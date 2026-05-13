@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="794" height="1123" viewBox="0 0 794 1123">
+  <defs>
+    <linearGradient id="blueBox" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b9d4ee"/>
+      <stop offset="1" stop-color="#86b2df"/>
+    </linearGradient>
+    <linearGradient id="grayBox" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d8d8d8"/>
+    </linearGradient>
+    <linearGradient id="darkBox" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#555"/>
+      <stop offset="1" stop-color="#050505"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#111"/>
+    </marker>
+    <style>
+      .title { font: 700 34px Arial, sans-serif; }
+      .subtitle { font: 700 20px Arial, sans-serif; }
+      .body { font: 18px Arial, sans-serif; }
+      .small { font: 13px Arial, sans-serif; }
+      .tiny { font: 11px Arial, sans-serif; }
+      .bold { font-weight: 700; }
+      .white { fill: #fff; }
+      .box { stroke: #222; stroke-width: 1; }
+      .pedal { fill: #dcebf7; stroke: #48718d; stroke-width: 6; }
+      .knob { fill: #ffe59b; stroke: #000; stroke-width: 3; }
+      .altknob { fill: #928c89; stroke: #000; stroke-width: 3; }
+      .switch { fill: #6bb0df; stroke: #06263e; stroke-width: 3; }
+      .fs { fill: #7bb6de; stroke: #5590bb; stroke-width: 5; }
+      .line { stroke: #111; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .tick { stroke: #000; stroke-width: 4; stroke-linecap: round; }
+    </style>
+  </defs>
+
+  <rect width="794" height="1123" fill="#f7f7f4"/>
+
+  <rect x="28" y="24" width="354" height="116" fill="url(#blueBox)" class="box"/>
+  <text x="45" y="62" class="title">BitCrusher3</text>
+  <text x="45" y="96" class="subtitle">Crush / Ring / Pitch / Flanger</text>
+  <text x="45" y="123" class="body">digital damage and motion.</text>
+
+  <rect x="412" y="24" width="354" height="116" fill="url(#blueBox)" class="box"/>
+  <text x="430" y="58" class="subtitle">Processing</text>
+  <text x="430" y="88" class="body">Stereo or MISO input</text>
+  <text x="430" y="116" class="body">15 presets: normal / pitch / flanger</text>
+
+  <rect x="250" y="168" width="294" height="526" rx="12" class="pedal"/>
+  <polygon points="324,175 334,193 314,193" fill="#000"/>
+  <polygon points="462,175 482,175 472,195" fill="#000"/>
+
+  <rect x="266" y="218" width="82" height="330" fill="none" stroke="#000"/>
+  <rect x="356" y="218" width="82" height="330" fill="none" stroke="#000"/>
+  <rect x="446" y="218" width="82" height="330" fill="none" stroke="#000"/>
+
+  <circle cx="307" cy="262" r="31" class="knob"/>
+  <line x1="307" y1="232" x2="307" y2="261" class="tick"/>
+  <text x="284" y="313" class="small bold">K1 Bits</text>
+  <text x="276" y="331" class="tiny">Ring: Freq</text>
+
+  <circle cx="397" cy="262" r="31" class="knob"/>
+  <line x1="397" y1="232" x2="397" y2="261" class="tick"/>
+  <text x="374" y="313" class="small bold">K2 SRT</text>
+  <text x="367" y="331" class="tiny">Ring: SRT2</text>
+
+  <circle cx="487" cy="262" r="31" class="knob"/>
+  <line x1="487" y1="232" x2="487" y2="261" class="tick"/>
+  <text x="460" y="313" class="small bold">K3 Cutoff</text>
+
+  <circle cx="307" cy="382" r="30" class="altknob"/>
+  <line x1="307" y1="354" x2="307" y2="382" class="tick"/>
+  <text x="279" y="431" class="small bold">K4 Env</text>
+  <text x="282" y="449" class="tiny">to Bits</text>
+
+  <circle cx="397" cy="382" r="30" class="altknob"/>
+  <line x1="397" y1="354" x2="397" y2="382" class="tick"/>
+  <text x="369" y="431" class="small bold">K5 Env</text>
+  <text x="370" y="449" class="tiny">to SRT</text>
+
+  <circle cx="487" cy="382" r="30" class="altknob"/>
+  <line x1="487" y1="354" x2="487" y2="382" class="tick"/>
+  <text x="459" y="431" class="small bold">K6 Env</text>
+  <text x="459" y="449" class="tiny">to Cutoff</text>
+
+  <rect x="266" y="462" width="82" height="86" fill="#d6e8f5" stroke="#000"/>
+  <rect x="356" y="462" width="82" height="86" fill="#d6e8f5" stroke="#000"/>
+  <rect x="446" y="462" width="82" height="86" fill="#d6e8f5" stroke="#000"/>
+
+  <circle cx="307" cy="501" r="15" class="switch"/>
+  <path d="M287,499 h20" stroke="#06263e" stroke-width="5" stroke-linecap="round"/>
+  <text x="286" y="535" class="tiny" transform="rotate(-90 286,535)">CRUSH</text>
+  <text x="304" y="537" class="tiny" transform="rotate(-90 304,537)">THRU</text>
+  <text x="322" y="533" class="tiny" transform="rotate(-90 322,533)">RING</text>
+
+  <circle cx="397" cy="501" r="15" class="switch"/>
+  <path d="M377,499 h20" stroke="#06263e" stroke-width="5" stroke-linecap="round"/>
+  <text x="374" y="537" class="tiny" transform="rotate(-90 374,537)">NORMAL</text>
+  <text x="393" y="540" class="tiny" transform="rotate(-90 393,540)">3 PITCH</text>
+  <text x="412" y="537" class="tiny" transform="rotate(-90 412,537)">FLANGER</text>
+
+  <circle cx="487" cy="501" r="15" class="switch"/>
+  <path d="M467,499 h20" stroke="#06263e" stroke-width="5" stroke-linecap="round"/>
+  <text x="466" y="533" class="tiny" transform="rotate(-90 466,533)">LOW</text>
+  <text x="484" y="535" class="tiny" transform="rotate(-90 484,535)">BAND</text>
+  <text x="502" y="533" class="tiny" transform="rotate(-90 502,533)">HIGH</text>
+
+  <circle cx="307" cy="560" r="9" fill="#65a9d7" stroke="#467fa6"/>
+  <circle cx="487" cy="560" r="9" fill="#65a9d7" stroke="#467fa6"/>
+  <text x="322" y="601" font="700 28px Georgia, serif">BITCRUSHER3</text>
+  <text x="334" y="622" class="small">CRUSH / RING / PITCH</text>
+
+  <circle cx="307" cy="648" r="28" class="fs"/>
+  <circle cx="487" cy="648" r="28" class="fs"/>
+  <text x="262" y="685" class="small bold">BYPASS / SHIFT</text>
+  <text x="460" y="685" class="small bold">PRESET</text>
+
+  <rect x="28" y="168" width="190" height="156" fill="url(#grayBox)" class="box"/>
+  <text x="42" y="195" class="subtitle">Normal Knobs</text>
+  <text x="42" y="224" class="body"><tspan class="bold">K1:</tspan> Bits</text>
+  <text x="42" y="251" class="body"><tspan class="bold">K2:</tspan> SRT</text>
+  <text x="42" y="278" class="body"><tspan class="bold">K3:</tspan> Cutoff</text>
+  <text x="42" y="305" class="body"><tspan class="bold">K4-6:</tspan> Env amt</text>
+  <line x1="218" y1="242" x2="264" y2="255" class="line"/>
+
+  <rect x="576" y="168" width="190" height="156" fill="url(#grayBox)" class="box"/>
+  <text x="592" y="195" class="subtitle">Ring Mode</text>
+  <text x="592" y="224" class="body"><tspan class="bold">K1:</tspan> sine freq</text>
+  <text x="592" y="251" class="body"><tspan class="bold">K2:</tspan> SRT after ring</text>
+  <text x="592" y="278" class="body"><tspan class="bold">K4:</tspan> env to freq</text>
+  <text x="592" y="305" class="body"><tspan class="bold">K5:</tspan> env to SRT</text>
+  <line x1="576" y1="242" x2="529" y2="255" class="line"/>
+
+  <rect x="28" y="342" width="190" height="142" fill="url(#darkBox)" class="box"/>
+  <text x="42" y="370" class="subtitle white">Switch 1</text>
+  <text x="42" y="399" class="body white"><tspan class="bold">Left:</tspan> Crush</text>
+  <text x="42" y="427" class="body white"><tspan class="bold">Center:</tspan> Thru</text>
+  <text x="42" y="455" class="body white"><tspan class="bold">Right:</tspan> Ring</text>
+  <line x1="218" y1="422" x2="266" y2="499" class="line"/>
+
+  <rect x="576" y="342" width="190" height="142" fill="url(#darkBox)" class="box"/>
+  <text x="592" y="370" class="subtitle white">Switch 3</text>
+  <text x="592" y="399" class="body white"><tspan class="bold">Left:</tspan> Lowpass</text>
+  <text x="592" y="427" class="body white"><tspan class="bold">Center:</tspan> Bandpass</text>
+  <text x="592" y="455" class="body white"><tspan class="bold">Right:</tspan> Highpass</text>
+  <line x1="576" y1="422" x2="529" y2="499" class="line"/>
+
+  <rect x="28" y="502" width="190" height="164" fill="url(#darkBox)" class="box"/>
+  <text x="42" y="530" class="subtitle white">Switch 2</text>
+  <text x="42" y="559" class="body white"><tspan class="bold">Left:</tspan> Normal</text>
+  <text x="42" y="587" class="body white"><tspan class="bold">Center:</tspan> Triple-Pitch</text>
+  <text x="42" y="615" class="body white"><tspan class="bold">Right:</tspan> Triple-Flanger</text>
+  <text x="42" y="644" class="small white">Pitch/flanger have own presets.</text>
+  <line x1="218" y1="586" x2="356" y2="501" class="line"/>
+
+  <rect x="576" y="502" width="190" height="164" fill="#435772" class="box"/>
+  <text x="592" y="530" class="subtitle white">DIP Switches</text>
+  <text x="592" y="559" class="body white"><tspan class="bold">1:</tspan> Stereo / MISO</text>
+  <text x="592" y="587" class="body white"><tspan class="bold">4:</tspan> Env gain x3.5</text>
+  <text x="592" y="622" class="small white">LED1: bypass / shift</text>
+  <text x="592" y="644" class="small white">LED2: preset feedback</text>
+
+  <rect x="28" y="724" width="738" height="150" fill="url(#grayBox)" class="box"/>
+  <text x="45" y="755" class="subtitle">Triple-Pitch Mode: Switch 2 Center</text>
+  <text x="45" y="785" class="body"><tspan class="bold">K1-3:</tspan> Pitch shifter 1 / 2 / 3 transpose, -12 to +12 semitones</text>
+  <text x="45" y="813" class="body"><tspan class="bold">K4-6:</tspan> Pitch shifter 1 / 2 / 3 volume</text>
+  <text x="45" y="842" class="body"><tspan class="bold">Shift K4-6:</tspan> Input source per voice, pre-effect to post-effect</text>
+
+  <rect x="28" y="890" width="738" height="122" fill="url(#grayBox)" class="box"/>
+  <text x="45" y="921" class="subtitle">Triple-Flanger Shift</text>
+  <text x="45" y="951" class="body"><tspan class="bold">Flanger:</tspan> K1-3 delay/color, 1-19 ms short-delay range</text>
+  <text x="45" y="982" class="body"><tspan class="bold">Shift K1:</tspan> dry/wet   <tspan class="bold">Shift K2:</tspan> LFO freq   <tspan class="bold">Shift K3:</tspan> reso/feedback   <tspan class="bold">K4-6:</tspan> LFO amount</text>
+
+  <rect x="28" y="1028" width="354" height="70" fill="#435772" class="box"/>
+  <text x="44" y="1056" class="body white"><tspan class="bold">Left Footswitch:</tspan> bypass / engage</text>
+  <text x="44" y="1084" class="body white">Hold for shift; hold both for expression.</text>
+
+  <rect x="412" y="1028" width="354" height="70" fill="#435772" class="box"/>
+  <text x="428" y="1056" class="body white"><tspan class="bold">Right Footswitch:</tspan> presets</text>
+  <text x="428" y="1084" class="body white">1-5 clicks recall; same active preset saves.</text>
+</svg>
