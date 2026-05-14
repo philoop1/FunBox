@@ -25,11 +25,11 @@ Live-Version auf Basis von BitCrusher4Live. Phaser wird per Shift + Switch 1 lin
 | Knob 3 | Filter cutoff. |
 | Knob 4 | Envelope amount to bit depth. In ringmod mode: envelope amount to sine frequency. Bipolar, center is neutral. |
 | Knob 5 | Envelope amount to sample-rate reduction. Bipolar, center is neutral. |
-| Knob 6 | Envelope amount to cutoff. Bipolar, center is neutral. |
+| Knob 6 | Envelope amount to cutoff. Bipolar, center is neutral. Uses an intensified range for stronger filter sweeps. |
 | Shift + Knob 3 | Filter resonance. |
-| Shift + Knob 4 | Envelope follower input gain. Stored globally and used by all modes. Phaser and Flanger multiply this by 3 internally. |
-| Shift + Knob 5 | Envelope attack. |
-| Shift + Knob 6 | Envelope release. |
+| Shift + Knob 4 | Envelope follower input gain. Stored globally, independent of presets, and used by all modes. Phaser and Flanger multiply this by 3 internally. |
+| Shift + Knob 5 | Envelope attack. Stored globally, independent of presets. |
+| Shift + Knob 6 | Envelope release. Stored globally, independent of presets. |
 
 Each Switch 1 position has its own normal 5-preset bank. Moving Switch 1 in normal route mode loads the same preset number from the new bank, or preset 1 if no preset number is active. Switch 1 and Switch 2 are not stored in presets, so their physical positions stay live when a preset is loaded.
 
@@ -94,9 +94,9 @@ There are 5 normal presets for each Switch 1 position, plus 5 Phaser presets and
 | Action | Result |
 | --- | --- |
 | 1-5 short clicks on Footswitch 2 | Recall preset 1-5 in the current route bank. If that preset is already active, save edits back to that preset. |
-| Hold Footswitch 2 for 700-999 ms | Enter save-select mode. LED2 stays dim while waiting for preset input. |
+| Hold Footswitch 2 for 700-999 ms | Enter save-select mode as soon as the hold threshold is reached. LED2 lights while waiting for preset input. |
 | In save-select mode, 1-5 short clicks | Save current state to preset 1-5 in the current route bank. |
-| Hold Footswitch 2 for 1 second or longer | Presets off in the current bank. Phaser/Flanger will still auto-load preset 1 the next time their latch is entered. |
+| Hold Footswitch 2 for 1.5 seconds or longer | Presets off in the current bank. Phaser/Flanger will still auto-load preset 1 the next time their latch is entered. |
 
 When a preset is active, LED2 blinks the preset number in a 200 ms pattern, then stays off for two 200 ms steps before repeating.
 

@@ -134,7 +134,7 @@ static constexpr uint32_t kSaveSelectTimeoutMs = 3000;
 static constexpr uint32_t kPresetLedStepMs = 200;
 static constexpr uint32_t kSaveLedStepMs = 80;
 static constexpr uint32_t kSaveSelectHoldMs = 700;
-static constexpr uint32_t kPresetOffHoldMs = 1000;
+static constexpr uint32_t kPresetOffHoldMs = 1500;
 
 DaisyPetal hw;
 Parameter  param1, param2, param3, param4, param5, param6, expression;
@@ -147,6 +147,7 @@ bool use_preset = false;
 bool trigger_save = false;
 bool update_switches = true;
 bool suppress_button2_release = false;
+bool suppress_button2_preset_release = false;
 bool live_alternate_save_pending = false;
 bool special_switch1_latched = false;
 int  special_return_switch1 = 1;
@@ -260,6 +261,11 @@ float ApplyEnv(float base, float amount, float env)
 float ApplyEnvDeadband(float base, float amount, float env)
 {
     return Clamp01(base + BipolarDeadband(amount) * env);
+}
+
+float ApplyEnvDeadbandDepth(float base, float amount, float env, float depth)
+{
+    return Clamp01(base + BipolarDeadband(amount) * env * depth);
 }
 
 float EnvScale(float amount, float env, float depth)
@@ -469,7 +475,11 @@ void ApplyPreset(int index)
         else if(routeMode == RouteMode::Flanger)
             flangerAlternateKnobValues[i] = s.alternate_knobs[i];
         else
-            alternateKnobValues[i] = s.alternate_knobs[i];
+        {
+            // Normal Shift K4-K6 are global env follower settings, not preset data.
+            if(i < 3)
+                alternateKnobValues[i] = s.alternate_knobs[i];
+        }
     }
     switchValues[2] = s.switches[2];
     for(int i = 0; i < 4; i++)
@@ -495,8 +505,9 @@ void StorePreset(int index)
     for(int i = 0; i < 6; i++)
     {
         s.knobs[i] = knobValues[i];
-        s.alternate_knobs[i] = IsSpecialRoute() ? ActiveSpecialAlternateValues()[i]
-                                                : alternateKnobValues[i];
+        if(IsSpecialRoute() || i < 3)
+            s.alternate_knobs[i] = IsSpecialRoute() ? ActiveSpecialAlternateValues()[i]
+                                                    : alternateKnobValues[i];
     }
     s.switches[2] = switchValues[2];
     for(int i = 0; i < 4; i++)
@@ -568,7 +579,7 @@ void UpdateLed2()
 
     if(save_select_active)
     {
-        led2.Set(0.35f);
+        led2.Set(0.75f);
         return;
     }
 
@@ -673,27 +684,52 @@ void UpdateButtons()
         button2_down_ms = System::GetNow();
     }
 
+    if(hw.switches[Funbox::FOOTSWITCH_2].Pressed()
+       && hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() <= 50
+       && !expression_pressed)
+    {
+        const uint32_t held_ms = System::GetNow() - button2_down_ms;
+        if(held_ms >= kPresetOffHoldMs)
+        {
+            if(save_select_active)
+            {
+                save_select_active = false;
+                pending_save_clicks = 0;
+            }
+            DisablePreset();
+            led2.Set(0.0f);
+            suppress_button2_preset_release = true;
+        }
+        else if(held_ms >= kSaveSelectHoldMs && !save_select_active
+                && !suppress_button2_preset_release)
+        {
+            save_select_active = true;
+            pending_preset_clicks = 0;
+            pending_save_clicks = 0;
+            save_select_start_ms = System::GetNow();
+            led2.Set(0.75f);
+        }
+    }
+
     if(hw.switches[Funbox::FOOTSWITCH_2].FallingEdge() && suppress_button2_release)
     {
         suppress_button2_release = false;
         return;
     }
 
+    if(hw.switches[Funbox::FOOTSWITCH_2].FallingEdge() && suppress_button2_preset_release)
+    {
+        suppress_button2_preset_release = false;
+        return;
+    }
+
     if(hw.switches[Funbox::FOOTSWITCH_2].FallingEdge() && !expression_pressed)
     {
         const uint32_t held_ms = System::GetNow() - button2_down_ms;
-        if(held_ms >= kPresetOffHoldMs
-           && hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() <= 50)
-        {
-            DisablePreset();
-        }
-        else if(held_ms >= kSaveSelectHoldMs
+        if(held_ms >= kSaveSelectHoldMs
                 && hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() <= 50)
         {
-            save_select_active = true;
-            pending_preset_clicks = 0;
-            pending_save_clicks = 0;
-            save_select_start_ms = System::GetNow();
+            return;
         }
         else if(held_ms < 350)
         {
@@ -1160,7 +1196,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
             else
                 modBits = ApplyEnvDeadband(bits, k4, env);
             modSr = ApplyEnvDeadband(sr_reduce, k5, env);
-            modCutoffControl = ApplyEnvDeadband(cutoffControl, k6, env);
+            modCutoffControl = ApplyEnvDeadbandDepth(cutoffControl, k6, env, 2.5f);
         }
 
         const float cutoff = ExpMap(modCutoffControl, 40.0f, 16000.0f);
