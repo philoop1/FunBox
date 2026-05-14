@@ -1,0 +1,667 @@
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 1
+  11              		.eabi_attribute 18, 4
+  12              		.file	"sampleratereducer.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN7daisysp17SampleRateReducer4InitEv,"ax",%progbits
+  17              		.align	1
+  18              		.global	_ZN7daisysp17SampleRateReducer4InitEv
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-d16
+  25              	_ZN7daisysp17SampleRateReducer4InitEv:
+  26              	.LVL0:
+  27              	.LFB2811:
+  28              		.file 1 "sampleratereducer.cpp"
+   1:sampleratereducer.cpp **** #include "dsp.h"
+   2:sampleratereducer.cpp **** #include "sampleratereducer.h"
+   3:sampleratereducer.cpp **** #include <math.h>
+   4:sampleratereducer.cpp **** 
+   5:sampleratereducer.cpp **** using namespace daisysp;
+   6:sampleratereducer.cpp **** void SampleRateReducer::Init()
+   7:sampleratereducer.cpp **** {
+  29              		.loc 1 7 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+   8:sampleratereducer.cpp ****     frequency_       = .2f;
+  34              		.loc 1 8 5 view .LVU1
+  35              		.loc 1 8 22 is_stmt 0 view .LVU2
+  36 0000 034B     		ldr	r3, .L2
+  37 0002 0360     		str	r3, [r0]	@ float
+   9:sampleratereducer.cpp ****     phase_           = 0.0f;
+  38              		.loc 1 9 5 is_stmt 1 view .LVU3
+  39              		.loc 1 9 22 is_stmt 0 view .LVU4
+  40 0004 0023     		movs	r3, #0
+  41 0006 4360     		str	r3, [r0, #4]	@ float
+  10:sampleratereducer.cpp ****     sample_          = 0.0f;
+  42              		.loc 1 10 5 is_stmt 1 view .LVU5
+  43              		.loc 1 10 22 is_stmt 0 view .LVU6
+  44 0008 8360     		str	r3, [r0, #8]	@ float
+  11:sampleratereducer.cpp ****     next_sample_     = 0.0f;
+  45              		.loc 1 11 5 is_stmt 1 view .LVU7
+  46              		.loc 1 11 22 is_stmt 0 view .LVU8
+  47 000a 0361     		str	r3, [r0, #16]	@ float
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 2
+
+
+  12:sampleratereducer.cpp ****     previous_sample_ = 0.0f;
+  48              		.loc 1 12 5 is_stmt 1 view .LVU9
+  49              		.loc 1 12 22 is_stmt 0 view .LVU10
+  50 000c C360     		str	r3, [r0, #12]	@ float
+  13:sampleratereducer.cpp **** }
+  51              		.loc 1 13 1 view .LVU11
+  52 000e 7047     		bx	lr
+  53              	.L3:
+  54              		.align	2
+  55              	.L2:
+  56 0010 CDCC4C3E 		.word	1045220557
+  57              		.cfi_endproc
+  58              	.LFE2811:
+  60              		.section	.text._ZN7daisysp17SampleRateReducer7ProcessEf,"ax",%progbits
+  61              		.align	1
+  62              		.global	_ZN7daisysp17SampleRateReducer7ProcessEf
+  63              		.syntax unified
+  64              		.thumb
+  65              		.thumb_func
+  66              		.fpu fpv5-d16
+  68              	_ZN7daisysp17SampleRateReducer7ProcessEf:
+  69              	.LVL1:
+  70              	.LFB2812:
+  14:sampleratereducer.cpp **** 
+  15:sampleratereducer.cpp **** float SampleRateReducer::Process(float in)
+  16:sampleratereducer.cpp **** {
+  71              		.loc 1 16 1 is_stmt 1 view -0
+  72              		.cfi_startproc
+  73              		@ args = 0, pretend = 0, frame = 0
+  74              		@ frame_needed = 0, uses_anonymous_args = 0
+  75              		@ link register save eliminated.
+  17:sampleratereducer.cpp ****     float this_sample = next_sample_;
+  76              		.loc 1 17 5 view .LVU13
+  18:sampleratereducer.cpp ****     next_sample_      = 0.f;
+  19:sampleratereducer.cpp ****     phase_ += frequency_;
+  77              		.loc 1 19 12 is_stmt 0 view .LVU14
+  78 0000 D0ED017A 		vldr.32	s15, [r0, #4]
+  79              	.LBB18:
+  20:sampleratereducer.cpp ****     if(phase_ >= 1.0f)
+  80              		.loc 1 20 5 view .LVU15
+  81 0004 B7EE007A 		vmov.f32	s14, #1.0e+0
+  82              	.LBE18:
+  19:sampleratereducer.cpp ****     if(phase_ >= 1.0f)
+  83              		.loc 1 19 15 view .LVU16
+  84 0008 D0ED006A 		vldr.32	s13, [r0]
+  18:sampleratereducer.cpp ****     next_sample_      = 0.f;
+  85              		.loc 1 18 23 view .LVU17
+  86 000c 0023     		movs	r3, #0
+  17:sampleratereducer.cpp ****     next_sample_      = 0.f;
+  87              		.loc 1 17 11 view .LVU18
+  88 000e 90ED045A 		vldr.32	s10, [r0, #16]
+  89              	.LVL2:
+  18:sampleratereducer.cpp ****     phase_ += frequency_;
+  90              		.loc 1 18 5 is_stmt 1 view .LVU19
+  19:sampleratereducer.cpp ****     if(phase_ >= 1.0f)
+  91              		.loc 1 19 12 is_stmt 0 view .LVU20
+  92 0012 76EEA77A 		vadd.f32	s15, s13, s15
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 3
+
+
+  18:sampleratereducer.cpp ****     phase_ += frequency_;
+  93              		.loc 1 18 23 view .LVU21
+  94 0016 0361     		str	r3, [r0, #16]	@ float
+  19:sampleratereducer.cpp ****     if(phase_ >= 1.0f)
+  95              		.loc 1 19 5 is_stmt 1 view .LVU22
+  96              	.LBB36:
+  97              		.loc 1 20 5 is_stmt 0 view .LVU23
+  98 0018 F4EEC77A 		vcmpe.f32	s15, s14
+  99              	.LBE36:
+  19:sampleratereducer.cpp ****     if(phase_ >= 1.0f)
+ 100              		.loc 1 19 12 view .LVU24
+ 101 001c C0ED017A 		vstr.32	s15, [r0, #4]
+ 102              		.loc 1 20 5 is_stmt 1 view .LVU25
+ 103              	.LBB37:
+ 104 0020 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 105 0024 25DB     		blt	.L5
+ 106              	.LBB19:
+  21:sampleratereducer.cpp ****     {
+  22:sampleratereducer.cpp ****         phase_ -= 1.0f;
+ 107              		.loc 1 22 16 is_stmt 0 view .LVU26
+ 108 0026 77EEC77A 		vsub.f32	s15, s15, s14
+  23:sampleratereducer.cpp ****         float t = phase_ / frequency_;
+  24:sampleratereducer.cpp ****         // t = 0: the transition occurred right at this sample.
+  25:sampleratereducer.cpp ****         // t = 1: the transition occurred at the previous sample.
+  26:sampleratereducer.cpp ****         // Use linear interpolation to recover the fractional sample.
+  27:sampleratereducer.cpp ****         float new_sample
+  28:sampleratereducer.cpp ****             = previous_sample_ + (in - previous_sample_) * (1.0f - t);
+  29:sampleratereducer.cpp ****         float discontinuity = new_sample - sample_;
+ 109              		.loc 1 29 44 view .LVU27
+ 110 002a D0ED025A 		vldr.32	s11, [r0, #8]
+  22:sampleratereducer.cpp ****         float t = phase_ / frequency_;
+ 111              		.loc 1 22 9 is_stmt 1 view .LVU28
+ 112              	.LBB20:
+ 113              	.LBB21:
+ 114              		.file 2 "../../DaisySP/Source/Utility/dsp.h"
+   1:../../DaisySP/Source/Utility/dsp.h **** /*
+   2:../../DaisySP/Source/Utility/dsp.h **** Copyright (c) 2020 Electrosmith, Corp, Emilie Gillet
+   3:../../DaisySP/Source/Utility/dsp.h **** 
+   4:../../DaisySP/Source/Utility/dsp.h **** Use of this source code is governed by an MIT-style
+   5:../../DaisySP/Source/Utility/dsp.h **** license that can be found in the LICENSE file or at
+   6:../../DaisySP/Source/Utility/dsp.h **** https://opensource.org/licenses/MIT.
+   7:../../DaisySP/Source/Utility/dsp.h **** */
+   8:../../DaisySP/Source/Utility/dsp.h **** 
+   9:../../DaisySP/Source/Utility/dsp.h **** /** Helpful defines, functions, and other utilities for use in/with daisysp modules.
+  10:../../DaisySP/Source/Utility/dsp.h **** */
+  11:../../DaisySP/Source/Utility/dsp.h **** #pragma once
+  12:../../DaisySP/Source/Utility/dsp.h **** #ifndef DSY_CORE_DSP
+  13:../../DaisySP/Source/Utility/dsp.h **** #define DSY_CORE_DSP
+  14:../../DaisySP/Source/Utility/dsp.h **** #include <cassert>
+  15:../../DaisySP/Source/Utility/dsp.h **** #include <cstdint>
+  16:../../DaisySP/Source/Utility/dsp.h **** #include <random>
+  17:../../DaisySP/Source/Utility/dsp.h **** #include <cmath>
+  18:../../DaisySP/Source/Utility/dsp.h **** 
+  19:../../DaisySP/Source/Utility/dsp.h **** /** PIs
+  20:../../DaisySP/Source/Utility/dsp.h **** */
+  21:../../DaisySP/Source/Utility/dsp.h **** #define PI_F 3.1415927410125732421875f
+  22:../../DaisySP/Source/Utility/dsp.h **** #define TWOPI_F (2.0f * PI_F)
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 4
+
+
+  23:../../DaisySP/Source/Utility/dsp.h **** #define HALFPI_F (PI_F * 0.5f)
+  24:../../DaisySP/Source/Utility/dsp.h **** #define DSY_MIN(in, mn) (in < mn ? in : mn)
+  25:../../DaisySP/Source/Utility/dsp.h **** #define DSY_MAX(in, mx) (in > mx ? in : mx)
+  26:../../DaisySP/Source/Utility/dsp.h **** #define DSY_CLAMP(in, mn, mx) (DSY_MIN(DSY_MAX(in, mn), mx))
+  27:../../DaisySP/Source/Utility/dsp.h **** #define DSY_COUNTOF(_arr) (sizeof(_arr) / sizeof(_arr[0]))
+  28:../../DaisySP/Source/Utility/dsp.h **** 
+  29:../../DaisySP/Source/Utility/dsp.h **** namespace daisysp
+  30:../../DaisySP/Source/Utility/dsp.h **** {
+  31:../../DaisySP/Source/Utility/dsp.h **** //Avoids division for random floats. e.g. rand() * kRandFrac
+  32:../../DaisySP/Source/Utility/dsp.h **** static constexpr float kRandFrac = 1.f / (float)RAND_MAX;
+  33:../../DaisySP/Source/Utility/dsp.h **** 
+  34:../../DaisySP/Source/Utility/dsp.h **** //Convert from semitones to other units. e.g. 2 ^ (kOneTwelfth * x)
+  35:../../DaisySP/Source/Utility/dsp.h **** static constexpr float kOneTwelfth = 1.f / 12.f;
+  36:../../DaisySP/Source/Utility/dsp.h **** 
+  37:../../DaisySP/Source/Utility/dsp.h **** /** efficient floating point min/max
+  38:../../DaisySP/Source/Utility/dsp.h **** c/o stephen mccaul
+  39:../../DaisySP/Source/Utility/dsp.h **** */
+  40:../../DaisySP/Source/Utility/dsp.h **** inline float fmax(float a, float b)
+  41:../../DaisySP/Source/Utility/dsp.h **** {
+  42:../../DaisySP/Source/Utility/dsp.h ****     float r;
+  43:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+  44:../../DaisySP/Source/Utility/dsp.h ****     asm("vmaxnm.f32 %[d], %[n], %[m]" : [d] "=t"(r) : [n] "t"(a), [m] "t"(b) :);
+  45:../../DaisySP/Source/Utility/dsp.h **** #else
+  46:../../DaisySP/Source/Utility/dsp.h ****     r = (a > b) ? a : b;
+  47:../../DaisySP/Source/Utility/dsp.h **** #endif // __arm__
+  48:../../DaisySP/Source/Utility/dsp.h ****     return r;
+  49:../../DaisySP/Source/Utility/dsp.h **** }
+  50:../../DaisySP/Source/Utility/dsp.h **** 
+  51:../../DaisySP/Source/Utility/dsp.h **** inline float fmin(float a, float b)
+  52:../../DaisySP/Source/Utility/dsp.h **** {
+  53:../../DaisySP/Source/Utility/dsp.h ****     float r;
+  54:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+  55:../../DaisySP/Source/Utility/dsp.h ****     asm("vminnm.f32 %[d], %[n], %[m]" : [d] "=t"(r) : [n] "t"(a), [m] "t"(b) :);
+  56:../../DaisySP/Source/Utility/dsp.h **** #else
+  57:../../DaisySP/Source/Utility/dsp.h ****     r = (a < b) ? a : b;
+  58:../../DaisySP/Source/Utility/dsp.h **** #endif // __arm__
+  59:../../DaisySP/Source/Utility/dsp.h ****     return r;
+  60:../../DaisySP/Source/Utility/dsp.h **** }
+  61:../../DaisySP/Source/Utility/dsp.h **** 
+  62:../../DaisySP/Source/Utility/dsp.h **** /** quick fp clamp
+  63:../../DaisySP/Source/Utility/dsp.h **** */
+  64:../../DaisySP/Source/Utility/dsp.h **** inline float fclamp(float in, float min, float max)
+  65:../../DaisySP/Source/Utility/dsp.h **** {
+  66:../../DaisySP/Source/Utility/dsp.h ****     return fmin(fmax(in, min), max);
+  67:../../DaisySP/Source/Utility/dsp.h **** }
+  68:../../DaisySP/Source/Utility/dsp.h **** 
+  69:../../DaisySP/Source/Utility/dsp.h **** /** From Musicdsp.org "Fast power and root estimates for 32bit floats)
+  70:../../DaisySP/Source/Utility/dsp.h **** Original code by Stefan Stenzel
+  71:../../DaisySP/Source/Utility/dsp.h **** These are approximations
+  72:../../DaisySP/Source/Utility/dsp.h **** */
+  73:../../DaisySP/Source/Utility/dsp.h **** inline float fastpower(float f, int n)
+  74:../../DaisySP/Source/Utility/dsp.h **** {
+  75:../../DaisySP/Source/Utility/dsp.h ****     long *lp, l;
+  76:../../DaisySP/Source/Utility/dsp.h ****     lp = (long *)(&f);
+  77:../../DaisySP/Source/Utility/dsp.h ****     l  = *lp;
+  78:../../DaisySP/Source/Utility/dsp.h ****     l -= 0x3F800000;
+  79:../../DaisySP/Source/Utility/dsp.h ****     l <<= (n - 1);
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 5
+
+
+  80:../../DaisySP/Source/Utility/dsp.h ****     l += 0x3F800000;
+  81:../../DaisySP/Source/Utility/dsp.h ****     *lp = l;
+  82:../../DaisySP/Source/Utility/dsp.h ****     return f;
+  83:../../DaisySP/Source/Utility/dsp.h **** }
+  84:../../DaisySP/Source/Utility/dsp.h **** 
+  85:../../DaisySP/Source/Utility/dsp.h **** inline float fastroot(float f, int n)
+  86:../../DaisySP/Source/Utility/dsp.h **** {
+  87:../../DaisySP/Source/Utility/dsp.h ****     long *lp, l;
+  88:../../DaisySP/Source/Utility/dsp.h ****     lp = (long *)(&f);
+  89:../../DaisySP/Source/Utility/dsp.h ****     l  = *lp;
+  90:../../DaisySP/Source/Utility/dsp.h ****     l -= 0x3F800000;
+  91:../../DaisySP/Source/Utility/dsp.h ****     l >>= (n - 1);
+  92:../../DaisySP/Source/Utility/dsp.h ****     l += 0x3F800000;
+  93:../../DaisySP/Source/Utility/dsp.h ****     *lp = l;
+  94:../../DaisySP/Source/Utility/dsp.h ****     return f;
+  95:../../DaisySP/Source/Utility/dsp.h **** }
+  96:../../DaisySP/Source/Utility/dsp.h **** 
+  97:../../DaisySP/Source/Utility/dsp.h **** /** Significantly more efficient than fmodf(x, 1.0f) for calculating
+  98:../../DaisySP/Source/Utility/dsp.h ****  *  the decimal part of a floating point value.
+  99:../../DaisySP/Source/Utility/dsp.h ****  */
+ 100:../../DaisySP/Source/Utility/dsp.h **** inline float fastmod1f(float x)
+ 101:../../DaisySP/Source/Utility/dsp.h **** {
+ 102:../../DaisySP/Source/Utility/dsp.h ****     return x - floorf(x);
+ 103:../../DaisySP/Source/Utility/dsp.h **** }
+ 104:../../DaisySP/Source/Utility/dsp.h **** 
+ 105:../../DaisySP/Source/Utility/dsp.h **** /** From http://openaudio.blogspot.com/2017/02/faster-log10-and-pow.html
+ 106:../../DaisySP/Source/Utility/dsp.h **** No approximation, pow10f(x) gives a 90% speed increase over powf(10.f, x)
+ 107:../../DaisySP/Source/Utility/dsp.h **** */
+ 108:../../DaisySP/Source/Utility/dsp.h **** inline float pow10f(float f)
+ 109:../../DaisySP/Source/Utility/dsp.h **** {
+ 110:../../DaisySP/Source/Utility/dsp.h ****     return expf(2.302585092994046f * f);
+ 111:../../DaisySP/Source/Utility/dsp.h **** }
+ 112:../../DaisySP/Source/Utility/dsp.h **** 
+ 113:../../DaisySP/Source/Utility/dsp.h **** /* Original code for fastlog2f by Dr. Paul Beckmann from the ARM community forum, adapted from the 
+ 114:../../DaisySP/Source/Utility/dsp.h **** About 25% performance increase over std::log10f
+ 115:../../DaisySP/Source/Utility/dsp.h **** */
+ 116:../../DaisySP/Source/Utility/dsp.h **** inline float fastlog2f(float f)
+ 117:../../DaisySP/Source/Utility/dsp.h **** {
+ 118:../../DaisySP/Source/Utility/dsp.h ****     float frac;
+ 119:../../DaisySP/Source/Utility/dsp.h ****     int   exp;
+ 120:../../DaisySP/Source/Utility/dsp.h ****     frac = frexpf(fabsf(f), &exp);
+ 121:../../DaisySP/Source/Utility/dsp.h ****     f    = 1.23149591368684f;
+ 122:../../DaisySP/Source/Utility/dsp.h ****     f *= frac;
+ 123:../../DaisySP/Source/Utility/dsp.h ****     f += -4.11852516267426f;
+ 124:../../DaisySP/Source/Utility/dsp.h ****     f *= frac;
+ 125:../../DaisySP/Source/Utility/dsp.h ****     f += 6.02197014179219f;
+ 126:../../DaisySP/Source/Utility/dsp.h ****     f *= frac;
+ 127:../../DaisySP/Source/Utility/dsp.h ****     f += -3.13396450166353f;
+ 128:../../DaisySP/Source/Utility/dsp.h ****     f += exp;
+ 129:../../DaisySP/Source/Utility/dsp.h ****     return (f);
+ 130:../../DaisySP/Source/Utility/dsp.h **** }
+ 131:../../DaisySP/Source/Utility/dsp.h **** 
+ 132:../../DaisySP/Source/Utility/dsp.h **** inline float fastlog10f(float f)
+ 133:../../DaisySP/Source/Utility/dsp.h **** {
+ 134:../../DaisySP/Source/Utility/dsp.h ****     return fastlog2f(f) * 0.3010299956639812f;
+ 135:../../DaisySP/Source/Utility/dsp.h **** }
+ 136:../../DaisySP/Source/Utility/dsp.h **** 
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 6
+
+
+ 137:../../DaisySP/Source/Utility/dsp.h **** /** Midi to frequency helper
+ 138:../../DaisySP/Source/Utility/dsp.h **** */
+ 139:../../DaisySP/Source/Utility/dsp.h **** inline float mtof(float m)
+ 140:../../DaisySP/Source/Utility/dsp.h **** {
+ 141:../../DaisySP/Source/Utility/dsp.h ****     return powf(2, (m - 69.0f) / 12.0f) * 440.0f;
+ 142:../../DaisySP/Source/Utility/dsp.h **** }
+ 143:../../DaisySP/Source/Utility/dsp.h **** 
+ 144:../../DaisySP/Source/Utility/dsp.h **** 
+ 145:../../DaisySP/Source/Utility/dsp.h **** /** one pole lpf
+ 146:../../DaisySP/Source/Utility/dsp.h **** out is passed by reference, and must be retained between
+ 147:../../DaisySP/Source/Utility/dsp.h **** calls to properly filter the signal
+ 148:../../DaisySP/Source/Utility/dsp.h **** coeff can be calculated:
+ 149:../../DaisySP/Source/Utility/dsp.h **** coeff = 1.0 / (time * sample_rate) ; where time is in seconds
+ 150:../../DaisySP/Source/Utility/dsp.h **** */
+ 151:../../DaisySP/Source/Utility/dsp.h **** inline void fonepole(float &out, float in, float coeff)
+ 152:../../DaisySP/Source/Utility/dsp.h **** {
+ 153:../../DaisySP/Source/Utility/dsp.h ****     out += coeff * (in - out);
+ 154:../../DaisySP/Source/Utility/dsp.h **** }
+ 155:../../DaisySP/Source/Utility/dsp.h **** 
+ 156:../../DaisySP/Source/Utility/dsp.h **** /** Curves to use with the fmap function */
+ 157:../../DaisySP/Source/Utility/dsp.h **** enum class Mapping
+ 158:../../DaisySP/Source/Utility/dsp.h **** {
+ 159:../../DaisySP/Source/Utility/dsp.h ****     LINEAR,
+ 160:../../DaisySP/Source/Utility/dsp.h ****     EXP,
+ 161:../../DaisySP/Source/Utility/dsp.h ****     LOG,
+ 162:../../DaisySP/Source/Utility/dsp.h **** };
+ 163:../../DaisySP/Source/Utility/dsp.h **** 
+ 164:../../DaisySP/Source/Utility/dsp.h **** /** Maps a float between a specified range, using a specified curve.
+ 165:../../DaisySP/Source/Utility/dsp.h ****  *
+ 166:../../DaisySP/Source/Utility/dsp.h ****  *  \param in a value between 0 to 1 that will be mapped to the new range.
+ 167:../../DaisySP/Source/Utility/dsp.h ****  *  \param min the new minimum value
+ 168:../../DaisySP/Source/Utility/dsp.h ****  *  \param max the new maxmimum value
+ 169:../../DaisySP/Source/Utility/dsp.h ****  *  \param curve a Mapping Value to adjust the response curve of the transformation
+ 170:../../DaisySP/Source/Utility/dsp.h ****  *               defaults to Linear. @see Mapping
+ 171:../../DaisySP/Source/Utility/dsp.h ****  *
+ 172:../../DaisySP/Source/Utility/dsp.h ****  *  When using the log curve min and max, must be greater than zero.
+ 173:../../DaisySP/Source/Utility/dsp.h ****  *
+ 174:../../DaisySP/Source/Utility/dsp.h ****  *  \retval returns the transformed float within the new range.
+ 175:../../DaisySP/Source/Utility/dsp.h **** */
+ 176:../../DaisySP/Source/Utility/dsp.h **** inline float
+ 177:../../DaisySP/Source/Utility/dsp.h **** fmap(float in, float min, float max, Mapping curve = Mapping::LINEAR)
+ 178:../../DaisySP/Source/Utility/dsp.h **** {
+ 179:../../DaisySP/Source/Utility/dsp.h ****     switch(curve)
+ 180:../../DaisySP/Source/Utility/dsp.h ****     {
+ 181:../../DaisySP/Source/Utility/dsp.h ****         case Mapping::EXP:
+ 182:../../DaisySP/Source/Utility/dsp.h ****             return fclamp(min + (in * in) * (max - min), min, max);
+ 183:../../DaisySP/Source/Utility/dsp.h ****         case Mapping::LOG:
+ 184:../../DaisySP/Source/Utility/dsp.h ****         {
+ 185:../../DaisySP/Source/Utility/dsp.h ****             const float a = 1.f / log10f(max / min);
+ 186:../../DaisySP/Source/Utility/dsp.h ****             return fclamp(min * powf(10, in / a), min, max);
+ 187:../../DaisySP/Source/Utility/dsp.h ****         }
+ 188:../../DaisySP/Source/Utility/dsp.h ****         case Mapping::LINEAR:
+ 189:../../DaisySP/Source/Utility/dsp.h ****         default: return fclamp(min + in * (max - min), min, max);
+ 190:../../DaisySP/Source/Utility/dsp.h ****     }
+ 191:../../DaisySP/Source/Utility/dsp.h **** }
+ 192:../../DaisySP/Source/Utility/dsp.h **** 
+ 193:../../DaisySP/Source/Utility/dsp.h **** /** Simple 3-point median filter
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 7
+
+
+ 194:../../DaisySP/Source/Utility/dsp.h **** c/o stephen mccaul
+ 195:../../DaisySP/Source/Utility/dsp.h **** */
+ 196:../../DaisySP/Source/Utility/dsp.h **** template <typename T>
+ 197:../../DaisySP/Source/Utility/dsp.h **** T median(T a, T b, T c)
+ 198:../../DaisySP/Source/Utility/dsp.h **** {
+ 199:../../DaisySP/Source/Utility/dsp.h ****     return (b < a) ? (b < c) ? (c < a) ? c : a : b
+ 200:../../DaisySP/Source/Utility/dsp.h ****                    : (a < c) ? (c < b) ? c : b : a;
+ 201:../../DaisySP/Source/Utility/dsp.h **** }
+ 202:../../DaisySP/Source/Utility/dsp.h **** 
+ 203:../../DaisySP/Source/Utility/dsp.h **** /** Ported from pichenettes/eurorack/plaits/dsp/oscillator/oscillator.h
+ 204:../../DaisySP/Source/Utility/dsp.h **** */
+ 205:../../DaisySP/Source/Utility/dsp.h **** inline float ThisBlepSample(float t)
+ 206:../../DaisySP/Source/Utility/dsp.h **** {
+ 207:../../DaisySP/Source/Utility/dsp.h ****     return 0.5f * t * t;
+ 115              		.loc 2 207 17 is_stmt 0 view .LVU29
+ 116 002e B6EE006A 		vmov.f32	s12, #5.0e-1
+ 117              	.LBE21:
+ 118              	.LBE20:
+  23:sampleratereducer.cpp ****         // t = 0: the transition occurred right at this sample.
+ 119              		.loc 1 23 15 view .LVU30
+ 120 0032 C7EEA64A 		vdiv.f32	s9, s15, s13
+  28:sampleratereducer.cpp ****         float discontinuity = new_sample - sample_;
+ 121              		.loc 1 28 15 view .LVU31
+ 122 0036 D0ED036A 		vldr.32	s13, [r0, #12]
+  22:sampleratereducer.cpp ****         float t = phase_ / frequency_;
+ 123              		.loc 1 22 16 view .LVU32
+ 124 003a C0ED017A 		vstr.32	s15, [r0, #4]
+  23:sampleratereducer.cpp ****         // t = 0: the transition occurred right at this sample.
+ 125              		.loc 1 23 9 is_stmt 1 view .LVU33
+ 126              	.LVL3:
+  27:sampleratereducer.cpp ****             = previous_sample_ + (in - previous_sample_) * (1.0f - t);
+ 127              		.loc 1 27 9 view .LVU34
+  28:sampleratereducer.cpp ****         float discontinuity = new_sample - sample_;
+ 128              		.loc 1 28 38 is_stmt 0 view .LVU35
+ 129 003e 70EE667A 		vsub.f32	s15, s0, s13
+  28:sampleratereducer.cpp ****         float discontinuity = new_sample - sample_;
+ 130              		.loc 1 28 66 view .LVU36
+ 131 0042 37EE647A 		vsub.f32	s14, s14, s9
+ 132              	.LBB25:
+ 133              	.LBB22:
+ 134              		.loc 2 207 17 view .LVU37
+ 135 0046 24EE866A 		vmul.f32	s12, s9, s12
+ 136              	.LBE22:
+ 137              	.LBE25:
+  27:sampleratereducer.cpp ****             = previous_sample_ + (in - previous_sample_) * (1.0f - t);
+ 138              		.loc 1 27 15 view .LVU38
+ 139 004a E7EE876A 		vfma.f32	s13, s15, s14
+ 140              	.LVL4:
+ 141              		.loc 1 29 9 is_stmt 1 view .LVU39
+ 142              	.LBB26:
+ 143              	.LBB27:
+ 208:../../DaisySP/Source/Utility/dsp.h **** }
+ 209:../../DaisySP/Source/Utility/dsp.h **** 
+ 210:../../DaisySP/Source/Utility/dsp.h **** /** Ported from pichenettes/eurorack/plaits/dsp/oscillator/oscillator.h
+ 211:../../DaisySP/Source/Utility/dsp.h **** */
+ 212:../../DaisySP/Source/Utility/dsp.h **** inline float NextBlepSample(float t)
+ 213:../../DaisySP/Source/Utility/dsp.h **** {
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 8
+
+
+ 214:../../DaisySP/Source/Utility/dsp.h ****     t = 1.0f - t;
+ 215:../../DaisySP/Source/Utility/dsp.h ****     return -0.5f * t * t;
+ 144              		.loc 2 215 18 is_stmt 0 view .LVU40
+ 145 004e FEEE007A 		vmov.f32	s15, #-5.0e-1
+ 146              	.LBE27:
+ 147              	.LBE26:
+ 148              	.LBB31:
+ 149              	.LBB23:
+ 207:../../DaisySP/Source/Utility/dsp.h **** }
+ 150              		.loc 2 207 23 view .LVU41
+ 151 0052 26EE246A 		vmul.f32	s12, s12, s9
+ 152              	.LBE23:
+ 153              	.LBE31:
+ 154              	.LBB32:
+ 155              	.LBB28:
+ 156              		.loc 2 215 18 view .LVU42
+ 157 0056 67EE277A 		vmul.f32	s15, s14, s15
+ 158              	.LBE28:
+ 159              	.LBE32:
+ 160              		.loc 1 29 15 view .LVU43
+ 161 005a 76EEE55A 		vsub.f32	s11, s13, s11
+ 162              	.LVL5:
+  30:sampleratereducer.cpp ****         this_sample += discontinuity * ThisBlepSample(t);
+ 163              		.loc 1 30 9 is_stmt 1 view .LVU44
+ 164              	.LBB33:
+ 165              	.LBI20:
+ 205:../../DaisySP/Source/Utility/dsp.h **** {
+ 166              		.loc 2 205 14 view .LVU45
+ 167              	.LBB24:
+ 207:../../DaisySP/Source/Utility/dsp.h **** }
+ 168              		.loc 2 207 5 view .LVU46
+ 207:../../DaisySP/Source/Utility/dsp.h **** }
+ 169              		.loc 2 207 5 is_stmt 0 view .LVU47
+ 170              	.LBE24:
+ 171              	.LBE33:
+  31:sampleratereducer.cpp ****         next_sample_ = discontinuity * NextBlepSample(t);
+  32:sampleratereducer.cpp ****         sample_      = new_sample;
+ 172              		.loc 1 32 22 view .LVU48
+ 173 005e C0ED026A 		vstr.32	s13, [r0, #8]
+ 174              	.LBB34:
+ 175              	.LBB29:
+ 176              		.loc 2 215 24 view .LVU49
+ 177 0062 67EE877A 		vmul.f32	s15, s15, s14
+ 178              	.LBE29:
+ 179              	.LBE34:
+  30:sampleratereducer.cpp ****         next_sample_ = discontinuity * NextBlepSample(t);
+ 180              		.loc 1 30 21 view .LVU50
+ 181 0066 A5EE865A 		vfma.f32	s10, s11, s12
+ 182              	.LVL6:
+  31:sampleratereducer.cpp ****         next_sample_ = discontinuity * NextBlepSample(t);
+ 183              		.loc 1 31 9 is_stmt 1 view .LVU51
+ 184              	.LBB35:
+ 185              	.LBI26:
+ 212:../../DaisySP/Source/Utility/dsp.h **** {
+ 186              		.loc 2 212 14 view .LVU52
+ 187              	.LBB30:
+ 214:../../DaisySP/Source/Utility/dsp.h ****     return -0.5f * t * t;
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 9
+
+
+ 188              		.loc 2 214 5 view .LVU53
+ 189              		.loc 2 215 5 view .LVU54
+ 190              		.loc 2 215 5 is_stmt 0 view .LVU55
+ 191              	.LBE30:
+ 192              	.LBE35:
+  31:sampleratereducer.cpp ****         sample_      = new_sample;
+ 193              		.loc 1 31 38 view .LVU56
+ 194 006a 67EEA57A 		vmul.f32	s15, s15, s11
+  31:sampleratereducer.cpp ****         sample_      = new_sample;
+ 195              		.loc 1 31 22 view .LVU57
+ 196 006e C0ED047A 		vstr.32	s15, [r0, #16]
+ 197              		.loc 1 32 9 is_stmt 1 view .LVU58
+ 198              	.LVL7:
+ 199              	.L5:
+ 200              		.loc 1 32 9 is_stmt 0 view .LVU59
+ 201              	.LBE19:
+ 202              	.LBE37:
+  33:sampleratereducer.cpp ****     }
+  34:sampleratereducer.cpp ****     next_sample_ += sample_;
+ 203              		.loc 1 34 5 is_stmt 1 view .LVU60
+ 204              		.loc 1 34 18 is_stmt 0 view .LVU61
+ 205 0072 D0ED047A 		vldr.32	s15, [r0, #16]
+ 206 0076 90ED027A 		vldr.32	s14, [r0, #8]
+  35:sampleratereducer.cpp ****     previous_sample_ = in;
+ 207              		.loc 1 35 22 view .LVU62
+ 208 007a 80ED030A 		vstr.32	s0, [r0, #12]
+  36:sampleratereducer.cpp **** 
+  37:sampleratereducer.cpp ****     return this_sample;
+  38:sampleratereducer.cpp **** }
+ 209              		.loc 1 38 1 view .LVU63
+ 210 007e B0EE450A 		vmov.f32	s0, s10
+ 211              	.LVL8:
+  34:sampleratereducer.cpp ****     previous_sample_ = in;
+ 212              		.loc 1 34 18 view .LVU64
+ 213 0082 77EE877A 		vadd.f32	s15, s15, s14
+ 214 0086 C0ED047A 		vstr.32	s15, [r0, #16]
+  35:sampleratereducer.cpp ****     previous_sample_ = in;
+ 215              		.loc 1 35 5 is_stmt 1 view .LVU65
+  37:sampleratereducer.cpp **** }
+ 216              		.loc 1 37 5 view .LVU66
+ 217              		.loc 1 38 1 is_stmt 0 view .LVU67
+ 218 008a 7047     		bx	lr
+ 219              		.cfi_endproc
+ 220              	.LFE2812:
+ 222              		.section	.text._ZN7daisysp17SampleRateReducer7SetFreqEf,"ax",%progbits
+ 223              		.align	1
+ 224              		.global	_ZN7daisysp17SampleRateReducer7SetFreqEf
+ 225              		.syntax unified
+ 226              		.thumb
+ 227              		.thumb_func
+ 228              		.fpu fpv5-d16
+ 230              	_ZN7daisysp17SampleRateReducer7SetFreqEf:
+ 231              	.LVL9:
+ 232              	.LFB2813:
+  39:sampleratereducer.cpp **** 
+  40:sampleratereducer.cpp **** void SampleRateReducer::SetFreq(float frequency)
+  41:sampleratereducer.cpp **** {
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 10
+
+
+ 233              		.loc 1 41 1 is_stmt 1 view -0
+ 234              		.cfi_startproc
+ 235              		@ args = 0, pretend = 0, frame = 0
+ 236              		@ frame_needed = 0, uses_anonymous_args = 0
+ 237              		@ link register save eliminated.
+  42:sampleratereducer.cpp ****     frequency_ = fclamp(frequency, 0.f, 1.f);
+ 238              		.loc 1 42 5 view .LVU69
+ 239              	.LBB38:
+ 240              	.LBI38:
+  64:../../DaisySP/Source/Utility/dsp.h **** {
+ 241              		.loc 2 64 14 view .LVU70
+ 242              	.LBE38:
+  66:../../DaisySP/Source/Utility/dsp.h **** }
+ 243              		.loc 2 66 5 view .LVU71
+ 244              	.LBB43:
+ 245              	.LBB39:
+ 246              	.LBI39:
+  40:../../DaisySP/Source/Utility/dsp.h **** {
+ 247              		.loc 2 40 14 view .LVU72
+ 248              	.LBB40:
+  42:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 249              		.loc 2 42 5 view .LVU73
+  44:../../DaisySP/Source/Utility/dsp.h **** #else
+ 250              		.loc 2 44 5 view .LVU74
+ 251 0000 DFED057A 		vldr.32	s15, .L9
+ 252              		.syntax unified
+ 253              	@ 44 "../../DaisySP/Source/Utility/dsp.h" 1
+ 254 0004 80FE270A 		vmaxnm.f32 s0, s0, s15
+ 255              	@ 0 "" 2
+ 256              	.LVL10:
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 257              		.loc 2 48 5 view .LVU75
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 258              		.loc 2 48 5 is_stmt 0 view .LVU76
+ 259              		.thumb
+ 260              		.syntax unified
+ 261              	.LBE40:
+ 262              	.LBE39:
+ 263              	.LBB41:
+ 264              	.LBI41:
+  51:../../DaisySP/Source/Utility/dsp.h **** {
+ 265              		.loc 2 51 14 is_stmt 1 view .LVU77
+ 266              	.LBB42:
+  53:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 267              		.loc 2 53 5 view .LVU78
+  55:../../DaisySP/Source/Utility/dsp.h **** #else
+ 268              		.loc 2 55 5 view .LVU79
+ 269 0008 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 270              		.syntax unified
+ 271              	@ 55 "../../DaisySP/Source/Utility/dsp.h" 1
+ 272 000c 80FE670A 		vminnm.f32 s0, s0, s15
+ 273              	@ 0 "" 2
+ 274              	.LVL11:
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 275              		.loc 2 59 5 view .LVU80
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 276              		.loc 2 59 5 is_stmt 0 view .LVU81
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 11
+
+
+ 277              		.thumb
+ 278              		.syntax unified
+ 279              	.LBE42:
+ 280              	.LBE41:
+ 281              	.LBE43:
+ 282              		.loc 1 42 16 view .LVU82
+ 283 0010 80ED000A 		vstr.32	s0, [r0]
+  43:sampleratereducer.cpp **** }
+ 284              		.loc 1 43 1 view .LVU83
+ 285 0014 7047     		bx	lr
+ 286              	.L10:
+ 287 0016 00BF     		.align	2
+ 288              	.L9:
+ 289 0018 00000000 		.word	0
+ 290              		.cfi_endproc
+ 291              	.LFE2813:
+ 293              		.text
+ 294              	.Letext0:
+ 295              		.file 3 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 296              		.file 4 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 297              		.file 5 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\stdint.h"
+ 298              		.file 6 "c:\\program files\\daisytoolchain\\lib\\gcc\\arm-none-eabi\\10.2.1\\include\\stddef.h"
+ 299              		.file 7 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cmath"
+ 300              		.file 8 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\std_abs.h"
+ 301              		.file 9 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cstdint"
+ 302              		.file 10 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cstdlib"
+ 303              		.file 11 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\type_traits"
+ 304              		.file 12 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\debug\\debug.h"
+ 305              		.file 13 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cwchar"
+ 306              		.file 14 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\stl_pair.h
+ 307              		.file 15 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\exception_
+ 308              		.file 16 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\arm-none-eabi\\t
+ 309              		.file 17 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\clocale"
+ 310              		.file 18 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cstdio"
+ 311              		.file 19 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\basic_stri
+ 312              		.file 20 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\charconv.h
+ 313              		.file 21 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\predefined
+ 314              		.file 22 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\sys\\_types.h"
+ 315              		.file 23 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\sys\\reent.h"
+ 316              		.file 24 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\sys\\lock.h"
+ 317              		.file 25 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\math.h"
+ 318              		.file 26 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\stdlib.h"
+ 319              		.file 27 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\math.h"
+ 320              		.file 28 "c:\\program files\\daisytoolchain\\lib\\gcc\\arm-none-eabi\\10.2.1\\include\\stdarg.h"
+ 321              		.file 29 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\wchar.h"
+ 322              		.file 30 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\locale.h"
+ 323              		.file 31 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\stdio.h"
+ 324              		.file 32 "sampleratereducer.h"
+ 325              		.file 33 "<built-in>"
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s 			page 12
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sampleratereducer.cpp
+C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s:17     .text._ZN7daisysp17SampleRateReducer4InitEv:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s:25     .text._ZN7daisysp17SampleRateReducer4InitEv:00000000 _ZN7daisysp17SampleRateReducer4InitEv
+C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s:56     .text._ZN7daisysp17SampleRateReducer4InitEv:00000010 $d
+C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s:61     .text._ZN7daisysp17SampleRateReducer7ProcessEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s:68     .text._ZN7daisysp17SampleRateReducer7ProcessEf:00000000 _ZN7daisysp17SampleRateReducer7ProcessEf
+C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s:223    .text._ZN7daisysp17SampleRateReducer7SetFreqEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s:230    .text._ZN7daisysp17SampleRateReducer7SetFreqEf:00000000 _ZN7daisysp17SampleRateReducer7SetFreqEf
+C:\Users\Philoop\AppData\Local\Temp\ccRNYBBy.s:289    .text._ZN7daisysp17SampleRateReducer7SetFreqEf:00000018 $d
+
+NO UNDEFINED SYMBOLS
