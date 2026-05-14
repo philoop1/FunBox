@@ -10,7 +10,8 @@ OPT = -Os
 
 # Sources
 CPP_SOURCES = BitCrush.cpp \
-              ../../DaisySP/Source/Effects/phaser.cpp \
+              funbox_phaser.cpp \
+              funbox_flanger.cpp \
               moogladder.cpp \
               oscillator.cpp \
               sampleratereducer.cpp \
