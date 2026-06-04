@@ -1,0 +1,1314 @@
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 1
+  11              		.eabi_attribute 18, 4
+  12              		.file	"harmonic_notch_filter.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN19HarmonicNotchFilter11BiquadNotch3SetEfff,"ax",%progbits
+  17              		.align	1
+  18              		.global	_ZN19HarmonicNotchFilter11BiquadNotch3SetEfff
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-d16
+  25              	_ZN19HarmonicNotchFilter11BiquadNotch3SetEfff:
+  26              	.LVL0:
+  27              	.LFB562:
+  28              		.file 1 "harmonic_notch_filter.cpp"
+   1:harmonic_notch_filter.cpp **** #include "harmonic_notch_filter.h"
+   2:harmonic_notch_filter.cpp **** 
+   3:harmonic_notch_filter.cpp **** #include <math.h>
+   4:harmonic_notch_filter.cpp **** 
+   5:harmonic_notch_filter.cpp **** namespace
+   6:harmonic_notch_filter.cpp **** {
+   7:harmonic_notch_filter.cpp **** inline float Clampf(float x, float lo, float hi)
+   8:harmonic_notch_filter.cpp **** {
+   9:harmonic_notch_filter.cpp ****     return x < lo ? lo : (x > hi ? hi : x);
+  10:harmonic_notch_filter.cpp **** }
+  11:harmonic_notch_filter.cpp **** } // namespace
+  12:harmonic_notch_filter.cpp **** 
+  13:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::BiquadNotch::Set(float sample_rate, float freq_hz, float q)
+  14:harmonic_notch_filter.cpp **** {
+  29              		.loc 1 14 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  15:harmonic_notch_filter.cpp ****     const float w0 = 2.0f * 3.14159265359f * freq_hz / sample_rate;
+  33              		.loc 1 15 5 view .LVU1
+  34              		.loc 1 15 44 is_stmt 0 view .LVU2
+  35 0000 DFED1B7A 		vldr.32	s15, .L2
+  36 0004 60EEA70A 		vmul.f32	s1, s1, s15
+  37              	.LVL1:
+  14:harmonic_notch_filter.cpp ****     const float w0 = 2.0f * 3.14159265359f * freq_hz / sample_rate;
+  38              		.loc 1 14 1 view .LVU3
+  39 0008 10B5     		push	{r4, lr}
+  40              		.cfi_def_cfa_offset 8
+  41              		.cfi_offset 4, -8
+  42              		.cfi_offset 14, -4
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 2
+
+
+  43 000a 2DED048B 		vpush.64	{d8, d9}
+  44              		.cfi_def_cfa_offset 24
+  45              		.cfi_offset 80, -24
+  46              		.cfi_offset 81, -20
+  47              		.cfi_offset 82, -16
+  48              		.cfi_offset 83, -12
+  49              		.loc 1 15 17 view .LVU4
+  50 000e 80EE809A 		vdiv.f32	s18, s1, s0
+  51              	.LVL2:
+  16:harmonic_notch_filter.cpp ****     const float cw = cosf(w0);
+  52              		.loc 1 16 5 is_stmt 1 view .LVU5
+  14:harmonic_notch_filter.cpp ****     const float w0 = 2.0f * 3.14159265359f * freq_hz / sample_rate;
+  53              		.loc 1 14 1 is_stmt 0 view .LVU6
+  54 0012 0446     		mov	r4, r0
+  55 0014 B0EE418A 		vmov.f32	s16, s2
+  17:harmonic_notch_filter.cpp ****     const float sw = sinf(w0);
+  18:harmonic_notch_filter.cpp ****     const float alpha = sw / (2.0f * q);
+  56              		.loc 1 18 36 view .LVU7
+  57 0018 38EE088A 		vadd.f32	s16, s16, s16
+  16:harmonic_notch_filter.cpp ****     const float cw = cosf(w0);
+  58              		.loc 1 16 26 view .LVU8
+  59 001c B0EE490A 		vmov.f32	s0, s18
+  60              	.LVL3:
+  16:harmonic_notch_filter.cpp ****     const float cw = cosf(w0);
+  61              		.loc 1 16 26 view .LVU9
+  62 0020 FFF7FEFF 		bl	cosf
+  63              	.LVL4:
+  16:harmonic_notch_filter.cpp ****     const float cw = cosf(w0);
+  64              		.loc 1 16 26 view .LVU10
+  65 0024 F0EE408A 		vmov.f32	s17, s0
+  66              	.LVL5:
+  17:harmonic_notch_filter.cpp ****     const float sw = sinf(w0);
+  67              		.loc 1 17 5 is_stmt 1 view .LVU11
+  17:harmonic_notch_filter.cpp ****     const float sw = sinf(w0);
+  68              		.loc 1 17 26 is_stmt 0 view .LVU12
+  69 0028 B0EE490A 		vmov.f32	s0, s18
+  70              	.LVL6:
+  17:harmonic_notch_filter.cpp ****     const float sw = sinf(w0);
+  71              		.loc 1 17 26 view .LVU13
+  72 002c FFF7FEFF 		bl	sinf
+  73              	.LVL7:
+  74              		.loc 1 18 5 is_stmt 1 view .LVU14
+  75              		.loc 1 18 17 is_stmt 0 view .LVU15
+  76 0030 C0EE086A 		vdiv.f32	s13, s0, s16
+  77              	.LVL8:
+  19:harmonic_notch_filter.cpp **** 
+  20:harmonic_notch_filter.cpp ****     const float b0n = 1.0f;
+  78              		.loc 1 20 5 is_stmt 1 view .LVU16
+  21:harmonic_notch_filter.cpp ****     const float b1n = -2.0f * cw;
+  79              		.loc 1 21 5 view .LVU17
+  22:harmonic_notch_filter.cpp ****     const float b2n = 1.0f;
+  80              		.loc 1 22 5 view .LVU18
+  23:harmonic_notch_filter.cpp ****     const float a0 = 1.0f + alpha;
+  81              		.loc 1 23 5 view .LVU19
+  82              		.loc 1 23 17 is_stmt 0 view .LVU20
+  83 0034 F7EE007A 		vmov.f32	s15, #1.0e+0
+  21:harmonic_notch_filter.cpp ****     const float b1n = -2.0f * cw;
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 3
+
+
+  84              		.loc 1 21 17 view .LVU21
+  85 0038 B8EE000A 		vmov.f32	s0, #-2.0e+0
+  86              	.LVL9:
+  21:harmonic_notch_filter.cpp ****     const float b1n = -2.0f * cw;
+  87              		.loc 1 21 17 view .LVU22
+  88 003c 68EE808A 		vmul.f32	s17, s17, s0
+  89              	.LVL10:
+  90              		.loc 1 23 17 view .LVU23
+  91 0040 36EEA77A 		vadd.f32	s14, s13, s15
+  92              	.LVL11:
+  24:harmonic_notch_filter.cpp ****     const float a1n = -2.0f * cw;
+  93              		.loc 1 24 5 is_stmt 1 view .LVU24
+  25:harmonic_notch_filter.cpp ****     const float a2n = 1.0f - alpha;
+  94              		.loc 1 25 5 view .LVU25
+  26:harmonic_notch_filter.cpp **** 
+  27:harmonic_notch_filter.cpp ****     b0 = b0n / a0;
+  95              		.loc 1 27 5 view .LVU26
+  96              		.loc 1 27 14 is_stmt 0 view .LVU27
+  97 0044 C7EE875A 		vdiv.f32	s11, s15, s14
+  25:harmonic_notch_filter.cpp ****     const float a2n = 1.0f - alpha;
+  98              		.loc 1 25 17 view .LVU28
+  99 0048 77EEE67A 		vsub.f32	s15, s15, s13
+ 100              	.LVL12:
+  28:harmonic_notch_filter.cpp ****     b1 = b1n / a0;
+ 101              		.loc 1 28 14 view .LVU29
+ 102 004c 88EE876A 		vdiv.f32	s12, s17, s14
+  29:harmonic_notch_filter.cpp ****     b2 = b2n / a0;
+  30:harmonic_notch_filter.cpp ****     a1 = a1n / a0;
+  31:harmonic_notch_filter.cpp ****     a2 = a2n / a0;
+ 103              		.loc 1 31 14 view .LVU30
+ 104 0050 C7EE876A 		vdiv.f32	s13, s15, s14
+ 105              	.LVL13:
+  27:harmonic_notch_filter.cpp ****     b1 = b1n / a0;
+ 106              		.loc 1 27 8 view .LVU31
+ 107 0054 C4ED005A 		vstr.32	s11, [r4]
+  28:harmonic_notch_filter.cpp ****     b1 = b1n / a0;
+ 108              		.loc 1 28 5 is_stmt 1 view .LVU32
+  29:harmonic_notch_filter.cpp ****     b2 = b2n / a0;
+ 109              		.loc 1 29 8 is_stmt 0 view .LVU33
+ 110 0058 C4ED025A 		vstr.32	s11, [r4, #8]
+  32:harmonic_notch_filter.cpp **** }
+ 111              		.loc 1 32 1 view .LVU34
+ 112 005c BDEC048B 		vldm	sp!, {d8-d9}
+ 113              		.cfi_restore 82
+ 114              		.cfi_restore 83
+ 115              		.cfi_restore 80
+ 116              		.cfi_restore 81
+ 117              		.cfi_def_cfa_offset 8
+ 118              	.LVL14:
+  28:harmonic_notch_filter.cpp ****     b2 = b2n / a0;
+ 119              		.loc 1 28 8 view .LVU35
+ 120 0060 84ED016A 		vstr.32	s12, [r4, #4]
+  29:harmonic_notch_filter.cpp ****     a1 = a1n / a0;
+ 121              		.loc 1 29 5 is_stmt 1 view .LVU36
+  30:harmonic_notch_filter.cpp ****     a2 = a2n / a0;
+ 122              		.loc 1 30 5 view .LVU37
+  30:harmonic_notch_filter.cpp ****     a2 = a2n / a0;
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 4
+
+
+ 123              		.loc 1 30 8 is_stmt 0 view .LVU38
+ 124 0064 84ED036A 		vstr.32	s12, [r4, #12]
+  31:harmonic_notch_filter.cpp **** }
+ 125              		.loc 1 31 5 is_stmt 1 view .LVU39
+  31:harmonic_notch_filter.cpp **** }
+ 126              		.loc 1 31 8 is_stmt 0 view .LVU40
+ 127 0068 C4ED046A 		vstr.32	s13, [r4, #16]
+ 128              		.loc 1 32 1 view .LVU41
+ 129 006c 10BD     		pop	{r4, pc}
+ 130              	.LVL15:
+ 131              	.L3:
+ 132              		.loc 1 32 1 view .LVU42
+ 133 006e 00BF     		.align	2
+ 134              	.L2:
+ 135 0070 DB0FC940 		.word	1086918619
+ 136              		.cfi_endproc
+ 137              	.LFE562:
+ 139              		.section	.text._ZN19HarmonicNotchFilter11BiquadNotch8ProcessLEf,"ax",%progbits
+ 140              		.align	1
+ 141              		.global	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessLEf
+ 142              		.syntax unified
+ 143              		.thumb
+ 144              		.thumb_func
+ 145              		.fpu fpv5-d16
+ 147              	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessLEf:
+ 148              	.LVL16:
+ 149              	.LFB563:
+  33:harmonic_notch_filter.cpp **** 
+  34:harmonic_notch_filter.cpp **** float HarmonicNotchFilter::BiquadNotch::ProcessL(float x)
+  35:harmonic_notch_filter.cpp **** {
+ 150              		.loc 1 35 1 is_stmt 1 view -0
+ 151              		.cfi_startproc
+ 152              		@ args = 0, pretend = 0, frame = 0
+ 153              		@ frame_needed = 0, uses_anonymous_args = 0
+ 154              		@ link register save eliminated.
+  36:harmonic_notch_filter.cpp ****     const float y = b0 * x + z1_l;
+ 155              		.loc 1 36 5 view .LVU44
+ 156              		.loc 1 36 17 is_stmt 0 view .LVU45
+ 157 0000 D0ED006A 		vldr.32	s13, [r0]
+  35:harmonic_notch_filter.cpp ****     const float y = b0 * x + z1_l;
+ 158              		.loc 1 35 1 view .LVU46
+ 159 0004 B0EE407A 		vmov.f32	s14, s0
+ 160              		.loc 1 36 17 view .LVU47
+ 161 0008 D0ED057A 		vldr.32	s15, [r0, #20]
+ 162 000c E6EE807A 		vfma.f32	s15, s13, s0
+  37:harmonic_notch_filter.cpp ****     z1_l = b1 * x - a1 * y + z2_l;
+ 163              		.loc 1 37 19 view .LVU48
+ 164 0010 D0ED016A 		vldr.32	s13, [r0, #4]
+  36:harmonic_notch_filter.cpp ****     const float y = b0 * x + z1_l;
+ 165              		.loc 1 36 17 view .LVU49
+ 166 0014 B0EE670A 		vmov.f32	s0, s15
+ 167              	.LVL17:
+ 168              		.loc 1 37 5 is_stmt 1 view .LVU50
+ 169              		.loc 1 37 24 is_stmt 0 view .LVU51
+ 170 0018 D0ED037A 		vldr.32	s15, [r0, #12]
+ 171              		.loc 1 37 19 view .LVU52
+ 172 001c 67EEC07A 		vnmul.f32	s15, s15, s0
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 5
+
+
+ 173 0020 E6EE877A 		vfma.f32	s15, s13, s14
+ 174              		.loc 1 37 28 view .LVU53
+ 175 0024 D0ED066A 		vldr.32	s13, [r0, #24]
+ 176 0028 76EEA77A 		vadd.f32	s15, s13, s15
+  38:harmonic_notch_filter.cpp ****     z2_l = b2 * x - a2 * y;
+ 177              		.loc 1 38 19 view .LVU54
+ 178 002c D0ED026A 		vldr.32	s13, [r0, #8]
+  37:harmonic_notch_filter.cpp ****     z1_l = b1 * x - a1 * y + z2_l;
+ 179              		.loc 1 37 10 view .LVU55
+ 180 0030 C0ED057A 		vstr.32	s15, [r0, #20]
+ 181              		.loc 1 38 5 is_stmt 1 view .LVU56
+ 182              		.loc 1 38 24 is_stmt 0 view .LVU57
+ 183 0034 D0ED047A 		vldr.32	s15, [r0, #16]
+ 184              		.loc 1 38 19 view .LVU58
+ 185 0038 67EEC07A 		vnmul.f32	s15, s15, s0
+ 186 003c E6EE877A 		vfma.f32	s15, s13, s14
+ 187              		.loc 1 38 10 view .LVU59
+ 188 0040 C0ED067A 		vstr.32	s15, [r0, #24]
+  39:harmonic_notch_filter.cpp ****     return y;
+ 189              		.loc 1 39 5 is_stmt 1 view .LVU60
+  40:harmonic_notch_filter.cpp **** }
+ 190              		.loc 1 40 1 is_stmt 0 view .LVU61
+ 191 0044 7047     		bx	lr
+ 192              		.cfi_endproc
+ 193              	.LFE563:
+ 195              		.section	.text._ZN19HarmonicNotchFilter11BiquadNotch8ProcessREf,"ax",%progbits
+ 196              		.align	1
+ 197              		.global	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessREf
+ 198              		.syntax unified
+ 199              		.thumb
+ 200              		.thumb_func
+ 201              		.fpu fpv5-d16
+ 203              	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessREf:
+ 204              	.LVL18:
+ 205              	.LFB564:
+  41:harmonic_notch_filter.cpp **** 
+  42:harmonic_notch_filter.cpp **** float HarmonicNotchFilter::BiquadNotch::ProcessR(float x)
+  43:harmonic_notch_filter.cpp **** {
+ 206              		.loc 1 43 1 is_stmt 1 view -0
+ 207              		.cfi_startproc
+ 208              		@ args = 0, pretend = 0, frame = 0
+ 209              		@ frame_needed = 0, uses_anonymous_args = 0
+ 210              		@ link register save eliminated.
+  44:harmonic_notch_filter.cpp ****     const float y = b0 * x + z1_r;
+ 211              		.loc 1 44 5 view .LVU63
+ 212              		.loc 1 44 17 is_stmt 0 view .LVU64
+ 213 0000 D0ED006A 		vldr.32	s13, [r0]
+  43:harmonic_notch_filter.cpp ****     const float y = b0 * x + z1_r;
+ 214              		.loc 1 43 1 view .LVU65
+ 215 0004 B0EE407A 		vmov.f32	s14, s0
+ 216              		.loc 1 44 17 view .LVU66
+ 217 0008 D0ED077A 		vldr.32	s15, [r0, #28]
+ 218 000c E6EE807A 		vfma.f32	s15, s13, s0
+  45:harmonic_notch_filter.cpp ****     z1_r = b1 * x - a1 * y + z2_r;
+ 219              		.loc 1 45 19 view .LVU67
+ 220 0010 D0ED016A 		vldr.32	s13, [r0, #4]
+  44:harmonic_notch_filter.cpp ****     const float y = b0 * x + z1_r;
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 6
+
+
+ 221              		.loc 1 44 17 view .LVU68
+ 222 0014 B0EE670A 		vmov.f32	s0, s15
+ 223              	.LVL19:
+ 224              		.loc 1 45 5 is_stmt 1 view .LVU69
+ 225              		.loc 1 45 24 is_stmt 0 view .LVU70
+ 226 0018 D0ED037A 		vldr.32	s15, [r0, #12]
+ 227              		.loc 1 45 19 view .LVU71
+ 228 001c 67EEC07A 		vnmul.f32	s15, s15, s0
+ 229 0020 E6EE877A 		vfma.f32	s15, s13, s14
+ 230              		.loc 1 45 28 view .LVU72
+ 231 0024 D0ED086A 		vldr.32	s13, [r0, #32]
+ 232 0028 76EEA77A 		vadd.f32	s15, s13, s15
+  46:harmonic_notch_filter.cpp ****     z2_r = b2 * x - a2 * y;
+ 233              		.loc 1 46 19 view .LVU73
+ 234 002c D0ED026A 		vldr.32	s13, [r0, #8]
+  45:harmonic_notch_filter.cpp ****     z1_r = b1 * x - a1 * y + z2_r;
+ 235              		.loc 1 45 10 view .LVU74
+ 236 0030 C0ED077A 		vstr.32	s15, [r0, #28]
+ 237              		.loc 1 46 5 is_stmt 1 view .LVU75
+ 238              		.loc 1 46 24 is_stmt 0 view .LVU76
+ 239 0034 D0ED047A 		vldr.32	s15, [r0, #16]
+ 240              		.loc 1 46 19 view .LVU77
+ 241 0038 67EEC07A 		vnmul.f32	s15, s15, s0
+ 242 003c E6EE877A 		vfma.f32	s15, s13, s14
+ 243              		.loc 1 46 10 view .LVU78
+ 244 0040 C0ED087A 		vstr.32	s15, [r0, #32]
+  47:harmonic_notch_filter.cpp ****     return y;
+ 245              		.loc 1 47 5 is_stmt 1 view .LVU79
+  48:harmonic_notch_filter.cpp **** }
+ 246              		.loc 1 48 1 is_stmt 0 view .LVU80
+ 247 0044 7047     		bx	lr
+ 248              		.cfi_endproc
+ 249              	.LFE564:
+ 251              		.section	.text._ZN19HarmonicNotchFilter11BiquadNotch5ResetEv,"ax",%progbits
+ 252              		.align	1
+ 253              		.global	_ZN19HarmonicNotchFilter11BiquadNotch5ResetEv
+ 254              		.syntax unified
+ 255              		.thumb
+ 256              		.thumb_func
+ 257              		.fpu fpv5-d16
+ 259              	_ZN19HarmonicNotchFilter11BiquadNotch5ResetEv:
+ 260              	.LVL20:
+ 261              	.LFB565:
+  49:harmonic_notch_filter.cpp **** 
+  50:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::BiquadNotch::Reset()
+  51:harmonic_notch_filter.cpp **** {
+ 262              		.loc 1 51 1 is_stmt 1 view -0
+ 263              		.cfi_startproc
+ 264              		@ args = 0, pretend = 0, frame = 0
+ 265              		@ frame_needed = 0, uses_anonymous_args = 0
+ 266              		@ link register save eliminated.
+  52:harmonic_notch_filter.cpp ****     z1_l = z2_l = 0.0f;
+ 267              		.loc 1 52 5 view .LVU82
+ 268              		.loc 1 52 17 is_stmt 0 view .LVU83
+ 269 0000 0023     		movs	r3, #0
+ 270 0002 8361     		str	r3, [r0, #24]	@ float
+ 271              		.loc 1 52 10 view .LVU84
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 7
+
+
+ 272 0004 4361     		str	r3, [r0, #20]	@ float
+  53:harmonic_notch_filter.cpp ****     z1_r = z2_r = 0.0f;
+ 273              		.loc 1 53 5 is_stmt 1 view .LVU85
+ 274              		.loc 1 53 17 is_stmt 0 view .LVU86
+ 275 0006 0362     		str	r3, [r0, #32]	@ float
+ 276              		.loc 1 53 10 view .LVU87
+ 277 0008 C361     		str	r3, [r0, #28]	@ float
+  54:harmonic_notch_filter.cpp **** }
+ 278              		.loc 1 54 1 view .LVU88
+ 279 000a 7047     		bx	lr
+ 280              		.cfi_endproc
+ 281              	.LFE565:
+ 283              		.section	.text._ZN19HarmonicNotchFilter8SetDepthEf,"ax",%progbits
+ 284              		.align	1
+ 285              		.global	_ZN19HarmonicNotchFilter8SetDepthEf
+ 286              		.syntax unified
+ 287              		.thumb
+ 288              		.thumb_func
+ 289              		.fpu fpv5-d16
+ 291              	_ZN19HarmonicNotchFilter8SetDepthEf:
+ 292              	.LVL21:
+ 293              	.LFB570:
+  55:harmonic_notch_filter.cpp **** 
+  56:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::Init(float sample_rate)
+  57:harmonic_notch_filter.cpp **** {
+  58:harmonic_notch_filter.cpp ****     sample_rate_ = sample_rate > 1000.0f ? sample_rate : 48000.0f;
+  59:harmonic_notch_filter.cpp ****     Rebuild();
+  60:harmonic_notch_filter.cpp **** }
+  61:harmonic_notch_filter.cpp **** 
+  62:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::SetFundamentalHz(float hz)
+  63:harmonic_notch_filter.cpp **** {
+  64:harmonic_notch_filter.cpp ****     fundamental_hz_ = Clampf(hz, 20.0f, 4000.0f);
+  65:harmonic_notch_filter.cpp ****     Rebuild();
+  66:harmonic_notch_filter.cpp **** }
+  67:harmonic_notch_filter.cpp **** 
+  68:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::SetQ(float q)
+  69:harmonic_notch_filter.cpp **** {
+  70:harmonic_notch_filter.cpp ****     q_ = Clampf(q, 1.0f, 60.0f);
+  71:harmonic_notch_filter.cpp ****     Rebuild();
+  72:harmonic_notch_filter.cpp **** }
+  73:harmonic_notch_filter.cpp **** 
+  74:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::SetHarmonicCount(size_t count)
+  75:harmonic_notch_filter.cpp **** {
+  76:harmonic_notch_filter.cpp ****     if(count < 1)
+  77:harmonic_notch_filter.cpp ****         count = 1;
+  78:harmonic_notch_filter.cpp ****     if(count > kMaxHarmonics)
+  79:harmonic_notch_filter.cpp ****         count = kMaxHarmonics;
+  80:harmonic_notch_filter.cpp ****     harmonic_count_ = count;
+  81:harmonic_notch_filter.cpp ****     Rebuild();
+  82:harmonic_notch_filter.cpp **** }
+  83:harmonic_notch_filter.cpp **** 
+  84:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::SetDepth(float depth)
+  85:harmonic_notch_filter.cpp **** {
+ 294              		.loc 1 85 1 is_stmt 1 view -0
+ 295              		.cfi_startproc
+ 296              		@ args = 0, pretend = 0, frame = 0
+ 297              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 8
+
+
+ 298              		@ link register save eliminated.
+  86:harmonic_notch_filter.cpp ****     depth_ = Clampf(depth, 0.0f, 1.0f);
+ 299              		.loc 1 86 5 view .LVU90
+ 300              	.LBB12:
+ 301              	.LBI12:
+   7:harmonic_notch_filter.cpp **** {
+ 302              		.loc 1 7 14 view .LVU91
+ 303              	.LBB13:
+   9:harmonic_notch_filter.cpp **** }
+ 304              		.loc 1 9 5 view .LVU92
+   9:harmonic_notch_filter.cpp **** }
+ 305              		.loc 1 9 19 is_stmt 0 view .LVU93
+ 306 0000 B5EEC00A 		vcmpe.f32	s0, #0
+ 307 0004 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 308 0008 0AD4     		bmi	.L9
+   9:harmonic_notch_filter.cpp **** }
+ 309              		.loc 1 9 34 view .LVU94
+ 310 000a F7EE007A 		vmov.f32	s15, #1.0e+0
+ 311 000e B4EE670A 		vcmp.f32	s0, s15
+ 312 0012 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 313 0016 37FE800A 		vselgt.f32	s0, s15, s0
+ 314              	.LVL22:
+ 315              	.L8:
+   9:harmonic_notch_filter.cpp **** }
+ 316              		.loc 1 9 34 view .LVU95
+ 317              	.LBE13:
+ 318              	.LBE12:
+ 319              		.loc 1 86 12 view .LVU96
+ 320 001a 80ED040A 		vstr.32	s0, [r0, #16]
+  87:harmonic_notch_filter.cpp **** }
+ 321              		.loc 1 87 1 view .LVU97
+ 322 001e 7047     		bx	lr
+ 323              	.LVL23:
+ 324              	.L9:
+ 325              	.LBB15:
+ 326              	.LBB14:
+   9:harmonic_notch_filter.cpp **** }
+ 327              		.loc 1 9 19 view .LVU98
+ 328 0020 9FED010A 		vldr.32	s0, .L11
+ 329              	.LVL24:
+   9:harmonic_notch_filter.cpp **** }
+ 330              		.loc 1 9 19 view .LVU99
+ 331 0024 F9E7     		b	.L8
+ 332              	.L12:
+ 333 0026 00BF     		.align	2
+ 334              	.L11:
+ 335 0028 00000000 		.word	0
+ 336              	.LBE14:
+ 337              	.LBE15:
+ 338              		.cfi_endproc
+ 339              	.LFE570:
+ 341              		.section	.text._ZN19HarmonicNotchFilter12SetSlope24dBEb,"ax",%progbits
+ 342              		.align	1
+ 343              		.global	_ZN19HarmonicNotchFilter12SetSlope24dBEb
+ 344              		.syntax unified
+ 345              		.thumb
+ 346              		.thumb_func
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 9
+
+
+ 347              		.fpu fpv5-d16
+ 349              	_ZN19HarmonicNotchFilter12SetSlope24dBEb:
+ 350              	.LVL25:
+ 351              	.LFB571:
+  88:harmonic_notch_filter.cpp **** 
+  89:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::SetSlope24dB(bool enabled)
+  90:harmonic_notch_filter.cpp **** {
+ 352              		.loc 1 90 1 is_stmt 1 view -0
+ 353              		.cfi_startproc
+ 354              		@ args = 0, pretend = 0, frame = 0
+ 355              		@ frame_needed = 0, uses_anonymous_args = 0
+ 356              		@ link register save eliminated.
+  91:harmonic_notch_filter.cpp ****     slope24db_ = enabled;
+ 357              		.loc 1 91 5 view .LVU101
+ 358              		.loc 1 91 16 is_stmt 0 view .LVU102
+ 359 0000 0175     		strb	r1, [r0, #20]
+  92:harmonic_notch_filter.cpp **** }
+ 360              		.loc 1 92 1 view .LVU103
+ 361 0002 7047     		bx	lr
+ 362              		.cfi_endproc
+ 363              	.LFE571:
+ 365              		.section	.text._ZN19HarmonicNotchFilter16SetExtraStageMixEf,"ax",%progbits
+ 366              		.align	1
+ 367              		.global	_ZN19HarmonicNotchFilter16SetExtraStageMixEf
+ 368              		.syntax unified
+ 369              		.thumb
+ 370              		.thumb_func
+ 371              		.fpu fpv5-d16
+ 373              	_ZN19HarmonicNotchFilter16SetExtraStageMixEf:
+ 374              	.LVL26:
+ 375              	.LFB572:
+  93:harmonic_notch_filter.cpp **** 
+  94:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::SetExtraStageMix(float mix)
+  95:harmonic_notch_filter.cpp **** {
+ 376              		.loc 1 95 1 is_stmt 1 view -0
+ 377              		.cfi_startproc
+ 378              		@ args = 0, pretend = 0, frame = 0
+ 379              		@ frame_needed = 0, uses_anonymous_args = 0
+ 380              		@ link register save eliminated.
+  96:harmonic_notch_filter.cpp ****     extra_stage_mix_ = Clampf(mix, 0.0f, 1.0f);
+ 381              		.loc 1 96 5 view .LVU105
+ 382              	.LBB16:
+ 383              	.LBI16:
+   7:harmonic_notch_filter.cpp **** {
+ 384              		.loc 1 7 14 view .LVU106
+ 385              	.LBB17:
+   9:harmonic_notch_filter.cpp **** }
+ 386              		.loc 1 9 5 view .LVU107
+   9:harmonic_notch_filter.cpp **** }
+ 387              		.loc 1 9 19 is_stmt 0 view .LVU108
+ 388 0000 B5EEC00A 		vcmpe.f32	s0, #0
+ 389 0004 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 390 0008 0CD4     		bmi	.L16
+   9:harmonic_notch_filter.cpp **** }
+ 391              		.loc 1 9 34 view .LVU109
+ 392 000a F7EE007A 		vmov.f32	s15, #1.0e+0
+ 393 000e B4EE670A 		vcmp.f32	s0, s15
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 10
+
+
+ 394 0012 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 395 0016 37FE800A 		vselgt.f32	s0, s15, s0
+ 396              	.LVL27:
+ 397              	.L15:
+   9:harmonic_notch_filter.cpp **** }
+ 398              		.loc 1 9 34 view .LVU110
+ 399              	.LBE17:
+ 400              	.LBE16:
+ 401              		.loc 1 96 22 view .LVU111
+ 402 001a 00F5DB60 		add	r0, r0, #1752
+ 403              	.LVL28:
+ 404              		.loc 1 96 22 view .LVU112
+ 405 001e 80ED000A 		vstr.32	s0, [r0]
+  97:harmonic_notch_filter.cpp **** }
+ 406              		.loc 1 97 1 view .LVU113
+ 407 0022 7047     		bx	lr
+ 408              	.LVL29:
+ 409              	.L16:
+ 410              	.LBB19:
+ 411              	.LBB18:
+   9:harmonic_notch_filter.cpp **** }
+ 412              		.loc 1 9 19 view .LVU114
+ 413 0024 9FED010A 		vldr.32	s0, .L18
+ 414              	.LVL30:
+   9:harmonic_notch_filter.cpp **** }
+ 415              		.loc 1 9 19 view .LVU115
+ 416 0028 F7E7     		b	.L15
+ 417              	.L19:
+ 418 002a 00BF     		.align	2
+ 419              	.L18:
+ 420 002c 00000000 		.word	0
+ 421              	.LBE18:
+ 422              	.LBE19:
+ 423              		.cfi_endproc
+ 424              	.LFE572:
+ 426              		.section	.text._ZNK19HarmonicNotchFilter9ClampFreqEf,"ax",%progbits
+ 427              		.align	1
+ 428              		.global	_ZNK19HarmonicNotchFilter9ClampFreqEf
+ 429              		.syntax unified
+ 430              		.thumb
+ 431              		.thumb_func
+ 432              		.fpu fpv5-d16
+ 434              	_ZNK19HarmonicNotchFilter9ClampFreqEf:
+ 435              	.LVL31:
+ 436              	.LFB573:
+  98:harmonic_notch_filter.cpp **** 
+  99:harmonic_notch_filter.cpp **** float HarmonicNotchFilter::ClampFreq(float hz) const
+ 100:harmonic_notch_filter.cpp **** {
+ 437              		.loc 1 100 1 is_stmt 1 view -0
+ 438              		.cfi_startproc
+ 439              		@ args = 0, pretend = 0, frame = 0
+ 440              		@ frame_needed = 0, uses_anonymous_args = 0
+ 441              		@ link register save eliminated.
+ 101:harmonic_notch_filter.cpp ****     const float nyquist = sample_rate_ * 0.5f;
+ 442              		.loc 1 101 5 view .LVU117
+ 100:harmonic_notch_filter.cpp ****     const float nyquist = sample_rate_ * 0.5f;
+ 443              		.loc 1 100 1 is_stmt 0 view .LVU118
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 11
+
+
+ 444 0000 B0EE407A 		vmov.f32	s14, s0
+ 445              		.loc 1 101 27 view .LVU119
+ 446 0004 90ED000A 		vldr.32	s0, [r0]
+ 447              	.LVL32:
+ 102:harmonic_notch_filter.cpp ****     return Clampf(hz, 20.0f, nyquist * 0.95f);
+ 448              		.loc 1 102 5 is_stmt 1 view .LVU120
+ 449              	.LBB20:
+ 450              	.LBI20:
+   7:harmonic_notch_filter.cpp **** {
+ 451              		.loc 1 7 14 view .LVU121
+ 452              	.LBB21:
+   9:harmonic_notch_filter.cpp **** }
+ 453              		.loc 1 9 5 view .LVU122
+   9:harmonic_notch_filter.cpp **** }
+ 454              		.loc 1 9 19 is_stmt 0 view .LVU123
+ 455 0008 F3EE047A 		vmov.f32	s15, #2.0e+1
+ 456 000c B4EEE77A 		vcmpe.f32	s14, s15
+ 457 0010 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 458 0014 0FD4     		bmi	.L22
+ 459              	.LBE21:
+ 460              	.LBE20:
+ 101:harmonic_notch_filter.cpp ****     return Clampf(hz, 20.0f, nyquist * 0.95f);
+ 461              		.loc 1 101 17 view .LVU124
+ 462 0016 F6EE007A 		vmov.f32	s15, #5.0e-1
+ 463 001a 20EE270A 		vmul.f32	s0, s0, s15
+ 464              	.LVL33:
+ 465              		.loc 1 102 18 view .LVU125
+ 466 001e DFED077A 		vldr.32	s15, .L23
+ 467 0022 20EE270A 		vmul.f32	s0, s0, s15
+ 468              	.LVL34:
+ 469              	.LBB23:
+ 470              	.LBB22:
+   9:harmonic_notch_filter.cpp **** }
+ 471              		.loc 1 9 34 view .LVU126
+ 472 0026 B4EEC70A 		vcmpe.f32	s0, s14
+ 473 002a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 474 002e 58BF     		it	pl
+ 475 0030 B0EE470A 		vmovpl.f32	s0, s14
+ 476 0034 7047     		bx	lr
+ 477              	.LVL35:
+ 478              	.L22:
+   9:harmonic_notch_filter.cpp **** }
+ 479              		.loc 1 9 19 view .LVU127
+ 480 0036 B0EE670A 		vmov.f32	s0, s15
+ 481              	.LVL36:
+   9:harmonic_notch_filter.cpp **** }
+ 482              		.loc 1 9 19 view .LVU128
+ 483              	.LBE22:
+ 484              	.LBE23:
+ 103:harmonic_notch_filter.cpp **** }
+ 485              		.loc 1 103 1 view .LVU129
+ 486 003a 7047     		bx	lr
+ 487              	.L24:
+ 488              		.align	2
+ 489              	.L23:
+ 490 003c 3333733F 		.word	1064514355
+ 491              		.cfi_endproc
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 12
+
+
+ 492              	.LFE573:
+ 494              		.section	.text._ZN19HarmonicNotchFilter7RebuildEv,"ax",%progbits
+ 495              		.align	1
+ 496              		.global	_ZN19HarmonicNotchFilter7RebuildEv
+ 497              		.syntax unified
+ 498              		.thumb
+ 499              		.thumb_func
+ 500              		.fpu fpv5-d16
+ 502              	_ZN19HarmonicNotchFilter7RebuildEv:
+ 503              	.LVL37:
+ 504              	.LFB574:
+ 104:harmonic_notch_filter.cpp **** 
+ 105:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::Rebuild()
+ 106:harmonic_notch_filter.cpp **** {
+ 505              		.loc 1 106 1 is_stmt 1 view -0
+ 506              		.cfi_startproc
+ 507              		@ args = 0, pretend = 0, frame = 8
+ 508              		@ frame_needed = 0, uses_anonymous_args = 0
+ 107:harmonic_notch_filter.cpp ****     for(size_t i = 0; i < kMaxHarmonics; ++i)
+ 509              		.loc 1 107 5 view .LVU131
+ 510              	.LBB24:
+ 511              		.loc 1 107 25 view .LVU132
+ 512              	.LBE24:
+ 106:harmonic_notch_filter.cpp ****     for(size_t i = 0; i < kMaxHarmonics; ++i)
+ 513              		.loc 1 106 1 is_stmt 0 view .LVU133
+ 514 0000 73B5     		push	{r0, r1, r4, r5, r6, lr}
+ 515              		.cfi_def_cfa_offset 24
+ 516              		.cfi_offset 4, -16
+ 517              		.cfi_offset 5, -12
+ 518              		.cfi_offset 6, -8
+ 519              		.cfi_offset 14, -4
+ 106:harmonic_notch_filter.cpp ****     for(size_t i = 0; i < kMaxHarmonics; ++i)
+ 520              		.loc 1 106 1 view .LVU134
+ 521 0002 0446     		mov	r4, r0
+ 522 0004 00F11805 		add	r5, r0, #24
+ 523              	.LBB27:
+ 524              		.loc 1 107 16 view .LVU135
+ 525 0008 0026     		movs	r6, #0
+ 526              	.LVL38:
+ 527              	.L26:
+ 528              	.LBB25:
+ 108:harmonic_notch_filter.cpp ****     {
+ 109:harmonic_notch_filter.cpp ****         const float f = ClampFreq(fundamental_hz_ * static_cast<float>(i + 1));
+ 529              		.loc 1 109 9 is_stmt 1 discriminator 2 view .LVU136
+ 530              		.loc 1 109 74 is_stmt 0 discriminator 2 view .LVU137
+ 531 000a 0136     		adds	r6, r6, #1
+ 532              	.LVL39:
+ 533              		.loc 1 109 34 discriminator 2 view .LVU138
+ 534 000c 2046     		mov	r0, r4
+ 535              		.loc 1 109 53 discriminator 2 view .LVU139
+ 536 000e 07EE906A 		vmov	s15, r6	@ int
+ 537 0012 B8EEE70A 		vcvt.f32.s32	s0, s15
+ 538              		.loc 1 109 34 discriminator 2 view .LVU140
+ 539 0016 D4ED017A 		vldr.32	s15, [r4, #4]
+ 540 001a 20EE270A 		vmul.f32	s0, s0, s15
+ 541 001e FFF7FEFF 		bl	_ZNK19HarmonicNotchFilter9ClampFreqEf
+ 542              	.LVL40:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 13
+
+
+ 110:harmonic_notch_filter.cpp ****         stage_a_[i].Set(sample_rate_, f, q_);
+ 543              		.loc 1 110 24 discriminator 2 view .LVU141
+ 544 0022 2846     		mov	r0, r5
+ 109:harmonic_notch_filter.cpp ****         stage_a_[i].Set(sample_rate_, f, q_);
+ 545              		.loc 1 109 34 discriminator 2 view .LVU142
+ 546 0024 F0EE400A 		vmov.f32	s1, s0
+ 547              	.LVL41:
+ 548              		.loc 1 110 9 is_stmt 1 discriminator 2 view .LVU143
+ 549              		.loc 1 110 24 is_stmt 0 discriminator 2 view .LVU144
+ 550 0028 94ED021A 		vldr.32	s2, [r4, #8]
+ 551 002c 8DED010A 		vstr.32	s0, [sp, #4]	@ int
+ 552 0030 94ED000A 		vldr.32	s0, [r4]
+ 553              	.LVL42:
+ 554              		.loc 1 110 24 discriminator 2 view .LVU145
+ 555 0034 FFF7FEFF 		bl	_ZN19HarmonicNotchFilter11BiquadNotch3SetEfff
+ 556              	.LVL43:
+ 111:harmonic_notch_filter.cpp ****         stage_b_[i].Set(sample_rate_, f, q_);
+ 557              		.loc 1 111 9 is_stmt 1 discriminator 2 view .LVU146
+ 558              		.loc 1 111 24 is_stmt 0 discriminator 2 view .LVU147
+ 559 0038 05F51070 		add	r0, r5, #576
+ 560 003c 94ED021A 		vldr.32	s2, [r4, #8]
+ 561 0040 DDED010A 		vldr.32	s1, [sp, #4]	@ int
+ 562 0044 94ED000A 		vldr.32	s0, [r4]
+ 563 0048 FFF7FEFF 		bl	_ZN19HarmonicNotchFilter11BiquadNotch3SetEfff
+ 564              	.LVL44:
+ 112:harmonic_notch_filter.cpp ****         stage_c_[i].Set(sample_rate_, f, q_);
+ 565              		.loc 1 112 9 is_stmt 1 discriminator 2 view .LVU148
+ 566              		.loc 1 112 24 is_stmt 0 discriminator 2 view .LVU149
+ 567 004c 05F59060 		add	r0, r5, #1152
+ 568 0050 94ED021A 		vldr.32	s2, [r4, #8]
+ 569              	.LBE25:
+ 107:harmonic_notch_filter.cpp ****     {
+ 570              		.loc 1 107 25 discriminator 2 view .LVU150
+ 571 0054 2435     		adds	r5, r5, #36
+ 572              	.LBB26:
+ 573              		.loc 1 112 24 discriminator 2 view .LVU151
+ 574 0056 DDED010A 		vldr.32	s1, [sp, #4]	@ int
+ 575 005a 94ED000A 		vldr.32	s0, [r4]
+ 576 005e FFF7FEFF 		bl	_ZN19HarmonicNotchFilter11BiquadNotch3SetEfff
+ 577              	.LVL45:
+ 578              	.LBE26:
+ 107:harmonic_notch_filter.cpp ****     {
+ 579              		.loc 1 107 5 is_stmt 1 discriminator 2 view .LVU152
+ 107:harmonic_notch_filter.cpp ****     {
+ 580              		.loc 1 107 25 discriminator 2 view .LVU153
+ 581 0062 102E     		cmp	r6, #16
+ 582 0064 D1D1     		bne	.L26
+ 583              	.LBE27:
+ 113:harmonic_notch_filter.cpp ****     }
+ 114:harmonic_notch_filter.cpp **** }
+ 584              		.loc 1 114 1 is_stmt 0 view .LVU154
+ 585 0066 02B0     		add	sp, sp, #8
+ 586              		.cfi_def_cfa_offset 16
+ 587              		@ sp needed
+ 588 0068 70BD     		pop	{r4, r5, r6, pc}
+ 589              		.loc 1 114 1 view .LVU155
+ 590              		.cfi_endproc
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 14
+
+
+ 591              	.LFE574:
+ 593              		.section	.text._ZN19HarmonicNotchFilter4InitEf,"ax",%progbits
+ 594              		.align	1
+ 595              		.global	_ZN19HarmonicNotchFilter4InitEf
+ 596              		.syntax unified
+ 597              		.thumb
+ 598              		.thumb_func
+ 599              		.fpu fpv5-d16
+ 601              	_ZN19HarmonicNotchFilter4InitEf:
+ 602              	.LVL46:
+ 603              	.LFB566:
+  57:harmonic_notch_filter.cpp ****     sample_rate_ = sample_rate > 1000.0f ? sample_rate : 48000.0f;
+ 604              		.loc 1 57 1 is_stmt 1 view -0
+ 605              		.cfi_startproc
+ 606              		@ args = 0, pretend = 0, frame = 0
+ 607              		@ frame_needed = 0, uses_anonymous_args = 0
+ 608              		@ link register save eliminated.
+  58:harmonic_notch_filter.cpp ****     Rebuild();
+ 609              		.loc 1 58 5 view .LVU157
+  58:harmonic_notch_filter.cpp ****     Rebuild();
+ 610              		.loc 1 58 42 is_stmt 0 view .LVU158
+ 611 0000 DFED067A 		vldr.32	s15, .L30
+ 612 0004 B4EEE70A 		vcmpe.f32	s0, s15
+ 613 0008 DFED057A 		vldr.32	s15, .L30+4
+ 614 000c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 615 0010 30FE270A 		vselgt.f32	s0, s0, s15
+ 616              	.LVL47:
+  58:harmonic_notch_filter.cpp ****     Rebuild();
+ 617              		.loc 1 58 18 view .LVU159
+ 618 0014 80ED000A 		vstr.32	s0, [r0]
+  59:harmonic_notch_filter.cpp **** }
+ 619              		.loc 1 59 5 is_stmt 1 view .LVU160
+  59:harmonic_notch_filter.cpp **** }
+ 620              		.loc 1 59 12 is_stmt 0 view .LVU161
+ 621 0018 FFF7FEBF 		b	_ZN19HarmonicNotchFilter7RebuildEv
+ 622              	.LVL48:
+ 623              	.L31:
+  59:harmonic_notch_filter.cpp **** }
+ 624              		.loc 1 59 12 view .LVU162
+ 625              		.align	2
+ 626              	.L30:
+ 627 001c 00007A44 		.word	1148846080
+ 628 0020 00803B47 		.word	1195081728
+ 629              		.cfi_endproc
+ 630              	.LFE566:
+ 632              		.section	.text._ZN19HarmonicNotchFilter16SetFundamentalHzEf,"ax",%progbits
+ 633              		.align	1
+ 634              		.global	_ZN19HarmonicNotchFilter16SetFundamentalHzEf
+ 635              		.syntax unified
+ 636              		.thumb
+ 637              		.thumb_func
+ 638              		.fpu fpv5-d16
+ 640              	_ZN19HarmonicNotchFilter16SetFundamentalHzEf:
+ 641              	.LVL49:
+ 642              	.LFB567:
+  63:harmonic_notch_filter.cpp ****     fundamental_hz_ = Clampf(hz, 20.0f, 4000.0f);
+ 643              		.loc 1 63 1 is_stmt 1 view -0
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 15
+
+
+ 644              		.cfi_startproc
+ 645              		@ args = 0, pretend = 0, frame = 0
+ 646              		@ frame_needed = 0, uses_anonymous_args = 0
+ 647              		@ link register save eliminated.
+  64:harmonic_notch_filter.cpp ****     Rebuild();
+ 648              		.loc 1 64 5 view .LVU164
+ 649              	.LBB28:
+ 650              	.LBI28:
+   7:harmonic_notch_filter.cpp **** {
+ 651              		.loc 1 7 14 view .LVU165
+ 652              	.LBB29:
+   9:harmonic_notch_filter.cpp **** }
+ 653              		.loc 1 9 5 view .LVU166
+   9:harmonic_notch_filter.cpp **** }
+ 654              		.loc 1 9 19 is_stmt 0 view .LVU167
+ 655 0000 F3EE047A 		vmov.f32	s15, #2.0e+1
+ 656 0004 B4EEE70A 		vcmpe.f32	s0, s15
+ 657 0008 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 658 000c 0BD4     		bmi	.L34
+   9:harmonic_notch_filter.cpp **** }
+ 659              		.loc 1 9 34 view .LVU168
+ 660 000e DFED077A 		vldr.32	s15, .L36
+ 661 0012 B4EE670A 		vcmp.f32	s0, s15
+ 662 0016 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 663 001a 37FE800A 		vselgt.f32	s0, s15, s0
+ 664              	.LVL50:
+ 665              	.L33:
+   9:harmonic_notch_filter.cpp **** }
+ 666              		.loc 1 9 34 view .LVU169
+ 667              	.LBE29:
+ 668              	.LBE28:
+  64:harmonic_notch_filter.cpp ****     Rebuild();
+ 669              		.loc 1 64 21 view .LVU170
+ 670 001e 80ED010A 		vstr.32	s0, [r0, #4]
+  65:harmonic_notch_filter.cpp **** }
+ 671              		.loc 1 65 5 is_stmt 1 view .LVU171
+  65:harmonic_notch_filter.cpp **** }
+ 672              		.loc 1 65 12 is_stmt 0 view .LVU172
+ 673 0022 FFF7FEBF 		b	_ZN19HarmonicNotchFilter7RebuildEv
+ 674              	.LVL51:
+ 675              	.L34:
+ 676              	.LBB31:
+ 677              	.LBB30:
+   9:harmonic_notch_filter.cpp **** }
+ 678              		.loc 1 9 19 view .LVU173
+ 679 0026 B0EE670A 		vmov.f32	s0, s15
+ 680              	.LVL52:
+   9:harmonic_notch_filter.cpp **** }
+ 681              		.loc 1 9 19 view .LVU174
+ 682 002a F8E7     		b	.L33
+ 683              	.L37:
+ 684              		.align	2
+ 685              	.L36:
+ 686 002c 00007A45 		.word	1165623296
+ 687              	.LBE30:
+ 688              	.LBE31:
+ 689              		.cfi_endproc
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 16
+
+
+ 690              	.LFE567:
+ 692              		.section	.text._ZN19HarmonicNotchFilter4SetQEf,"ax",%progbits
+ 693              		.align	1
+ 694              		.global	_ZN19HarmonicNotchFilter4SetQEf
+ 695              		.syntax unified
+ 696              		.thumb
+ 697              		.thumb_func
+ 698              		.fpu fpv5-d16
+ 700              	_ZN19HarmonicNotchFilter4SetQEf:
+ 701              	.LVL53:
+ 702              	.LFB568:
+  69:harmonic_notch_filter.cpp ****     q_ = Clampf(q, 1.0f, 60.0f);
+ 703              		.loc 1 69 1 is_stmt 1 view -0
+ 704              		.cfi_startproc
+ 705              		@ args = 0, pretend = 0, frame = 0
+ 706              		@ frame_needed = 0, uses_anonymous_args = 0
+ 707              		@ link register save eliminated.
+  70:harmonic_notch_filter.cpp ****     Rebuild();
+ 708              		.loc 1 70 5 view .LVU176
+ 709              	.LBB32:
+ 710              	.LBI32:
+   7:harmonic_notch_filter.cpp **** {
+ 711              		.loc 1 7 14 view .LVU177
+ 712              	.LBB33:
+   9:harmonic_notch_filter.cpp **** }
+ 713              		.loc 1 9 5 view .LVU178
+   9:harmonic_notch_filter.cpp **** }
+ 714              		.loc 1 9 19 is_stmt 0 view .LVU179
+ 715 0000 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 716 0004 B4EEE70A 		vcmpe.f32	s0, s15
+ 717 0008 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 718 000c 0BD4     		bmi	.L40
+   9:harmonic_notch_filter.cpp **** }
+ 719              		.loc 1 9 34 view .LVU180
+ 720 000e DFED077A 		vldr.32	s15, .L42
+ 721 0012 B4EE670A 		vcmp.f32	s0, s15
+ 722 0016 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 723 001a 37FE800A 		vselgt.f32	s0, s15, s0
+ 724              	.LVL54:
+ 725              	.L39:
+   9:harmonic_notch_filter.cpp **** }
+ 726              		.loc 1 9 34 view .LVU181
+ 727              	.LBE33:
+ 728              	.LBE32:
+  70:harmonic_notch_filter.cpp ****     Rebuild();
+ 729              		.loc 1 70 8 view .LVU182
+ 730 001e 80ED020A 		vstr.32	s0, [r0, #8]
+  71:harmonic_notch_filter.cpp **** }
+ 731              		.loc 1 71 5 is_stmt 1 view .LVU183
+  71:harmonic_notch_filter.cpp **** }
+ 732              		.loc 1 71 12 is_stmt 0 view .LVU184
+ 733 0022 FFF7FEBF 		b	_ZN19HarmonicNotchFilter7RebuildEv
+ 734              	.LVL55:
+ 735              	.L40:
+ 736              	.LBB35:
+ 737              	.LBB34:
+   9:harmonic_notch_filter.cpp **** }
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 17
+
+
+ 738              		.loc 1 9 19 view .LVU185
+ 739 0026 B0EE670A 		vmov.f32	s0, s15
+ 740              	.LVL56:
+   9:harmonic_notch_filter.cpp **** }
+ 741              		.loc 1 9 19 view .LVU186
+ 742 002a F8E7     		b	.L39
+ 743              	.L43:
+ 744              		.align	2
+ 745              	.L42:
+ 746 002c 00007042 		.word	1114636288
+ 747              	.LBE34:
+ 748              	.LBE35:
+ 749              		.cfi_endproc
+ 750              	.LFE568:
+ 752              		.section	.text._ZN19HarmonicNotchFilter16SetHarmonicCountEj,"ax",%progbits
+ 753              		.align	1
+ 754              		.global	_ZN19HarmonicNotchFilter16SetHarmonicCountEj
+ 755              		.syntax unified
+ 756              		.thumb
+ 757              		.thumb_func
+ 758              		.fpu fpv5-d16
+ 760              	_ZN19HarmonicNotchFilter16SetHarmonicCountEj:
+ 761              	.LVL57:
+ 762              	.LFB569:
+  75:harmonic_notch_filter.cpp ****     if(count < 1)
+ 763              		.loc 1 75 1 is_stmt 1 view -0
+ 764              		.cfi_startproc
+ 765              		@ args = 0, pretend = 0, frame = 0
+ 766              		@ frame_needed = 0, uses_anonymous_args = 0
+ 767              		@ link register save eliminated.
+  76:harmonic_notch_filter.cpp ****         count = 1;
+ 768              		.loc 1 76 5 view .LVU188
+ 769 0000 1029     		cmp	r1, #16
+ 770 0002 28BF     		it	cs
+ 771 0004 1021     		movcs	r1, #16
+ 772              	.LVL58:
+  80:harmonic_notch_filter.cpp ****     Rebuild();
+ 773              		.loc 1 80 5 view .LVU189
+  80:harmonic_notch_filter.cpp ****     Rebuild();
+ 774              		.loc 1 80 21 is_stmt 0 view .LVU190
+ 775 0006 0129     		cmp	r1, #1
+ 776 0008 38BF     		it	cc
+ 777 000a 0121     		movcc	r1, #1
+ 778              	.LVL59:
+  80:harmonic_notch_filter.cpp ****     Rebuild();
+ 779              		.loc 1 80 21 view .LVU191
+ 780 000c C160     		str	r1, [r0, #12]
+  81:harmonic_notch_filter.cpp **** }
+ 781              		.loc 1 81 5 is_stmt 1 view .LVU192
+  81:harmonic_notch_filter.cpp **** }
+ 782              		.loc 1 81 12 is_stmt 0 view .LVU193
+ 783 000e FFF7FEBF 		b	_ZN19HarmonicNotchFilter7RebuildEv
+ 784              	.LVL60:
+  81:harmonic_notch_filter.cpp **** }
+ 785              		.loc 1 81 12 view .LVU194
+ 786              		.cfi_endproc
+ 787              	.LFE569:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 18
+
+
+ 789              		.section	.text._ZN19HarmonicNotchFilter13ProcessStereoEffRfS0_,"ax",%progbits
+ 790              		.align	1
+ 791              		.global	_ZN19HarmonicNotchFilter13ProcessStereoEffRfS0_
+ 792              		.syntax unified
+ 793              		.thumb
+ 794              		.thumb_func
+ 795              		.fpu fpv5-d16
+ 797              	_ZN19HarmonicNotchFilter13ProcessStereoEffRfS0_:
+ 798              	.LVL61:
+ 799              	.LFB575:
+ 115:harmonic_notch_filter.cpp **** 
+ 116:harmonic_notch_filter.cpp **** void HarmonicNotchFilter::ProcessStereo(float in_l, float in_r, float& out_l, float& out_r)
+ 117:harmonic_notch_filter.cpp **** {
+ 800              		.loc 1 117 1 is_stmt 1 view -0
+ 801              		.cfi_startproc
+ 802              		@ args = 0, pretend = 0, frame = 0
+ 803              		@ frame_needed = 0, uses_anonymous_args = 0
+ 118:harmonic_notch_filter.cpp ****     float wet_l = in_l;
+ 804              		.loc 1 118 5 view .LVU196
+ 119:harmonic_notch_filter.cpp ****     float wet_r = in_r;
+ 805              		.loc 1 119 5 view .LVU197
+ 120:harmonic_notch_filter.cpp **** 
+ 121:harmonic_notch_filter.cpp ****     for(size_t i = 0; i < harmonic_count_; ++i)
+ 806              		.loc 1 121 5 view .LVU198
+ 117:harmonic_notch_filter.cpp ****     float wet_l = in_l;
+ 807              		.loc 1 117 1 is_stmt 0 view .LVU199
+ 808 0000 F0EE404A 		vmov.f32	s9, s0
+ 809 0004 0346     		mov	r3, r0
+ 119:harmonic_notch_filter.cpp ****     float wet_r = in_r;
+ 810              		.loc 1 119 11 view .LVU200
+ 811 0006 B0EE606A 		vmov.f32	s12, s1
+ 118:harmonic_notch_filter.cpp ****     float wet_r = in_r;
+ 812              		.loc 1 118 11 view .LVU201
+ 813 000a F0EE405A 		vmov.f32	s11, s0
+ 117:harmonic_notch_filter.cpp ****     float wet_l = in_l;
+ 814              		.loc 1 117 1 view .LVU202
+ 815 000e 70B5     		push	{r4, r5, r6, lr}
+ 816              		.cfi_def_cfa_offset 16
+ 817              		.cfi_offset 4, -16
+ 818              		.cfi_offset 5, -12
+ 819              		.cfi_offset 6, -8
+ 820              		.cfi_offset 14, -4
+ 821 0010 00F59364 		add	r4, r0, #1176
+ 822              	.LBB36:
+ 823              		.loc 1 121 16 view .LVU203
+ 824 0014 0025     		movs	r5, #0
+ 825              	.LVL62:
+ 826              	.L49:
+ 827              		.loc 1 121 25 is_stmt 1 discriminator 1 view .LVU204
+ 828 0016 D868     		ldr	r0, [r3, #12]
+ 829 0018 A842     		cmp	r0, r5
+ 830 001a 3ED9     		bls	.L46
+ 831              	.LBB37:
+ 122:harmonic_notch_filter.cpp ****     {
+ 123:harmonic_notch_filter.cpp ****         wet_l = stage_a_[i].ProcessL(wet_l);
+ 832              		.loc 1 123 9 view .LVU205
+ 833              		.loc 1 123 37 is_stmt 0 view .LVU206
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 19
+
+
+ 834 001c A4F59060 		sub	r0, r4, #1152
+ 835 0020 B0EE650A 		vmov.f32	s0, s11
+ 836 0024 FFF7FEFF 		bl	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessLEf
+ 837              	.LVL63:
+ 838 0028 F0EE405A 		vmov.f32	s11, s0
+ 839              	.LVL64:
+ 124:harmonic_notch_filter.cpp ****         wet_r = stage_a_[i].ProcessR(wet_r);
+ 840              		.loc 1 124 9 is_stmt 1 view .LVU207
+ 841              		.loc 1 124 37 is_stmt 0 view .LVU208
+ 842 002c B0EE460A 		vmov.f32	s0, s12
+ 843              	.LVL65:
+ 844              		.loc 1 124 37 view .LVU209
+ 845 0030 FFF7FEFF 		bl	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessREf
+ 846              	.LVL66:
+ 847              	.LBB38:
+ 125:harmonic_notch_filter.cpp ****         if(slope24db_)
+ 848              		.loc 1 125 9 view .LVU210
+ 849 0034 187D     		ldrb	r0, [r3, #20]	@ zero_extendqisi2
+ 850              	.LBE38:
+ 124:harmonic_notch_filter.cpp ****         wet_r = stage_a_[i].ProcessR(wet_r);
+ 851              		.loc 1 124 37 view .LVU211
+ 852 0036 B0EE406A 		vmov.f32	s12, s0
+ 853              	.LVL67:
+ 854              		.loc 1 125 9 is_stmt 1 view .LVU212
+ 855              	.LBB44:
+ 856 003a 58B3     		cbz	r0, .L47
+ 857              	.LBB39:
+ 126:harmonic_notch_filter.cpp ****         {
+ 127:harmonic_notch_filter.cpp ****             wet_l = stage_b_[i].ProcessL(wet_l);
+ 858              		.loc 1 127 13 view .LVU213
+ 859              		.loc 1 127 41 is_stmt 0 view .LVU214
+ 860 003c B0EE650A 		vmov.f32	s0, s11
+ 861              	.LVL68:
+ 862              		.loc 1 127 41 view .LVU215
+ 863 0040 A4F51070 		sub	r0, r4, #576
+ 864              	.LBB40:
+ 128:harmonic_notch_filter.cpp ****             wet_r = stage_b_[i].ProcessR(wet_r);
+ 129:harmonic_notch_filter.cpp ****             if(extra_stage_mix_ > 0.0f)
+ 865              		.loc 1 129 16 view .LVU216
+ 866 0044 03F5DB66 		add	r6, r3, #1752
+ 867              	.LBE40:
+ 127:harmonic_notch_filter.cpp ****             wet_r = stage_b_[i].ProcessR(wet_r);
+ 868              		.loc 1 127 41 view .LVU217
+ 869 0048 FFF7FEFF 		bl	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessLEf
+ 870              	.LVL69:
+ 871 004c F0EE405A 		vmov.f32	s11, s0
+ 872              	.LVL70:
+ 128:harmonic_notch_filter.cpp ****             wet_r = stage_b_[i].ProcessR(wet_r);
+ 873              		.loc 1 128 13 is_stmt 1 view .LVU218
+ 128:harmonic_notch_filter.cpp ****             wet_r = stage_b_[i].ProcessR(wet_r);
+ 874              		.loc 1 128 41 is_stmt 0 view .LVU219
+ 875 0050 B0EE460A 		vmov.f32	s0, s12
+ 876              	.LVL71:
+ 128:harmonic_notch_filter.cpp ****             wet_r = stage_b_[i].ProcessR(wet_r);
+ 877              		.loc 1 128 41 view .LVU220
+ 878 0054 FFF7FEFF 		bl	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessREf
+ 879              	.LVL72:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 20
+
+
+ 880              	.LBB42:
+ 881              		.loc 1 129 13 view .LVU221
+ 882 0058 D6ED007A 		vldr.32	s15, [r6]
+ 883              	.LBE42:
+ 128:harmonic_notch_filter.cpp ****             wet_r = stage_b_[i].ProcessR(wet_r);
+ 884              		.loc 1 128 41 view .LVU222
+ 885 005c B0EE406A 		vmov.f32	s12, s0
+ 886              	.LVL73:
+ 887              		.loc 1 129 13 is_stmt 1 view .LVU223
+ 888              	.LBB43:
+ 889 0060 F5EEC07A 		vcmpe.f32	s15, #0
+ 890 0064 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 891 0068 14DD     		ble	.L47
+ 892              	.LBB41:
+ 130:harmonic_notch_filter.cpp ****             {
+ 131:harmonic_notch_filter.cpp ****                 const float c_l = stage_c_[i].ProcessL(wet_l);
+ 893              		.loc 1 131 17 view .LVU224
+ 894              		.loc 1 131 55 is_stmt 0 view .LVU225
+ 895 006a B0EE650A 		vmov.f32	s0, s11
+ 896              	.LVL74:
+ 897              		.loc 1 131 55 view .LVU226
+ 898 006e 2046     		mov	r0, r4
+ 899 0070 FFF7FEFF 		bl	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessLEf
+ 900              	.LVL75:
+ 901 0074 B0EE405A 		vmov.f32	s10, s0
+ 902              	.LVL76:
+ 132:harmonic_notch_filter.cpp ****                 const float c_r = stage_c_[i].ProcessR(wet_r);
+ 903              		.loc 1 132 17 is_stmt 1 view .LVU227
+ 904              		.loc 1 132 55 is_stmt 0 view .LVU228
+ 905 0078 B0EE460A 		vmov.f32	s0, s12
+ 906              	.LVL77:
+ 907              		.loc 1 132 55 view .LVU229
+ 908 007c FFF7FEFF 		bl	_ZN19HarmonicNotchFilter11BiquadNotch8ProcessREf
+ 909              	.LVL78:
+ 133:harmonic_notch_filter.cpp ****                 wet_l = wet_l + (c_l - wet_l) * extra_stage_mix_;
+ 910              		.loc 1 133 17 is_stmt 1 view .LVU230
+ 134:harmonic_notch_filter.cpp ****                 wet_r = wet_r + (c_r - wet_r) * extra_stage_mix_;
+ 911              		.loc 1 134 38 is_stmt 0 view .LVU231
+ 912 0080 30EE460A 		vsub.f32	s0, s0, s12
+ 913              	.LVL79:
+ 133:harmonic_notch_filter.cpp ****                 wet_l = wet_l + (c_l - wet_l) * extra_stage_mix_;
+ 914              		.loc 1 133 38 view .LVU232
+ 915 0084 35EE655A 		vsub.f32	s10, s10, s11
+ 916              	.LVL80:
+ 133:harmonic_notch_filter.cpp ****                 wet_l = wet_l + (c_l - wet_l) * extra_stage_mix_;
+ 917              		.loc 1 133 49 view .LVU233
+ 918 0088 D6ED007A 		vldr.32	s15, [r6]
+ 919              		.loc 1 134 23 view .LVU234
+ 920 008c A7EE806A 		vfma.f32	s12, s15, s0
+ 921              	.LVL81:
+ 133:harmonic_notch_filter.cpp ****                 wet_l = wet_l + (c_l - wet_l) * extra_stage_mix_;
+ 922              		.loc 1 133 23 view .LVU235
+ 923 0090 E5EE275A 		vfma.f32	s11, s10, s15
+ 924              	.LVL82:
+ 925              		.loc 1 134 17 is_stmt 1 view .LVU236
+ 926              	.L47:
+ 927              		.loc 1 134 17 is_stmt 0 view .LVU237
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 21
+
+
+ 928              	.LBE41:
+ 929              	.LBE43:
+ 930              	.LBE39:
+ 931              	.LBE44:
+ 932              	.LBE37:
+ 121:harmonic_notch_filter.cpp ****     {
+ 933              		.loc 1 121 5 is_stmt 1 discriminator 2 view .LVU238
+ 934 0094 0135     		adds	r5, r5, #1
+ 935              	.LVL83:
+ 121:harmonic_notch_filter.cpp ****     {
+ 936              		.loc 1 121 5 is_stmt 0 discriminator 2 view .LVU239
+ 937 0096 2434     		adds	r4, r4, #36
+ 938 0098 BDE7     		b	.L49
+ 939              	.L46:
+ 121:harmonic_notch_filter.cpp ****     {
+ 940              		.loc 1 121 5 discriminator 2 view .LVU240
+ 941              	.LBE36:
+ 135:harmonic_notch_filter.cpp ****             }
+ 136:harmonic_notch_filter.cpp ****         }
+ 137:harmonic_notch_filter.cpp ****     }
+ 138:harmonic_notch_filter.cpp **** 
+ 139:harmonic_notch_filter.cpp ****     const float dry = 1.0f - depth_;
+ 942              		.loc 1 139 5 is_stmt 1 view .LVU241
+ 943              		.loc 1 139 17 is_stmt 0 view .LVU242
+ 944 009a B7EE007A 		vmov.f32	s14, #1.0e+0
+ 945              		.loc 1 139 30 view .LVU243
+ 946 009e D3ED047A 		vldr.32	s15, [r3, #16]
+ 947              		.loc 1 139 17 view .LVU244
+ 948 00a2 37EE677A 		vsub.f32	s14, s14, s15
+ 949              	.LVL84:
+ 140:harmonic_notch_filter.cpp ****     out_l = dry * in_l + depth_ * wet_l;
+ 950              		.loc 1 140 5 is_stmt 1 view .LVU245
+ 951              		.loc 1 140 33 is_stmt 0 view .LVU246
+ 952 00a6 67EEA57A 		vmul.f32	s15, s15, s11
+ 953              		.loc 1 140 24 view .LVU247
+ 954 00aa E4EE877A 		vfma.f32	s15, s9, s14
+ 955              		.loc 1 140 11 view .LVU248
+ 956 00ae C1ED007A 		vstr.32	s15, [r1]
+ 141:harmonic_notch_filter.cpp ****     out_r = dry * in_r + depth_ * wet_r;
+ 957              		.loc 1 141 5 is_stmt 1 view .LVU249
+ 958              		.loc 1 141 33 is_stmt 0 view .LVU250
+ 959 00b2 93ED040A 		vldr.32	s0, [r3, #16]
+ 960 00b6 26EE006A 		vmul.f32	s12, s12, s0
+ 961              	.LVL85:
+ 962              		.loc 1 141 24 view .LVU251
+ 963 00ba A0EE876A 		vfma.f32	s12, s1, s14
+ 964              		.loc 1 141 11 view .LVU252
+ 965 00be 82ED006A 		vstr.32	s12, [r2]
+ 142:harmonic_notch_filter.cpp **** }
+ 966              		.loc 1 142 1 view .LVU253
+ 967 00c2 70BD     		pop	{r4, r5, r6, pc}
+ 968              		.loc 1 142 1 view .LVU254
+ 969              		.cfi_endproc
+ 970              	.LFE575:
+ 972              		.text
+ 973              	.Letext0:
+ 974              		.file 2 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cmath"
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 22
+
+
+ 975              		.file 3 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\std_abs.h"
+ 976              		.file 4 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\arm-none-eabi\\th
+ 977              		.file 5 "c:\\program files\\daisytoolchain\\lib\\gcc\\arm-none-eabi\\10.2.1\\include\\stddef.h"
+ 978              		.file 6 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\math.h"
+ 979              		.file 7 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\math.h"
+ 980              		.file 8 "harmonic_notch_filter.h"
+ 981              		.file 9 "<built-in>"
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s 			page 23
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 harmonic_notch_filter.cpp
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:17     .text._ZN19HarmonicNotchFilter11BiquadNotch3SetEfff:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:25     .text._ZN19HarmonicNotchFilter11BiquadNotch3SetEfff:00000000 _ZN19HarmonicNotchFilter11BiquadNotch3SetEfff
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:135    .text._ZN19HarmonicNotchFilter11BiquadNotch3SetEfff:00000070 $d
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:140    .text._ZN19HarmonicNotchFilter11BiquadNotch8ProcessLEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:147    .text._ZN19HarmonicNotchFilter11BiquadNotch8ProcessLEf:00000000 _ZN19HarmonicNotchFilter11BiquadNotch8ProcessLEf
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:196    .text._ZN19HarmonicNotchFilter11BiquadNotch8ProcessREf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:203    .text._ZN19HarmonicNotchFilter11BiquadNotch8ProcessREf:00000000 _ZN19HarmonicNotchFilter11BiquadNotch8ProcessREf
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:252    .text._ZN19HarmonicNotchFilter11BiquadNotch5ResetEv:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:259    .text._ZN19HarmonicNotchFilter11BiquadNotch5ResetEv:00000000 _ZN19HarmonicNotchFilter11BiquadNotch5ResetEv
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:284    .text._ZN19HarmonicNotchFilter8SetDepthEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:291    .text._ZN19HarmonicNotchFilter8SetDepthEf:00000000 _ZN19HarmonicNotchFilter8SetDepthEf
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:335    .text._ZN19HarmonicNotchFilter8SetDepthEf:00000028 $d
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:342    .text._ZN19HarmonicNotchFilter12SetSlope24dBEb:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:349    .text._ZN19HarmonicNotchFilter12SetSlope24dBEb:00000000 _ZN19HarmonicNotchFilter12SetSlope24dBEb
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:366    .text._ZN19HarmonicNotchFilter16SetExtraStageMixEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:373    .text._ZN19HarmonicNotchFilter16SetExtraStageMixEf:00000000 _ZN19HarmonicNotchFilter16SetExtraStageMixEf
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:420    .text._ZN19HarmonicNotchFilter16SetExtraStageMixEf:0000002c $d
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:427    .text._ZNK19HarmonicNotchFilter9ClampFreqEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:434    .text._ZNK19HarmonicNotchFilter9ClampFreqEf:00000000 _ZNK19HarmonicNotchFilter9ClampFreqEf
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:490    .text._ZNK19HarmonicNotchFilter9ClampFreqEf:0000003c $d
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:495    .text._ZN19HarmonicNotchFilter7RebuildEv:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:502    .text._ZN19HarmonicNotchFilter7RebuildEv:00000000 _ZN19HarmonicNotchFilter7RebuildEv
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:594    .text._ZN19HarmonicNotchFilter4InitEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:601    .text._ZN19HarmonicNotchFilter4InitEf:00000000 _ZN19HarmonicNotchFilter4InitEf
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:627    .text._ZN19HarmonicNotchFilter4InitEf:0000001c $d
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:633    .text._ZN19HarmonicNotchFilter16SetFundamentalHzEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:640    .text._ZN19HarmonicNotchFilter16SetFundamentalHzEf:00000000 _ZN19HarmonicNotchFilter16SetFundamentalHzEf
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:686    .text._ZN19HarmonicNotchFilter16SetFundamentalHzEf:0000002c $d
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:693    .text._ZN19HarmonicNotchFilter4SetQEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:700    .text._ZN19HarmonicNotchFilter4SetQEf:00000000 _ZN19HarmonicNotchFilter4SetQEf
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:746    .text._ZN19HarmonicNotchFilter4SetQEf:0000002c $d
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:753    .text._ZN19HarmonicNotchFilter16SetHarmonicCountEj:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:760    .text._ZN19HarmonicNotchFilter16SetHarmonicCountEj:00000000 _ZN19HarmonicNotchFilter16SetHarmonicCountEj
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:790    .text._ZN19HarmonicNotchFilter13ProcessStereoEffRfS0_:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\cc7qFUlY.s:797    .text._ZN19HarmonicNotchFilter13ProcessStereoEffRfS0_:00000000 _ZN19HarmonicNotchFilter13ProcessStereoEffRfS0_
+
+UNDEFINED SYMBOLS
+cosf
+sinf
