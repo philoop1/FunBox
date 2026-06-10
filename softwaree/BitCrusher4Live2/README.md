@@ -20,18 +20,20 @@ Live-Version auf Basis von BitCrusher4Live. Phaser wird per Shift + Switch 1 lin
 
 | Control | Description |
 | --- | --- |
-| Knob 1 | Bit depth. In ringmod mode: sine oscillator frequency. |
-| Knob 2 | Sample-rate reduction. In ringmod mode: second sample-rate reducer after ringmod. |
+| Knob 1 | Bit depth. In Switch 1 middle/filter mode: global output gain, 1.0x to 2.0x. In ringmod mode: sine oscillator frequency. |
+| Knob 2 | Sample-rate reduction. In Switch 1 middle/filter mode: global envelope attack. In ringmod mode: second sample-rate reducer after ringmod. |
 | Knob 3 | Filter cutoff. |
-| Knob 4 | Envelope amount to bit depth. In ringmod mode: envelope amount to sine frequency. Bipolar, center is neutral. |
-| Knob 5 | Envelope amount to sample-rate reduction. Bipolar, center is neutral. |
+| Knob 4 | Envelope amount to bit depth. In Switch 1 middle/filter mode: global envelope follower input gain. In ringmod mode: envelope amount to sine frequency. Bipolar, center is neutral except in filter mode. |
+| Knob 5 | Envelope amount to sample-rate reduction. In Switch 1 middle/filter mode: global envelope decay/release. Bipolar, center is neutral except in filter mode. |
 | Knob 6 | Envelope amount to cutoff. Bipolar, center is neutral. Uses an intensified range for stronger filter sweeps. |
 | Shift + Knob 3 | Filter resonance. |
-| Shift + Knob 4 | Envelope follower input gain. Stored globally, independent of presets, and used by all modes. Phaser and Flanger multiply this by 3 internally. |
-| Shift + Knob 5 | Envelope attack. Stored globally, independent of presets. |
-| Shift + Knob 6 | Envelope release. Stored globally, independent of presets. |
+| Shift + Knob 4 | Envelope follower input gain. Stored globally, independent of presets, and used by all modes. Also available as Switch 1 middle + Knob 4. Phaser and Flanger multiply this by 3 internally. |
+| Shift + Knob 5 | Envelope attack. Stored globally, independent of presets. Also available as Switch 1 middle + Knob 2. |
+| Shift + Knob 6 | Envelope release. Stored globally, independent of presets. Also available as Switch 1 middle + Knob 5. |
 
 Each Switch 1 position has its own normal 5-preset bank. Moving Switch 1 in normal route mode loads the same preset number from the new bank, or preset 1 if no preset number is active. Switch 1 and Switch 2 are not stored in presets, so their physical positions stay live when a preset is loaded.
+
+Switch 1 middle acts as the filter page. Knob 1 sets the global output gain. Knobs 2, 4, and 5 edit the same global envelope follower values as the Shift layer, so changing them there affects all modes and is saved globally.
 
 ## Phaser Controls
 

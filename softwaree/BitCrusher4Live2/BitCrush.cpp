@@ -80,6 +80,7 @@ struct StorageData
 {
     uint32_t magic;
     uint32_t version;
+    float output_gain_filter_mode;
     float live_alternate_knobs[6];
     Settings presets[3][5];
     Settings phaser_presets[5];
@@ -89,6 +90,8 @@ struct StorageData
     bool operator!=(const StorageData& a) const
     {
         if(a.magic != magic || a.version != version)
+            return true;
+        if(a.output_gain_filter_mode != output_gain_filter_mode)
             return true;
         for(int i = 0; i < 6; i++)
         {
@@ -128,7 +131,7 @@ struct StorageData
 };
 
 static constexpr uint32_t kStorageMagic = 0x42434C34; // "BCL4"
-static constexpr uint32_t kStorageVersion = 5;
+static constexpr uint32_t kStorageVersion = 6;
 static constexpr uint32_t kPresetClickTimeoutMs = 1000;
 static constexpr uint32_t kSaveSelectTimeoutMs = 3000;
 static constexpr uint32_t kPresetLedStepMs = 200;
@@ -149,6 +152,7 @@ bool update_switches = true;
 bool suppress_button2_release = false;
 bool suppress_button2_preset_release = false;
 bool live_alternate_save_pending = false;
+bool filter_mode_gain_save_pending = false;
 bool special_switch1_latched = false;
 int  special_return_switch1 = 1;
 uint32_t button2_down_ms = 0;
@@ -156,6 +160,7 @@ uint32_t preset_click_start_ms = 0;
 uint32_t save_select_start_ms = 0;
 uint32_t led2_pattern_ms = 0;
 uint32_t live_alternate_save_ms = 0;
+uint32_t filter_mode_gain_save_ms = 0;
 int  pending_preset_clicks = 0;
 int  pending_save_clicks = 0;
 int  active_preset = -1;
@@ -218,6 +223,7 @@ float flangerLfoPrevPhaseR = 0.0f;
 float flangerLfoRandomL = 0.0f;
 float flangerLfoRandomR = 0.0f;
 uint32_t flangerRandomState = 0x87654321;
+float outputGainFilterMode = 1.0f;
 
 float Clamp01(float v)
 {
@@ -411,8 +417,10 @@ void StoreExpressionAssignment(int slot)
     StorageData& data = SavedSettings.GetSettings();
     data.magic = kStorageMagic;
     data.version = kStorageVersion;
+    data.output_gain_filter_mode = outputGainFilterMode;
     expHandler.SaveState(data.expression_assignments[slot]);
     trigger_save = true;
+    filter_mode_gain_save_pending = false;
 }
 
 void RequestLiveAlternateSave()
@@ -426,10 +434,22 @@ void StoreLiveAlternateValues()
     StorageData& data = SavedSettings.GetSettings();
     data.magic = kStorageMagic;
     data.version = kStorageVersion;
+    data.output_gain_filter_mode = outputGainFilterMode;
     for(int i = 0; i < 6; i++)
         data.live_alternate_knobs[i] = alternateKnobValues[i];
     trigger_save = true;
     live_alternate_save_pending = false;
+    filter_mode_gain_save_pending = false;
+}
+
+void StoreFilterModeOutputGain()
+{
+    StorageData& data = SavedSettings.GetSettings();
+    data.magic = kStorageMagic;
+    data.version = kStorageVersion;
+    data.output_gain_filter_mode = outputGainFilterMode;
+    trigger_save = true;
+    filter_mode_gain_save_pending = false;
 }
 
 bool IsSpecialRoute()
@@ -486,6 +506,16 @@ void ApplyPreset(int index)
         dipValues[i] = s.dips[i];
     use_preset = true;
     active_preset = index;
+    outputGainFilterMode = data.output_gain_filter_mode;
+    if(routeMode == RouteMode::Normal && switchValues[0] == 1)
+    {
+        float gainKnob = outputGainFilterMode - 1.0f;
+        if(gainKnob < 0.0f)
+            gainKnob = 0.0f;
+        if(gainKnob > 1.0f)
+            gainKnob = 1.0f;
+        knobValues[0] = gainKnob;
+    }
     led2_phase = 0;
     led2_pattern_ms = System::GetNow();
     CaptureNormalPickup();
@@ -501,10 +531,14 @@ void StorePreset(int index)
     StorageData& data = SavedSettings.GetSettings();
     data.magic = kStorageMagic;
     data.version = kStorageVersion;
+    data.output_gain_filter_mode = outputGainFilterMode;
     Settings& s = ActivePresetBank(data, index);
     for(int i = 0; i < 6; i++)
     {
-        s.knobs[i] = knobValues[i];
+        if(routeMode == RouteMode::Normal && switchValues[0] == 1 && i == 0)
+            s.knobs[i] = outputGainFilterMode - 1.0f;
+        else
+            s.knobs[i] = knobValues[i];
         if(IsSpecialRoute() || i < 3)
             s.alternate_knobs[i] = IsSpecialRoute() ? ActiveSpecialAlternateValues()[i]
                                                     : alternateKnobValues[i];
@@ -513,6 +547,7 @@ void StorePreset(int index)
     for(int i = 0; i < 4; i++)
         s.dips[i] = dipValues[i];
     trigger_save = true;
+    filter_mode_gain_save_pending = false;
     use_preset = true;
     active_preset = index;
     led2_phase = 0;
@@ -1036,6 +1071,36 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
     float k5 = expressionValues[4];
     float k6 = expressionValues[5];
 
+    if(routeMode == RouteMode::Normal && effectMode == EffectMode::ThruToFilter
+       && !alternateMode)
+    {
+        bool envSettingsChanged = false;
+        const float nextEnvGain = Clamp01(knobValues[3]);    // K4
+        const float nextEnvAttack = Clamp01(knobValues[1]);  // K2
+        const float nextEnvRelease = Clamp01(knobValues[4]); // K5
+
+        if(fabsf(nextEnvGain - alternateKnobValues[3]) > 0.001f)
+        {
+            alternateKnobValues[3] = nextEnvGain;
+            alternatePickupValues[3] = physicalKnobValues[3];
+            envSettingsChanged = true;
+        }
+        if(fabsf(nextEnvAttack - alternateKnobValues[4]) > 0.001f)
+        {
+            alternateKnobValues[4] = nextEnvAttack;
+            alternatePickupValues[4] = physicalKnobValues[1];
+            envSettingsChanged = true;
+        }
+        if(fabsf(nextEnvRelease - alternateKnobValues[5]) > 0.001f)
+        {
+            alternateKnobValues[5] = nextEnvRelease;
+            alternatePickupValues[5] = physicalKnobValues[4];
+            envSettingsChanged = true;
+        }
+        if(envSettingsChanged)
+            RequestLiveAlternateSave();
+    }
+
     filterResonance = alternateKnobValues[2];
     envInputGain = 1.0f + alternateKnobValues[3] * 18.0f;
     if(IsSpecialRoute())
@@ -1054,6 +1119,17 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
     {
         ringBaseFreq = ExpMap(k1, 0.5f, 2000.0f);
         ringOsc.SetWaveform(Oscillator::WAVE_SIN);
+    }
+
+    if(routeMode == RouteMode::Normal && effectMode == EffectMode::ThruToFilter)
+    {
+        const float nextGain = 1.0f + Clamp01(k1);
+        if(fabsf(nextGain - outputGainFilterMode) > 0.001f)
+        {
+            outputGainFilterMode = nextGain;
+            filter_mode_gain_save_pending = true;
+            filter_mode_gain_save_ms = System::GetNow();
+        }
     }
 
     for(size_t i = 0; i < size; i++)
@@ -1205,8 +1281,8 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
         const float outL = ProcessVoice(inL, true, modBits, modSr, cutoff, resonance, ring);
         const float outR = ProcessVoice(inR, false, modBits, modSr, cutoff, resonance, ring);
 
-        out[0][i] = outL;
-        out[1][i] = outR;
+        out[0][i] = fclamp(outL * outputGainFilterMode, -1.0f, 1.0f);
+        out[1][i] = fclamp(outR * outputGainFilterMode, -1.0f, 1.0f);
     }
 }
 
@@ -1289,6 +1365,7 @@ int main(void)
     StorageData defaults = {};
     defaults.magic = kStorageMagic;
     defaults.version = kStorageVersion;
+    defaults.output_gain_filter_mode = 1.0f;
     for(int i = 0; i < 6; i++)
         defaults.live_alternate_knobs[i] = defaultAlternate[i];
     for(int i = 0; i < 5; i++)
@@ -1342,6 +1419,7 @@ int main(void)
         alternateKnobValues[i] = SavedSettings.GetSettings().live_alternate_knobs[i];
         alternatePickupValues[i] = alternateKnobValues[i];
     }
+    outputGainFilterMode = SavedSettings.GetSettings().output_gain_filter_mode;
 
     UpdateSwitch1();
     UpdateSwitch3();
@@ -1357,6 +1435,11 @@ int main(void)
            && System::GetNow() - live_alternate_save_ms >= 750)
         {
             StoreLiveAlternateValues();
+        }
+        if(filter_mode_gain_save_pending
+           && System::GetNow() - filter_mode_gain_save_ms >= 30000)
+        {
+            StoreFilterModeOutputGain();
         }
 
         if(trigger_save)

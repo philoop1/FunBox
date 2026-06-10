@@ -233,8 +233,8 @@ build/BitCrush.o: BitCrush.cpp \
  ../../DaisySP/DaisySP-LGPL/Source/Synthesis/blosc.h \
  ../../DaisySP/DaisySP-LGPL/Source/Utility/jitter.h \
  ../../DaisySP/DaisySP-LGPL/Source/Utility/port.h ../../include/funbox.h \
- ../../include/expressionHandler.h envelopeFollower.h moogladder.h \
- oscillator.h sampleratereducer.h svf.h
+ ../../include/expressionHandler.h envelopeFollower.h funbox_flanger.h \
+ funbox_phaser.h moogladder.h oscillator.h sampleratereducer.h svf.h
 ../../libDaisy/Drivers/CMSIS-Device/ST/STM32H7xx/Include/stm32h7xx.h:
 ../../libDaisy/Drivers/CMSIS-Device/ST/STM32H7xx/Include/stm32h750xx.h:
 ../../libDaisy/Drivers/CMSIS_5/CMSIS/Core/Include/core_cm7.h:
@@ -513,6 +513,8 @@ build/BitCrush.o: BitCrush.cpp \
 ../../include/funbox.h:
 ../../include/expressionHandler.h:
 envelopeFollower.h:
+funbox_flanger.h:
+funbox_phaser.h:
 moogladder.h:
 oscillator.h:
 sampleratereducer.h:

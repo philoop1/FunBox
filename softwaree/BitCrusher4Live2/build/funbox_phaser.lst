@@ -1,0 +1,1443 @@
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 1
+  11              		.eabi_attribute 18, 4
+  12              		.file	"funbox_phaser.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN7daisysp18FunboxPhaserEngine4InitEf,"ax",%progbits
+  17              		.align	1
+  18              		.global	_ZN7daisysp18FunboxPhaserEngine4InitEf
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-d16
+  25              	_ZN7daisysp18FunboxPhaserEngine4InitEf:
+  26              	.LVL0:
+  27              	.LFB2828:
+  28              		.file 1 "funbox_phaser.cpp"
+   1:funbox_phaser.cpp **** #include "dsp.h"
+   2:funbox_phaser.cpp **** #include "funbox_phaser.h"
+   3:funbox_phaser.cpp **** 
+   4:funbox_phaser.cpp **** using namespace daisysp;
+   5:funbox_phaser.cpp **** 
+   6:funbox_phaser.cpp **** void FunboxPhaserEngine::Init(float sample_rate)
+   7:funbox_phaser.cpp **** {
+  29              		.loc 1 7 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+   8:funbox_phaser.cpp ****     sample_rate_ = sample_rate;
+  33              		.loc 1 8 5 view .LVU1
+   7:funbox_phaser.cpp ****     sample_rate_ = sample_rate;
+  34              		.loc 1 7 1 is_stmt 0 view .LVU2
+  35 0000 10B5     		push	{r4, lr}
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 4, -8
+  38              		.cfi_offset 14, -4
+   7:funbox_phaser.cpp ****     sample_rate_ = sample_rate;
+  39              		.loc 1 7 1 view .LVU3
+  40 0002 0446     		mov	r4, r0
+  41              	.LBB47:
+  42              	.LBB48:
+  43              	.LBB49:
+  44              	.LBB50:
+  45              		.file 2 "../../DaisySP/Source/Utility/delayline.h"
+   1:../../DaisySP/Source/Utility/delayline.h **** /*
+   2:../../DaisySP/Source/Utility/delayline.h **** Copyright (c) 2020 Electrosmith, Corp
+   3:../../DaisySP/Source/Utility/delayline.h **** 
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 2
+
+
+   4:../../DaisySP/Source/Utility/delayline.h **** Use of this source code is governed by an MIT-style
+   5:../../DaisySP/Source/Utility/delayline.h **** license that can be found in the LICENSE file or at
+   6:../../DaisySP/Source/Utility/delayline.h **** https://opensource.org/licenses/MIT.
+   7:../../DaisySP/Source/Utility/delayline.h **** */
+   8:../../DaisySP/Source/Utility/delayline.h **** 
+   9:../../DaisySP/Source/Utility/delayline.h **** #pragma once
+  10:../../DaisySP/Source/Utility/delayline.h **** #ifndef DSY_DELAY_H
+  11:../../DaisySP/Source/Utility/delayline.h **** #define DSY_DELAY_H
+  12:../../DaisySP/Source/Utility/delayline.h **** #include <stdlib.h>
+  13:../../DaisySP/Source/Utility/delayline.h **** #include <stdint.h>
+  14:../../DaisySP/Source/Utility/delayline.h **** namespace daisysp
+  15:../../DaisySP/Source/Utility/delayline.h **** {
+  16:../../DaisySP/Source/Utility/delayline.h **** /** Simple Delay line.
+  17:../../DaisySP/Source/Utility/delayline.h **** November 2019
+  18:../../DaisySP/Source/Utility/delayline.h **** 
+  19:../../DaisySP/Source/Utility/delayline.h **** Converted to Template December 2019
+  20:../../DaisySP/Source/Utility/delayline.h **** 
+  21:../../DaisySP/Source/Utility/delayline.h **** declaration example: (1 second of floats)
+  22:../../DaisySP/Source/Utility/delayline.h **** 
+  23:../../DaisySP/Source/Utility/delayline.h **** DelayLine<float, SAMPLE_RATE> del;
+  24:../../DaisySP/Source/Utility/delayline.h **** 
+  25:../../DaisySP/Source/Utility/delayline.h **** By: shensley
+  26:../../DaisySP/Source/Utility/delayline.h **** */
+  27:../../DaisySP/Source/Utility/delayline.h **** template <typename T, size_t max_size>
+  28:../../DaisySP/Source/Utility/delayline.h **** class DelayLine
+  29:../../DaisySP/Source/Utility/delayline.h **** {
+  30:../../DaisySP/Source/Utility/delayline.h ****   public:
+  31:../../DaisySP/Source/Utility/delayline.h ****     DelayLine() {}
+  32:../../DaisySP/Source/Utility/delayline.h ****     ~DelayLine() {}
+  33:../../DaisySP/Source/Utility/delayline.h ****     /** initializes the delay line by clearing the values within, and setting delay to 1 sample.
+  34:../../DaisySP/Source/Utility/delayline.h ****     */
+  35:../../DaisySP/Source/Utility/delayline.h ****     void Init() { Reset(); }
+  36:../../DaisySP/Source/Utility/delayline.h ****     /** clears buffer, sets write ptr to 0, and delay to 1 sample.
+  37:../../DaisySP/Source/Utility/delayline.h ****     */
+  38:../../DaisySP/Source/Utility/delayline.h ****     void Reset()
+  39:../../DaisySP/Source/Utility/delayline.h ****     {
+  40:../../DaisySP/Source/Utility/delayline.h ****         for(size_t i = 0; i < max_size; i++)
+  41:../../DaisySP/Source/Utility/delayline.h ****         {
+  42:../../DaisySP/Source/Utility/delayline.h ****             line_[i] = T(0);
+  46              		.loc 2 42 22 view .LVU4
+  47 0004 4FF41652 		mov	r2, #9600
+  48              	.LBE50:
+  49              	.LBE49:
+  50              	.LBE48:
+  51              	.LBE47:
+  52              		.loc 1 8 18 view .LVU5
+  53 0008 2430     		adds	r0, r0, #36
+  54              	.LVL1:
+  55              	.LBB61:
+  56              	.LBB57:
+  57              	.LBB53:
+  58              	.LBB51:
+  59              		.loc 2 42 22 view .LVU6
+  60 000a 0021     		movs	r1, #0
+  61              	.LBE51:
+  62              	.LBE53:
+  63              	.LBE57:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 3
+
+
+  64              	.LBE61:
+  65              		.loc 1 8 18 view .LVU7
+  66 000c 84ED000A 		vstr.32	s0, [r4]
+   9:funbox_phaser.cpp ****     del_.Init();
+  67              		.loc 1 9 5 is_stmt 1 view .LVU8
+  68              	.LVL2:
+  69              	.LBB62:
+  70              	.LBI47:
+  35:../../DaisySP/Source/Utility/delayline.h ****     /** clears buffer, sets write ptr to 0, and delay to 1 sample.
+  71              		.loc 2 35 10 view .LVU9
+  72              	.LBB58:
+  73              	.LBI48:
+  38:../../DaisySP/Source/Utility/delayline.h ****     {
+  74              		.loc 2 38 10 view .LVU10
+  75              	.LBB54:
+  76              	.LBB52:
+  40:../../DaisySP/Source/Utility/delayline.h ****         {
+  77              		.loc 2 40 29 view .LVU11
+  78              		.loc 2 42 22 is_stmt 0 view .LVU12
+  79 0010 FFF7FEFF 		bl	memset
+  80              	.LVL3:
+  81              		.loc 2 42 22 view .LVU13
+  82              	.LBE52:
+  83              	.LBE54:
+  84              	.LBE58:
+  85              	.LBE62:
+  10:funbox_phaser.cpp ****     feedback_ = 0.2f;
+  86              		.loc 1 10 15 view .LVU14
+  87 0014 064B     		ldr	r3, .L2
+  88              	.LBB63:
+  89              	.LBB59:
+  90              	.LBB55:
+  43:../../DaisySP/Source/Utility/delayline.h ****         }
+  44:../../DaisySP/Source/Utility/delayline.h ****         write_ptr_ = 0;
+  91              		.loc 2 44 20 view .LVU15
+  92 0016 0022     		movs	r2, #0
+  93              	.LBE55:
+  94              	.LBE59:
+  95              	.LBE63:
+  96              		.loc 1 10 15 view .LVU16
+  97 0018 A360     		str	r3, [r4, #8]	@ float
+  11:funbox_phaser.cpp ****     ap_freq_ = 200.0f;
+  98              		.loc 1 11 14 view .LVU17
+  99 001a 064B     		ldr	r3, .L2+4
+ 100              	.LBB64:
+ 101              	.LBB60:
+ 102              	.LBB56:
+ 103              		.loc 2 44 20 view .LVU18
+ 104 001c E261     		str	r2, [r4, #28]
+ 105              	.LVL4:
+ 106              		.loc 2 44 20 view .LVU19
+ 107              	.LBE56:
+ 108              	.LBE60:
+ 109              	.LBE64:
+  10:funbox_phaser.cpp ****     feedback_ = 0.2f;
+ 110              		.loc 1 10 5 is_stmt 1 view .LVU20
+ 111              		.loc 1 11 5 view .LVU21
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 4
+
+
+ 112              		.loc 1 11 14 is_stmt 0 view .LVU22
+ 113 001e E360     		str	r3, [r4, #12]	@ float
+  12:funbox_phaser.cpp ****     os_ = 30.0f;
+ 114              		.loc 1 12 5 is_stmt 1 view .LVU23
+ 115              		.loc 1 12 9 is_stmt 0 view .LVU24
+ 116 0020 054B     		ldr	r3, .L2+8
+ 117              	.LBB65:
+ 118              	.LBB66:
+  45:../../DaisySP/Source/Utility/delayline.h ****         delay_     = 1;
+  46:../../DaisySP/Source/Utility/delayline.h ****     }
+  47:../../DaisySP/Source/Utility/delayline.h **** 
+  48:../../DaisySP/Source/Utility/delayline.h ****     /** sets the delay time in samples
+  49:../../DaisySP/Source/Utility/delayline.h ****         If a float is passed in, a fractional component will be calculated for interpolating the de
+  50:../../DaisySP/Source/Utility/delayline.h ****     */
+  51:../../DaisySP/Source/Utility/delayline.h ****     inline void SetDelay(size_t delay)
+  52:../../DaisySP/Source/Utility/delayline.h ****     {
+  53:../../DaisySP/Source/Utility/delayline.h ****         frac_  = 0.0f;
+  54:../../DaisySP/Source/Utility/delayline.h ****         delay_ = delay < max_size ? delay : max_size - 1;
+  55:../../DaisySP/Source/Utility/delayline.h ****     }
+  56:../../DaisySP/Source/Utility/delayline.h **** 
+  57:../../DaisySP/Source/Utility/delayline.h ****     /** sets the delay time in samples
+  58:../../DaisySP/Source/Utility/delayline.h ****         If a float is passed in, a fractional component will be calculated for interpolating the de
+  59:../../DaisySP/Source/Utility/delayline.h ****     */
+  60:../../DaisySP/Source/Utility/delayline.h ****     inline void SetDelay(float delay)
+  61:../../DaisySP/Source/Utility/delayline.h ****     {
+  62:../../DaisySP/Source/Utility/delayline.h ****         int32_t int_delay = static_cast<int32_t>(delay);
+  63:../../DaisySP/Source/Utility/delayline.h ****         frac_             = delay - static_cast<float>(int_delay);
+  64:../../DaisySP/Source/Utility/delayline.h ****         delay_ = static_cast<size_t>(int_delay) < max_size ? int_delay
+ 119              		.loc 2 64 16 view .LVU25
+ 120 0022 2262     		str	r2, [r4, #32]
+ 121              	.LBE66:
+ 122              	.LBE65:
+ 123              		.loc 1 12 9 view .LVU26
+ 124 0024 6360     		str	r3, [r4, #4]	@ float
+  13:funbox_phaser.cpp ****     deltime_ = 0.0f;
+ 125              		.loc 1 13 5 is_stmt 1 view .LVU27
+ 126              		.loc 1 13 14 is_stmt 0 view .LVU28
+ 127 0026 0023     		movs	r3, #0
+ 128 0028 2361     		str	r3, [r4, #16]	@ float
+  14:funbox_phaser.cpp ****     last_sample_ = 0.0f;
+ 129              		.loc 1 14 5 is_stmt 1 view .LVU29
+ 130              		.loc 1 14 18 is_stmt 0 view .LVU30
+ 131 002a 6361     		str	r3, [r4, #20]	@ float
+  15:funbox_phaser.cpp ****     del_.SetDelay(0.0f);
+ 132              		.loc 1 15 5 is_stmt 1 view .LVU31
+ 133              	.LVL5:
+ 134              	.LBB68:
+ 135              	.LBI65:
+  60:../../DaisySP/Source/Utility/delayline.h ****     {
+ 136              		.loc 2 60 17 view .LVU32
+ 137              	.LBB67:
+  63:../../DaisySP/Source/Utility/delayline.h ****         delay_ = static_cast<size_t>(int_delay) < max_size ? int_delay
+ 138              		.loc 2 63 27 is_stmt 0 view .LVU33
+ 139 002c A361     		str	r3, [r4, #24]	@ float
+ 140              	.LBE67:
+ 141              	.LBE68:
+  16:funbox_phaser.cpp **** }
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 5
+
+
+ 142              		.loc 1 16 1 view .LVU34
+ 143 002e 10BD     		pop	{r4, pc}
+ 144              	.LVL6:
+ 145              	.L3:
+ 146              		.loc 1 16 1 view .LVU35
+ 147              		.align	2
+ 148              	.L2:
+ 149 0030 CDCC4C3E 		.word	1045220557
+ 150 0034 00004843 		.word	1128792064
+ 151 0038 0000F041 		.word	1106247680
+ 152              		.cfi_endproc
+ 153              	.LFE2828:
+ 155              		.section	.text._ZN7daisysp18FunboxPhaserEngine7ProcessEf,"ax",%progbits
+ 156              		.align	1
+ 157              		.global	_ZN7daisysp18FunboxPhaserEngine7ProcessEf
+ 158              		.syntax unified
+ 159              		.thumb
+ 160              		.thumb_func
+ 161              		.fpu fpv5-d16
+ 163              	_ZN7daisysp18FunboxPhaserEngine7ProcessEf:
+ 164              	.LVL7:
+ 165              	.LFB2829:
+  17:funbox_phaser.cpp **** 
+  18:funbox_phaser.cpp **** float FunboxPhaserEngine::Process(float in)
+  19:funbox_phaser.cpp **** {
+ 166              		.loc 1 19 1 is_stmt 1 view -0
+ 167              		.cfi_startproc
+ 168              		@ args = 0, pretend = 0, frame = 0
+ 169              		@ frame_needed = 0, uses_anonymous_args = 0
+  20:funbox_phaser.cpp ****     fonepole(deltime_, sample_rate_ / (ap_freq_ + os_), 0.0001f);
+ 170              		.loc 1 20 5 view .LVU37
+ 171              	.LBB75:
+ 172              	.LBI75:
+ 173              		.file 3 "../../DaisySP/Source/Utility/dsp.h"
+   1:../../DaisySP/Source/Utility/dsp.h **** /*
+   2:../../DaisySP/Source/Utility/dsp.h **** Copyright (c) 2020 Electrosmith, Corp, Emilie Gillet
+   3:../../DaisySP/Source/Utility/dsp.h **** 
+   4:../../DaisySP/Source/Utility/dsp.h **** Use of this source code is governed by an MIT-style
+   5:../../DaisySP/Source/Utility/dsp.h **** license that can be found in the LICENSE file or at
+   6:../../DaisySP/Source/Utility/dsp.h **** https://opensource.org/licenses/MIT.
+   7:../../DaisySP/Source/Utility/dsp.h **** */
+   8:../../DaisySP/Source/Utility/dsp.h **** 
+   9:../../DaisySP/Source/Utility/dsp.h **** /** Helpful defines, functions, and other utilities for use in/with daisysp modules.
+  10:../../DaisySP/Source/Utility/dsp.h **** */
+  11:../../DaisySP/Source/Utility/dsp.h **** #pragma once
+  12:../../DaisySP/Source/Utility/dsp.h **** #ifndef DSY_CORE_DSP
+  13:../../DaisySP/Source/Utility/dsp.h **** #define DSY_CORE_DSP
+  14:../../DaisySP/Source/Utility/dsp.h **** #include <cassert>
+  15:../../DaisySP/Source/Utility/dsp.h **** #include <cstdint>
+  16:../../DaisySP/Source/Utility/dsp.h **** #include <random>
+  17:../../DaisySP/Source/Utility/dsp.h **** #include <cmath>
+  18:../../DaisySP/Source/Utility/dsp.h **** 
+  19:../../DaisySP/Source/Utility/dsp.h **** /** PIs
+  20:../../DaisySP/Source/Utility/dsp.h **** */
+  21:../../DaisySP/Source/Utility/dsp.h **** #define PI_F 3.1415927410125732421875f
+  22:../../DaisySP/Source/Utility/dsp.h **** #define TWOPI_F (2.0f * PI_F)
+  23:../../DaisySP/Source/Utility/dsp.h **** #define HALFPI_F (PI_F * 0.5f)
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 6
+
+
+  24:../../DaisySP/Source/Utility/dsp.h **** #define DSY_MIN(in, mn) (in < mn ? in : mn)
+  25:../../DaisySP/Source/Utility/dsp.h **** #define DSY_MAX(in, mx) (in > mx ? in : mx)
+  26:../../DaisySP/Source/Utility/dsp.h **** #define DSY_CLAMP(in, mn, mx) (DSY_MIN(DSY_MAX(in, mn), mx))
+  27:../../DaisySP/Source/Utility/dsp.h **** #define DSY_COUNTOF(_arr) (sizeof(_arr) / sizeof(_arr[0]))
+  28:../../DaisySP/Source/Utility/dsp.h **** 
+  29:../../DaisySP/Source/Utility/dsp.h **** namespace daisysp
+  30:../../DaisySP/Source/Utility/dsp.h **** {
+  31:../../DaisySP/Source/Utility/dsp.h **** //Avoids division for random floats. e.g. rand() * kRandFrac
+  32:../../DaisySP/Source/Utility/dsp.h **** static constexpr float kRandFrac = 1.f / (float)RAND_MAX;
+  33:../../DaisySP/Source/Utility/dsp.h **** 
+  34:../../DaisySP/Source/Utility/dsp.h **** //Convert from semitones to other units. e.g. 2 ^ (kOneTwelfth * x)
+  35:../../DaisySP/Source/Utility/dsp.h **** static constexpr float kOneTwelfth = 1.f / 12.f;
+  36:../../DaisySP/Source/Utility/dsp.h **** 
+  37:../../DaisySP/Source/Utility/dsp.h **** /** efficient floating point min/max
+  38:../../DaisySP/Source/Utility/dsp.h **** c/o stephen mccaul
+  39:../../DaisySP/Source/Utility/dsp.h **** */
+  40:../../DaisySP/Source/Utility/dsp.h **** inline float fmax(float a, float b)
+  41:../../DaisySP/Source/Utility/dsp.h **** {
+  42:../../DaisySP/Source/Utility/dsp.h ****     float r;
+  43:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+  44:../../DaisySP/Source/Utility/dsp.h ****     asm("vmaxnm.f32 %[d], %[n], %[m]" : [d] "=t"(r) : [n] "t"(a), [m] "t"(b) :);
+  45:../../DaisySP/Source/Utility/dsp.h **** #else
+  46:../../DaisySP/Source/Utility/dsp.h ****     r = (a > b) ? a : b;
+  47:../../DaisySP/Source/Utility/dsp.h **** #endif // __arm__
+  48:../../DaisySP/Source/Utility/dsp.h ****     return r;
+  49:../../DaisySP/Source/Utility/dsp.h **** }
+  50:../../DaisySP/Source/Utility/dsp.h **** 
+  51:../../DaisySP/Source/Utility/dsp.h **** inline float fmin(float a, float b)
+  52:../../DaisySP/Source/Utility/dsp.h **** {
+  53:../../DaisySP/Source/Utility/dsp.h ****     float r;
+  54:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+  55:../../DaisySP/Source/Utility/dsp.h ****     asm("vminnm.f32 %[d], %[n], %[m]" : [d] "=t"(r) : [n] "t"(a), [m] "t"(b) :);
+  56:../../DaisySP/Source/Utility/dsp.h **** #else
+  57:../../DaisySP/Source/Utility/dsp.h ****     r = (a < b) ? a : b;
+  58:../../DaisySP/Source/Utility/dsp.h **** #endif // __arm__
+  59:../../DaisySP/Source/Utility/dsp.h ****     return r;
+  60:../../DaisySP/Source/Utility/dsp.h **** }
+  61:../../DaisySP/Source/Utility/dsp.h **** 
+  62:../../DaisySP/Source/Utility/dsp.h **** /** quick fp clamp
+  63:../../DaisySP/Source/Utility/dsp.h **** */
+  64:../../DaisySP/Source/Utility/dsp.h **** inline float fclamp(float in, float min, float max)
+  65:../../DaisySP/Source/Utility/dsp.h **** {
+  66:../../DaisySP/Source/Utility/dsp.h ****     return fmin(fmax(in, min), max);
+  67:../../DaisySP/Source/Utility/dsp.h **** }
+  68:../../DaisySP/Source/Utility/dsp.h **** 
+  69:../../DaisySP/Source/Utility/dsp.h **** /** From Musicdsp.org "Fast power and root estimates for 32bit floats)
+  70:../../DaisySP/Source/Utility/dsp.h **** Original code by Stefan Stenzel
+  71:../../DaisySP/Source/Utility/dsp.h **** These are approximations
+  72:../../DaisySP/Source/Utility/dsp.h **** */
+  73:../../DaisySP/Source/Utility/dsp.h **** inline float fastpower(float f, int n)
+  74:../../DaisySP/Source/Utility/dsp.h **** {
+  75:../../DaisySP/Source/Utility/dsp.h ****     long *lp, l;
+  76:../../DaisySP/Source/Utility/dsp.h ****     lp = (long *)(&f);
+  77:../../DaisySP/Source/Utility/dsp.h ****     l  = *lp;
+  78:../../DaisySP/Source/Utility/dsp.h ****     l -= 0x3F800000;
+  79:../../DaisySP/Source/Utility/dsp.h ****     l <<= (n - 1);
+  80:../../DaisySP/Source/Utility/dsp.h ****     l += 0x3F800000;
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 7
+
+
+  81:../../DaisySP/Source/Utility/dsp.h ****     *lp = l;
+  82:../../DaisySP/Source/Utility/dsp.h ****     return f;
+  83:../../DaisySP/Source/Utility/dsp.h **** }
+  84:../../DaisySP/Source/Utility/dsp.h **** 
+  85:../../DaisySP/Source/Utility/dsp.h **** inline float fastroot(float f, int n)
+  86:../../DaisySP/Source/Utility/dsp.h **** {
+  87:../../DaisySP/Source/Utility/dsp.h ****     long *lp, l;
+  88:../../DaisySP/Source/Utility/dsp.h ****     lp = (long *)(&f);
+  89:../../DaisySP/Source/Utility/dsp.h ****     l  = *lp;
+  90:../../DaisySP/Source/Utility/dsp.h ****     l -= 0x3F800000;
+  91:../../DaisySP/Source/Utility/dsp.h ****     l >>= (n - 1);
+  92:../../DaisySP/Source/Utility/dsp.h ****     l += 0x3F800000;
+  93:../../DaisySP/Source/Utility/dsp.h ****     *lp = l;
+  94:../../DaisySP/Source/Utility/dsp.h ****     return f;
+  95:../../DaisySP/Source/Utility/dsp.h **** }
+  96:../../DaisySP/Source/Utility/dsp.h **** 
+  97:../../DaisySP/Source/Utility/dsp.h **** /** Significantly more efficient than fmodf(x, 1.0f) for calculating
+  98:../../DaisySP/Source/Utility/dsp.h ****  *  the decimal part of a floating point value.
+  99:../../DaisySP/Source/Utility/dsp.h ****  */
+ 100:../../DaisySP/Source/Utility/dsp.h **** inline float fastmod1f(float x)
+ 101:../../DaisySP/Source/Utility/dsp.h **** {
+ 102:../../DaisySP/Source/Utility/dsp.h ****     return x - floorf(x);
+ 103:../../DaisySP/Source/Utility/dsp.h **** }
+ 104:../../DaisySP/Source/Utility/dsp.h **** 
+ 105:../../DaisySP/Source/Utility/dsp.h **** /** From http://openaudio.blogspot.com/2017/02/faster-log10-and-pow.html
+ 106:../../DaisySP/Source/Utility/dsp.h **** No approximation, pow10f(x) gives a 90% speed increase over powf(10.f, x)
+ 107:../../DaisySP/Source/Utility/dsp.h **** */
+ 108:../../DaisySP/Source/Utility/dsp.h **** inline float pow10f(float f)
+ 109:../../DaisySP/Source/Utility/dsp.h **** {
+ 110:../../DaisySP/Source/Utility/dsp.h ****     return expf(2.302585092994046f * f);
+ 111:../../DaisySP/Source/Utility/dsp.h **** }
+ 112:../../DaisySP/Source/Utility/dsp.h **** 
+ 113:../../DaisySP/Source/Utility/dsp.h **** /* Original code for fastlog2f by Dr. Paul Beckmann from the ARM community forum, adapted from the 
+ 114:../../DaisySP/Source/Utility/dsp.h **** About 25% performance increase over std::log10f
+ 115:../../DaisySP/Source/Utility/dsp.h **** */
+ 116:../../DaisySP/Source/Utility/dsp.h **** inline float fastlog2f(float f)
+ 117:../../DaisySP/Source/Utility/dsp.h **** {
+ 118:../../DaisySP/Source/Utility/dsp.h ****     float frac;
+ 119:../../DaisySP/Source/Utility/dsp.h ****     int   exp;
+ 120:../../DaisySP/Source/Utility/dsp.h ****     frac = frexpf(fabsf(f), &exp);
+ 121:../../DaisySP/Source/Utility/dsp.h ****     f    = 1.23149591368684f;
+ 122:../../DaisySP/Source/Utility/dsp.h ****     f *= frac;
+ 123:../../DaisySP/Source/Utility/dsp.h ****     f += -4.11852516267426f;
+ 124:../../DaisySP/Source/Utility/dsp.h ****     f *= frac;
+ 125:../../DaisySP/Source/Utility/dsp.h ****     f += 6.02197014179219f;
+ 126:../../DaisySP/Source/Utility/dsp.h ****     f *= frac;
+ 127:../../DaisySP/Source/Utility/dsp.h ****     f += -3.13396450166353f;
+ 128:../../DaisySP/Source/Utility/dsp.h ****     f += exp;
+ 129:../../DaisySP/Source/Utility/dsp.h ****     return (f);
+ 130:../../DaisySP/Source/Utility/dsp.h **** }
+ 131:../../DaisySP/Source/Utility/dsp.h **** 
+ 132:../../DaisySP/Source/Utility/dsp.h **** inline float fastlog10f(float f)
+ 133:../../DaisySP/Source/Utility/dsp.h **** {
+ 134:../../DaisySP/Source/Utility/dsp.h ****     return fastlog2f(f) * 0.3010299956639812f;
+ 135:../../DaisySP/Source/Utility/dsp.h **** }
+ 136:../../DaisySP/Source/Utility/dsp.h **** 
+ 137:../../DaisySP/Source/Utility/dsp.h **** /** Midi to frequency helper
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 8
+
+
+ 138:../../DaisySP/Source/Utility/dsp.h **** */
+ 139:../../DaisySP/Source/Utility/dsp.h **** inline float mtof(float m)
+ 140:../../DaisySP/Source/Utility/dsp.h **** {
+ 141:../../DaisySP/Source/Utility/dsp.h ****     return powf(2, (m - 69.0f) / 12.0f) * 440.0f;
+ 142:../../DaisySP/Source/Utility/dsp.h **** }
+ 143:../../DaisySP/Source/Utility/dsp.h **** 
+ 144:../../DaisySP/Source/Utility/dsp.h **** 
+ 145:../../DaisySP/Source/Utility/dsp.h **** /** one pole lpf
+ 146:../../DaisySP/Source/Utility/dsp.h **** out is passed by reference, and must be retained between
+ 147:../../DaisySP/Source/Utility/dsp.h **** calls to properly filter the signal
+ 148:../../DaisySP/Source/Utility/dsp.h **** coeff can be calculated:
+ 149:../../DaisySP/Source/Utility/dsp.h **** coeff = 1.0 / (time * sample_rate) ; where time is in seconds
+ 150:../../DaisySP/Source/Utility/dsp.h **** */
+ 151:../../DaisySP/Source/Utility/dsp.h **** inline void fonepole(float &out, float in, float coeff)
+ 174              		.loc 3 151 13 view .LVU38
+ 175              	.LBB76:
+ 152:../../DaisySP/Source/Utility/dsp.h **** {
+ 153:../../DaisySP/Source/Utility/dsp.h ****     out += coeff * (in - out);
+ 176              		.loc 3 153 5 view .LVU39
+ 177              	.LBE76:
+ 178              	.LBE75:
+ 179              		.loc 1 20 49 is_stmt 0 view .LVU40
+ 180 0000 90ED017A 		vldr.32	s14, [r0, #4]
+ 181              	.LBB81:
+ 182              	.LBB82:
+  65:../../DaisySP/Source/Utility/delayline.h ****                                                            : max_size - 1;
+  66:../../DaisySP/Source/Utility/delayline.h ****     }
+  67:../../DaisySP/Source/Utility/delayline.h **** 
+  68:../../DaisySP/Source/Utility/delayline.h ****     /** writes the sample of type T to the delay line, and advances the write ptr
+  69:../../DaisySP/Source/Utility/delayline.h ****     */
+  70:../../DaisySP/Source/Utility/delayline.h ****     inline void Write(const T sample)
+  71:../../DaisySP/Source/Utility/delayline.h ****     {
+  72:../../DaisySP/Source/Utility/delayline.h ****         line_[write_ptr_] = sample;
+  73:../../DaisySP/Source/Utility/delayline.h ****         write_ptr_        = (write_ptr_ - 1 + max_size) % max_size;
+  74:../../DaisySP/Source/Utility/delayline.h ****     }
+  75:../../DaisySP/Source/Utility/delayline.h **** 
+  76:../../DaisySP/Source/Utility/delayline.h ****     /** returns the next sample of type T in the delay line, interpolated if necessary.
+  77:../../DaisySP/Source/Utility/delayline.h ****     */
+  78:../../DaisySP/Source/Utility/delayline.h ****     inline const T Read() const
+  79:../../DaisySP/Source/Utility/delayline.h ****     {
+  80:../../DaisySP/Source/Utility/delayline.h ****         T a = line_[(write_ptr_ + delay_) % max_size];
+  81:../../DaisySP/Source/Utility/delayline.h ****         T b = line_[(write_ptr_ + delay_ + 1) % max_size];
+  82:../../DaisySP/Source/Utility/delayline.h ****         return a + (b - a) * frac_;
+  83:../../DaisySP/Source/Utility/delayline.h ****     }
+  84:../../DaisySP/Source/Utility/delayline.h **** 
+  85:../../DaisySP/Source/Utility/delayline.h ****     /** Read from a set location */
+  86:../../DaisySP/Source/Utility/delayline.h ****     inline const T Read(float delay) const
+  87:../../DaisySP/Source/Utility/delayline.h ****     {
+  88:../../DaisySP/Source/Utility/delayline.h ****         int32_t delay_integral   = static_cast<int32_t>(delay);
+  89:../../DaisySP/Source/Utility/delayline.h ****         float   delay_fractional = delay - static_cast<float>(delay_integral);
+  90:../../DaisySP/Source/Utility/delayline.h ****         const T a = line_[(write_ptr_ + delay_integral) % max_size];
+  91:../../DaisySP/Source/Utility/delayline.h ****         const T b = line_[(write_ptr_ + delay_integral + 1) % max_size];
+  92:../../DaisySP/Source/Utility/delayline.h ****         return a + (b - a) * delay_fractional;
+  93:../../DaisySP/Source/Utility/delayline.h ****     }
+  94:../../DaisySP/Source/Utility/delayline.h **** 
+  95:../../DaisySP/Source/Utility/delayline.h ****     inline const T ReadHermite(float delay) const
+  96:../../DaisySP/Source/Utility/delayline.h ****     {
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 9
+
+
+  97:../../DaisySP/Source/Utility/delayline.h ****         int32_t delay_integral   = static_cast<int32_t>(delay);
+  98:../../DaisySP/Source/Utility/delayline.h ****         float   delay_fractional = delay - static_cast<float>(delay_integral);
+  99:../../DaisySP/Source/Utility/delayline.h **** 
+ 100:../../DaisySP/Source/Utility/delayline.h ****         int32_t     t     = (write_ptr_ + delay_integral + max_size);
+ 101:../../DaisySP/Source/Utility/delayline.h ****         const T     xm1   = line_[(t - 1) % max_size];
+ 102:../../DaisySP/Source/Utility/delayline.h ****         const T     x0    = line_[(t) % max_size];
+ 103:../../DaisySP/Source/Utility/delayline.h ****         const T     x1    = line_[(t + 1) % max_size];
+ 104:../../DaisySP/Source/Utility/delayline.h ****         const T     x2    = line_[(t + 2) % max_size];
+ 105:../../DaisySP/Source/Utility/delayline.h ****         const float c     = (x1 - xm1) * 0.5f;
+ 106:../../DaisySP/Source/Utility/delayline.h ****         const float v     = x0 - x1;
+ 107:../../DaisySP/Source/Utility/delayline.h ****         const float w     = c + v;
+ 108:../../DaisySP/Source/Utility/delayline.h ****         const float a     = w + v + (x2 - x0) * 0.5f;
+ 109:../../DaisySP/Source/Utility/delayline.h ****         const float b_neg = w + a;
+ 110:../../DaisySP/Source/Utility/delayline.h ****         const float f     = delay_fractional;
+ 111:../../DaisySP/Source/Utility/delayline.h ****         return (((a * f) - b_neg) * f + c) * f + x0;
+ 112:../../DaisySP/Source/Utility/delayline.h ****     }
+ 113:../../DaisySP/Source/Utility/delayline.h **** 
+ 114:../../DaisySP/Source/Utility/delayline.h ****     inline const T Allpass(const T sample, size_t delay, const T coefficient)
+ 115:../../DaisySP/Source/Utility/delayline.h ****     {
+ 116:../../DaisySP/Source/Utility/delayline.h ****         T read  = line_[(write_ptr_ + delay) % max_size];
+ 183              		.loc 2 116 46 view .LVU41
+ 184 0004 4FF41661 		mov	r1, #2400
+ 185              	.LBE82:
+ 186              	.LBE81:
+ 187              		.loc 1 20 49 view .LVU42
+ 188 0008 D0ED036A 		vldr.32	s13, [r0, #12]
+ 189              		.loc 1 20 13 view .LVU43
+ 190 000c 90ED006A 		vldr.32	s12, [r0]
+ 191              		.loc 1 20 49 view .LVU44
+ 192 0010 76EE876A 		vadd.f32	s13, s13, s14
+ 193              	.LBB94:
+ 194              	.LBB77:
+ 195              		.loc 3 153 9 view .LVU45
+ 196 0014 D0ED047A 		vldr.32	s15, [r0, #16]
+ 197              	.LBE77:
+ 198              	.LBE94:
+ 199              	.LBB95:
+ 200              	.LBB90:
+ 201              		.loc 2 116 26 view .LVU46
+ 202 0018 C269     		ldr	r2, [r0, #28]
+ 203              	.LBE90:
+ 204              	.LBE95:
+ 205              		.loc 1 20 13 view .LVU47
+ 206 001a 86EE267A 		vdiv.f32	s14, s12, s13
+ 207              	.LVL8:
+ 208              	.LBB96:
+ 209              	.LBB78:
+ 210              		.loc 3 153 9 view .LVU48
+ 211 001e DFED1C6A 		vldr.32	s13, .L5
+ 212              	.LBE78:
+ 213              	.LBE96:
+  21:funbox_phaser.cpp ****     last_sample_ = del_.Allpass(in + feedback_ * last_sample_, deltime_, 0.3f);
+ 214              		.loc 1 21 32 view .LVU49
+ 215 0022 90ED026A 		vldr.32	s12, [r0, #8]
+  19:funbox_phaser.cpp ****     fonepole(deltime_, sample_rate_ / (ap_freq_ + os_), 0.0001f);
+ 216              		.loc 1 19 1 view .LVU50
+ 217 0026 10B5     		push	{r4, lr}
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 10
+
+
+ 218              		.cfi_def_cfa_offset 8
+ 219              		.cfi_offset 4, -8
+ 220              		.cfi_offset 14, -4
+ 221              	.LBB97:
+ 222              	.LBB79:
+ 223              		.loc 3 153 24 view .LVU51
+ 224 0028 37EE677A 		vsub.f32	s14, s14, s15
+ 225              	.LVL9:
+ 226              		.loc 3 153 9 view .LVU52
+ 227 002c E7EE267A 		vfma.f32	s15, s14, s13
+ 228              	.LBE79:
+ 229              	.LBE97:
+ 230              		.loc 1 21 32 view .LVU53
+ 231 0030 D0ED056A 		vldr.32	s13, [r0, #20]
+ 232 0034 B0EE407A 		vmov.f32	s14, s0
+ 233 0038 A6EE267A 		vfma.f32	s14, s12, s13
+ 234              	.LBB98:
+ 235              	.LBB91:
+ 117:../../DaisySP/Source/Utility/delayline.h ****         T write = sample + coefficient * read;
+ 236              		.loc 2 117 11 view .LVU54
+ 237 003c DFED156A 		vldr.32	s13, .L5+4
+ 238              	.LBE91:
+ 239              	.LBE98:
+ 240              	.LBB99:
+ 241              	.LBB80:
+ 242              		.loc 3 153 9 view .LVU55
+ 243 0040 C0ED047A 		vstr.32	s15, [r0, #16]
+ 244              	.LVL10:
+ 245              		.loc 3 153 9 view .LVU56
+ 246              	.LBE80:
+ 247              	.LBE99:
+ 248              		.loc 1 21 5 is_stmt 1 view .LVU57
+ 249              	.LBB100:
+ 250              	.LBI81:
+ 114:../../DaisySP/Source/Utility/delayline.h ****     {
+ 251              		.loc 2 114 20 view .LVU58
+ 252              	.LBE100:
+ 253              		.loc 1 21 32 is_stmt 0 view .LVU59
+ 254 0044 FCEEE77A 		vcvt.u32.f32	s15, s15
+ 255              	.LVL11:
+ 256              		.loc 1 21 32 view .LVU60
+ 257 0048 17EE903A 		vmov	r3, s15	@ int
+ 258              	.LBB101:
+ 259              	.LBB92:
+ 116:../../DaisySP/Source/Utility/delayline.h ****         T write = sample + coefficient * read;
+ 260              		.loc 2 116 37 view .LVU61
+ 261 004c 1344     		add	r3, r3, r2
+ 116:../../DaisySP/Source/Utility/delayline.h ****         T write = sample + coefficient * read;
+ 262              		.loc 2 116 46 view .LVU62
+ 263 004e B3FBF1F4 		udiv	r4, r3, r1
+ 264 0052 01FB1433 		mls	r3, r1, r4, r3
+ 116:../../DaisySP/Source/Utility/delayline.h ****         T write = sample + coefficient * read;
+ 265              		.loc 2 116 11 view .LVU63
+ 266 0056 00EB8303 		add	r3, r0, r3, lsl #2
+ 267 005a D3ED097A 		vldr.32	s15, [r3, #36]
+ 268              	.LVL12:
+ 269              	.LBB83:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 11
+
+
+ 270              	.LBB84:
+  72:../../DaisySP/Source/Utility/delayline.h ****         write_ptr_        = (write_ptr_ - 1 + max_size) % max_size;
+ 271              		.loc 2 72 27 view .LVU64
+ 272 005e 00EB8203 		add	r3, r0, r2, lsl #2
+  73:../../DaisySP/Source/Utility/delayline.h ****     }
+ 273              		.loc 2 73 45 view .LVU65
+ 274 0062 02F65F12 		addw	r2, r2, #2399
+ 275              	.LBE84:
+ 276              	.LBE83:
+ 277              		.loc 2 117 11 view .LVU66
+ 278 0066 A7EEA67A 		vfma.f32	s14, s15, s13
+ 279              	.LVL13:
+ 280              	.LBB87:
+ 281              	.LBI83:
+  70:../../DaisySP/Source/Utility/delayline.h ****     {
+ 282              		.loc 2 70 17 is_stmt 1 view .LVU67
+ 283              	.LBE87:
+ 118:../../DaisySP/Source/Utility/delayline.h ****         Write(write);
+ 119:../../DaisySP/Source/Utility/delayline.h ****         return -write * coefficient + read;
+ 284              		.loc 2 119 39 is_stmt 0 view .LVU68
+ 285 006a E7EE667A 		vfms.f32	s15, s14, s13
+ 286              	.LVL14:
+ 287              	.LBB88:
+ 288              	.LBB85:
+  72:../../DaisySP/Source/Utility/delayline.h ****         write_ptr_        = (write_ptr_ - 1 + max_size) % max_size;
+ 289              		.loc 2 72 27 view .LVU69
+ 290 006e 83ED097A 		vstr.32	s14, [r3, #36]
+ 291              	.LVL15:
+  73:../../DaisySP/Source/Utility/delayline.h ****     }
+ 292              		.loc 2 73 57 view .LVU70
+ 293 0072 B2FBF1F3 		udiv	r3, r2, r1
+ 294              	.LBE85:
+ 295              	.LBE88:
+ 296              	.LBE92:
+ 297              	.LBE101:
+  22:funbox_phaser.cpp ****     return (in + last_sample_) * 0.5f;
+ 298              		.loc 1 22 16 view .LVU71
+ 299 0076 30EE270A 		vadd.f32	s0, s0, s15
+ 300              	.LVL16:
+  21:funbox_phaser.cpp ****     return (in + last_sample_) * 0.5f;
+ 301              		.loc 1 21 18 view .LVU72
+ 302 007a C0ED057A 		vstr.32	s15, [r0, #20]
+ 303              	.LVL17:
+  23:funbox_phaser.cpp **** }
+ 304              		.loc 1 23 1 view .LVU73
+ 305 007e F6EE007A 		vmov.f32	s15, #5.0e-1
+ 306              	.LBB102:
+ 307              	.LBB93:
+ 308              	.LBB89:
+ 309              	.LBB86:
+  73:../../DaisySP/Source/Utility/delayline.h ****     }
+ 310              		.loc 2 73 57 view .LVU74
+ 311 0082 01FB1322 		mls	r2, r1, r3, r2
+  73:../../DaisySP/Source/Utility/delayline.h ****     }
+ 312              		.loc 2 73 27 view .LVU75
+ 313 0086 C261     		str	r2, [r0, #28]
+ 314              	.LVL18:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 12
+
+
+  73:../../DaisySP/Source/Utility/delayline.h ****     }
+ 315              		.loc 2 73 27 view .LVU76
+ 316              	.LBE86:
+ 317              	.LBE89:
+ 318              	.LBE93:
+ 319              	.LBE102:
+  22:funbox_phaser.cpp **** }
+ 320              		.loc 1 22 5 is_stmt 1 view .LVU77
+ 321              		.loc 1 23 1 is_stmt 0 view .LVU78
+ 322 0088 20EE270A 		vmul.f32	s0, s0, s15
+ 323 008c 10BD     		pop	{r4, pc}
+ 324              	.L6:
+ 325 008e 00BF     		.align	2
+ 326              	.L5:
+ 327 0090 17B7D138 		.word	953267991
+ 328 0094 9A99993E 		.word	1050253722
+ 329              		.cfi_endproc
+ 330              	.LFE2829:
+ 332              		.section	.text._ZN7daisysp18FunboxPhaserEngine7SetFreqEf,"ax",%progbits
+ 333              		.align	1
+ 334              		.global	_ZN7daisysp18FunboxPhaserEngine7SetFreqEf
+ 335              		.syntax unified
+ 336              		.thumb
+ 337              		.thumb_func
+ 338              		.fpu fpv5-d16
+ 340              	_ZN7daisysp18FunboxPhaserEngine7SetFreqEf:
+ 341              	.LVL19:
+ 342              	.LFB2830:
+  24:funbox_phaser.cpp **** 
+  25:funbox_phaser.cpp **** void FunboxPhaserEngine::SetFreq(float ap_freq)
+  26:funbox_phaser.cpp **** {
+ 343              		.loc 1 26 1 is_stmt 1 view -0
+ 344              		.cfi_startproc
+ 345              		@ args = 0, pretend = 0, frame = 0
+ 346              		@ frame_needed = 0, uses_anonymous_args = 0
+ 347              		@ link register save eliminated.
+  27:funbox_phaser.cpp ****     ap_freq_ = fclamp(ap_freq, 0.0f, 20000.0f);
+ 348              		.loc 1 27 5 view .LVU80
+ 349              	.LBB103:
+ 350              	.LBI103:
+  64:../../DaisySP/Source/Utility/dsp.h **** {
+ 351              		.loc 3 64 14 view .LVU81
+ 352              	.LBE103:
+  66:../../DaisySP/Source/Utility/dsp.h **** }
+ 353              		.loc 3 66 5 view .LVU82
+ 354              	.LBB108:
+ 355              	.LBB104:
+ 356              	.LBI104:
+  40:../../DaisySP/Source/Utility/dsp.h **** {
+ 357              		.loc 3 40 14 view .LVU83
+ 358              	.LBB105:
+  42:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 359              		.loc 3 42 5 view .LVU84
+  44:../../DaisySP/Source/Utility/dsp.h **** #else
+ 360              		.loc 3 44 5 view .LVU85
+ 361 0000 DFED057A 		vldr.32	s15, .L8
+ 362              		.syntax unified
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 13
+
+
+ 363              	@ 44 "../../DaisySP/Source/Utility/dsp.h" 1
+ 364 0004 80FE270A 		vmaxnm.f32 s0, s0, s15
+ 365              	@ 0 "" 2
+ 366              	.LVL20:
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 367              		.loc 3 48 5 view .LVU86
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 368              		.loc 3 48 5 is_stmt 0 view .LVU87
+ 369              		.thumb
+ 370              		.syntax unified
+ 371              	.LBE105:
+ 372              	.LBE104:
+ 373              	.LBB106:
+ 374              	.LBI106:
+  51:../../DaisySP/Source/Utility/dsp.h **** {
+ 375              		.loc 3 51 14 is_stmt 1 view .LVU88
+ 376              	.LBB107:
+  53:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 377              		.loc 3 53 5 view .LVU89
+  55:../../DaisySP/Source/Utility/dsp.h **** #else
+ 378              		.loc 3 55 5 view .LVU90
+ 379 0008 DFED047A 		vldr.32	s15, .L8+4
+ 380              		.syntax unified
+ 381              	@ 55 "../../DaisySP/Source/Utility/dsp.h" 1
+ 382 000c 80FE670A 		vminnm.f32 s0, s0, s15
+ 383              	@ 0 "" 2
+ 384              	.LVL21:
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 385              		.loc 3 59 5 view .LVU91
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 386              		.loc 3 59 5 is_stmt 0 view .LVU92
+ 387              		.thumb
+ 388              		.syntax unified
+ 389              	.LBE107:
+ 390              	.LBE106:
+ 391              	.LBE108:
+ 392              		.loc 1 27 14 view .LVU93
+ 393 0010 80ED030A 		vstr.32	s0, [r0, #12]
+  28:funbox_phaser.cpp **** }
+ 394              		.loc 1 28 1 view .LVU94
+ 395 0014 7047     		bx	lr
+ 396              	.L9:
+ 397 0016 00BF     		.align	2
+ 398              	.L8:
+ 399 0018 00000000 		.word	0
+ 400 001c 00409C46 		.word	1184645120
+ 401              		.cfi_endproc
+ 402              	.LFE2830:
+ 404              		.section	.text._ZN7daisysp18FunboxPhaserEngine11SetFeedbackEf,"ax",%progbits
+ 405              		.align	1
+ 406              		.global	_ZN7daisysp18FunboxPhaserEngine11SetFeedbackEf
+ 407              		.syntax unified
+ 408              		.thumb
+ 409              		.thumb_func
+ 410              		.fpu fpv5-d16
+ 412              	_ZN7daisysp18FunboxPhaserEngine11SetFeedbackEf:
+ 413              	.LVL22:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 14
+
+
+ 414              	.LFB2831:
+  29:funbox_phaser.cpp **** 
+  30:funbox_phaser.cpp **** void FunboxPhaserEngine::SetFeedback(float feedback)
+  31:funbox_phaser.cpp **** {
+ 415              		.loc 1 31 1 is_stmt 1 view -0
+ 416              		.cfi_startproc
+ 417              		@ args = 0, pretend = 0, frame = 0
+ 418              		@ frame_needed = 0, uses_anonymous_args = 0
+ 419              		@ link register save eliminated.
+  32:funbox_phaser.cpp ****     feedback_ = fclamp(feedback, 0.0f, 0.92f);
+ 420              		.loc 1 32 5 view .LVU96
+ 421              	.LBB109:
+ 422              	.LBI109:
+  64:../../DaisySP/Source/Utility/dsp.h **** {
+ 423              		.loc 3 64 14 view .LVU97
+ 424              	.LBE109:
+  66:../../DaisySP/Source/Utility/dsp.h **** }
+ 425              		.loc 3 66 5 view .LVU98
+ 426              	.LBB114:
+ 427              	.LBB110:
+ 428              	.LBI110:
+  40:../../DaisySP/Source/Utility/dsp.h **** {
+ 429              		.loc 3 40 14 view .LVU99
+ 430              	.LBB111:
+  42:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 431              		.loc 3 42 5 view .LVU100
+  44:../../DaisySP/Source/Utility/dsp.h **** #else
+ 432              		.loc 3 44 5 view .LVU101
+ 433 0000 DFED057A 		vldr.32	s15, .L11
+ 434              		.syntax unified
+ 435              	@ 44 "../../DaisySP/Source/Utility/dsp.h" 1
+ 436 0004 80FE270A 		vmaxnm.f32 s0, s0, s15
+ 437              	@ 0 "" 2
+ 438              	.LVL23:
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 439              		.loc 3 48 5 view .LVU102
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 440              		.loc 3 48 5 is_stmt 0 view .LVU103
+ 441              		.thumb
+ 442              		.syntax unified
+ 443              	.LBE111:
+ 444              	.LBE110:
+ 445              	.LBB112:
+ 446              	.LBI112:
+  51:../../DaisySP/Source/Utility/dsp.h **** {
+ 447              		.loc 3 51 14 is_stmt 1 view .LVU104
+ 448              	.LBB113:
+  53:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 449              		.loc 3 53 5 view .LVU105
+  55:../../DaisySP/Source/Utility/dsp.h **** #else
+ 450              		.loc 3 55 5 view .LVU106
+ 451 0008 DFED047A 		vldr.32	s15, .L11+4
+ 452              		.syntax unified
+ 453              	@ 55 "../../DaisySP/Source/Utility/dsp.h" 1
+ 454 000c 80FE670A 		vminnm.f32 s0, s0, s15
+ 455              	@ 0 "" 2
+ 456              	.LVL24:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 15
+
+
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 457              		.loc 3 59 5 view .LVU107
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 458              		.loc 3 59 5 is_stmt 0 view .LVU108
+ 459              		.thumb
+ 460              		.syntax unified
+ 461              	.LBE113:
+ 462              	.LBE112:
+ 463              	.LBE114:
+ 464              		.loc 1 32 15 view .LVU109
+ 465 0010 80ED020A 		vstr.32	s0, [r0, #8]
+  33:funbox_phaser.cpp **** }
+ 466              		.loc 1 33 1 view .LVU110
+ 467 0014 7047     		bx	lr
+ 468              	.L12:
+ 469 0016 00BF     		.align	2
+ 470              	.L11:
+ 471 0018 00000000 		.word	0
+ 472 001c 1F856B3F 		.word	1064011039
+ 473              		.cfi_endproc
+ 474              	.LFE2831:
+ 476              		.section	.text._ZN7daisysp12FunboxPhaser4InitEf,"ax",%progbits
+ 477              		.align	1
+ 478              		.global	_ZN7daisysp12FunboxPhaser4InitEf
+ 479              		.syntax unified
+ 480              		.thumb
+ 481              		.thumb_func
+ 482              		.fpu fpv5-d16
+ 484              	_ZN7daisysp12FunboxPhaser4InitEf:
+ 485              	.LVL25:
+ 486              	.LFB2832:
+  34:funbox_phaser.cpp **** 
+  35:funbox_phaser.cpp **** void FunboxPhaser::Init(float sample_rate)
+  36:funbox_phaser.cpp **** {
+ 487              		.loc 1 36 1 is_stmt 1 view -0
+ 488              		.cfi_startproc
+ 489              		@ args = 0, pretend = 0, frame = 0
+ 490              		@ frame_needed = 0, uses_anonymous_args = 0
+  37:funbox_phaser.cpp ****     for(size_t i = 0; i < kMaxPoles; i++)
+ 491              		.loc 1 37 5 view .LVU112
+ 492              	.LBB115:
+ 493              		.loc 1 37 25 view .LVU113
+ 494              	.LBE115:
+  36:funbox_phaser.cpp ****     for(size_t i = 0; i < kMaxPoles; i++)
+ 495              		.loc 1 36 1 is_stmt 0 view .LVU114
+ 496 0000 70B5     		push	{r4, r5, r6, lr}
+ 497              		.cfi_def_cfa_offset 16
+ 498              		.cfi_offset 4, -16
+ 499              		.cfi_offset 5, -12
+ 500              		.cfi_offset 6, -8
+ 501              		.cfi_offset 14, -4
+ 502 0002 00F59636 		add	r6, r0, #76800
+ 503 0006 0446     		mov	r4, r0
+ 504 0008 0546     		mov	r5, r0
+ 505 000a 06F59076 		add	r6, r6, #288
+ 506 000e 2DED028B 		vpush.64	{d8}
+ 507              		.cfi_def_cfa_offset 24
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 16
+
+
+ 508              		.cfi_offset 80, -24
+ 509              		.cfi_offset 81, -20
+  36:funbox_phaser.cpp ****     for(size_t i = 0; i < kMaxPoles; i++)
+ 510              		.loc 1 36 1 view .LVU115
+ 511 0012 B0EE408A 		vmov.f32	s16, s0
+ 512              	.LVL26:
+ 513              	.L14:
+ 514              	.LBB116:
+  38:funbox_phaser.cpp ****         engines_[i].Init(sample_rate);
+ 515              		.loc 1 38 9 is_stmt 1 discriminator 2 view .LVU116
+ 516              		.loc 1 38 25 is_stmt 0 discriminator 2 view .LVU117
+ 517 0016 2846     		mov	r0, r5
+  37:funbox_phaser.cpp ****     for(size_t i = 0; i < kMaxPoles; i++)
+ 518              		.loc 1 37 25 discriminator 2 view .LVU118
+ 519 0018 05F51655 		add	r5, r5, #9600
+ 520              		.loc 1 38 25 discriminator 2 view .LVU119
+ 521 001c B0EE480A 		vmov.f32	s0, s16
+  37:funbox_phaser.cpp ****     for(size_t i = 0; i < kMaxPoles; i++)
+ 522              		.loc 1 37 25 discriminator 2 view .LVU120
+ 523 0020 2435     		adds	r5, r5, #36
+ 524              		.loc 1 38 25 discriminator 2 view .LVU121
+ 525 0022 FFF7FEFF 		bl	_ZN7daisysp18FunboxPhaserEngine4InitEf
+ 526              	.LVL27:
+  37:funbox_phaser.cpp ****     for(size_t i = 0; i < kMaxPoles; i++)
+ 527              		.loc 1 37 5 is_stmt 1 discriminator 2 view .LVU122
+  37:funbox_phaser.cpp ****     for(size_t i = 0; i < kMaxPoles; i++)
+ 528              		.loc 1 37 25 discriminator 2 view .LVU123
+ 529 0026 B542     		cmp	r5, r6
+ 530 0028 F5D1     		bne	.L14
+ 531              	.LBE116:
+  39:funbox_phaser.cpp ****     poles_ = 6;
+ 532              		.loc 1 39 5 view .LVU124
+ 533              		.loc 1 39 12 is_stmt 0 view .LVU125
+ 534 002a 04F59034 		add	r4, r4, #73728
+ 535              	.LVL28:
+ 536              		.loc 1 39 12 view .LVU126
+ 537 002e 0623     		movs	r3, #6
+  40:funbox_phaser.cpp **** }
+ 538              		.loc 1 40 1 view .LVU127
+ 539 0030 BDEC028B 		vldm	sp!, {d8}
+ 540              		.cfi_restore 80
+ 541              		.cfi_restore 81
+ 542              		.cfi_def_cfa_offset 16
+ 543              	.LVL29:
+  39:funbox_phaser.cpp ****     poles_ = 6;
+ 544              		.loc 1 39 12 view .LVU128
+ 545 0034 C4F8203D 		str	r3, [r4, #3360]
+ 546              		.loc 1 40 1 view .LVU129
+ 547 0038 70BD     		pop	{r4, r5, r6, pc}
+ 548              		.loc 1 40 1 view .LVU130
+ 549              		.cfi_endproc
+ 550              	.LFE2832:
+ 552              		.section	.text._ZN7daisysp12FunboxPhaser7ProcessEf,"ax",%progbits
+ 553              		.align	1
+ 554              		.global	_ZN7daisysp12FunboxPhaser7ProcessEf
+ 555              		.syntax unified
+ 556              		.thumb
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 17
+
+
+ 557              		.thumb_func
+ 558              		.fpu fpv5-d16
+ 560              	_ZN7daisysp12FunboxPhaser7ProcessEf:
+ 561              	.LVL30:
+ 562              	.LFB2833:
+  41:funbox_phaser.cpp **** 
+  42:funbox_phaser.cpp **** float FunboxPhaser::Process(float in)
+  43:funbox_phaser.cpp **** {
+ 563              		.loc 1 43 1 is_stmt 1 view -0
+ 564              		.cfi_startproc
+ 565              		@ args = 0, pretend = 0, frame = 0
+ 566              		@ frame_needed = 0, uses_anonymous_args = 0
+  44:funbox_phaser.cpp ****     float sig = 0.0f;
+ 567              		.loc 1 44 5 view .LVU132
+  45:funbox_phaser.cpp ****     for(int i = 0; i < poles_; i++)
+ 568              		.loc 1 45 5 view .LVU133
+  43:funbox_phaser.cpp ****     float sig = 0.0f;
+ 569              		.loc 1 43 1 is_stmt 0 view .LVU134
+ 570 0000 B0EE405A 		vmov.f32	s10, s0
+  44:funbox_phaser.cpp ****     float sig = 0.0f;
+ 571              		.loc 1 44 11 view .LVU135
+ 572 0004 DFED0C5A 		vldr.32	s11, .L19
+  43:funbox_phaser.cpp ****     float sig = 0.0f;
+ 573              		.loc 1 43 1 view .LVU136
+ 574 0008 38B5     		push	{r3, r4, r5, lr}
+ 575              		.cfi_def_cfa_offset 16
+ 576              		.cfi_offset 3, -16
+ 577              		.cfi_offset 4, -12
+ 578              		.cfi_offset 5, -8
+ 579              		.cfi_offset 14, -4
+  43:funbox_phaser.cpp ****     float sig = 0.0f;
+ 580              		.loc 1 43 1 view .LVU137
+ 581 000a 0546     		mov	r5, r0
+ 582              	.LBB117:
+ 583              		.loc 1 45 13 view .LVU138
+ 584 000c 0024     		movs	r4, #0
+ 585              	.LVL31:
+ 586              	.L18:
+ 587              		.loc 1 45 22 is_stmt 1 discriminator 3 view .LVU139
+ 588              		.loc 1 45 24 is_stmt 0 discriminator 3 view .LVU140
+ 589 000e 05F59033 		add	r3, r5, #73728
+ 590              		.loc 1 45 22 discriminator 3 view .LVU141
+ 591 0012 D3F8203D 		ldr	r3, [r3, #3360]
+ 592 0016 A342     		cmp	r3, r4
+ 593 0018 0BDD     		ble	.L16
+  46:funbox_phaser.cpp ****         sig += engines_[i].Process(in);
+ 594              		.loc 1 46 9 is_stmt 1 discriminator 2 view .LVU142
+ 595              		.loc 1 46 35 is_stmt 0 discriminator 2 view .LVU143
+ 596 001a 42F2A450 		movw	r0, #9636
+ 597 001e B0EE450A 		vmov.f32	s0, s10
+ 598 0022 00FB0450 		mla	r0, r0, r4, r5
+  45:funbox_phaser.cpp ****     for(int i = 0; i < poles_; i++)
+ 599              		.loc 1 45 5 discriminator 2 view .LVU144
+ 600 0026 0134     		adds	r4, r4, #1
+ 601              	.LVL32:
+ 602              		.loc 1 46 35 discriminator 2 view .LVU145
+ 603 0028 FFF7FEFF 		bl	_ZN7daisysp18FunboxPhaserEngine7ProcessEf
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 18
+
+
+ 604              	.LVL33:
+ 605              		.loc 1 46 13 discriminator 2 view .LVU146
+ 606 002c 75EE805A 		vadd.f32	s11, s11, s0
+ 607              	.LVL34:
+  45:funbox_phaser.cpp ****     for(int i = 0; i < poles_; i++)
+ 608              		.loc 1 45 5 is_stmt 1 discriminator 2 view .LVU147
+  45:funbox_phaser.cpp ****     for(int i = 0; i < poles_; i++)
+ 609              		.loc 1 45 5 is_stmt 0 discriminator 2 view .LVU148
+ 610 0030 EDE7     		b	.L18
+ 611              	.L16:
+  45:funbox_phaser.cpp ****     for(int i = 0; i < poles_; i++)
+ 612              		.loc 1 45 5 discriminator 2 view .LVU149
+ 613              	.LBE117:
+  47:funbox_phaser.cpp ****     return sig;
+  48:funbox_phaser.cpp **** }
+ 614              		.loc 1 48 1 view .LVU150
+ 615 0032 B0EE650A 		vmov.f32	s0, s11
+ 616 0036 38BD     		pop	{r3, r4, r5, pc}
+ 617              	.LVL35:
+ 618              	.L20:
+ 619              		.loc 1 48 1 view .LVU151
+ 620              		.align	2
+ 621              	.L19:
+ 622 0038 00000000 		.word	0
+ 623              		.cfi_endproc
+ 624              	.LFE2833:
+ 626              		.section	.text._ZN7daisysp12FunboxPhaser8SetPolesEi,"ax",%progbits
+ 627              		.align	1
+ 628              		.global	_ZN7daisysp12FunboxPhaser8SetPolesEi
+ 629              		.syntax unified
+ 630              		.thumb
+ 631              		.thumb_func
+ 632              		.fpu fpv5-d16
+ 634              	_ZN7daisysp12FunboxPhaser8SetPolesEi:
+ 635              	.LVL36:
+ 636              	.LFB2834:
+  49:funbox_phaser.cpp **** 
+  50:funbox_phaser.cpp **** void FunboxPhaser::SetPoles(int poles)
+  51:funbox_phaser.cpp **** {
+ 637              		.loc 1 51 1 is_stmt 1 view -0
+ 638              		.cfi_startproc
+ 639              		@ args = 0, pretend = 0, frame = 0
+ 640              		@ frame_needed = 0, uses_anonymous_args = 0
+ 641              		@ link register save eliminated.
+  52:funbox_phaser.cpp ****     poles_ = DSY_CLAMP(poles, 1, 8);
+ 642              		.loc 1 52 5 view .LVU153
+ 643              		.loc 1 52 14 is_stmt 0 view .LVU154
+ 644 0000 0129     		cmp	r1, #1
+ 645              		.loc 1 52 12 view .LVU155
+ 646 0002 00F59030 		add	r0, r0, #73728
+ 647              	.LVL37:
+ 648              		.loc 1 52 14 view .LVU156
+ 649 0006 B8BF     		it	lt
+ 650 0008 0121     		movlt	r1, #1
+ 651              	.LVL38:
+ 652              		.loc 1 52 12 view .LVU157
+ 653 000a 0829     		cmp	r1, #8
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 19
+
+
+ 654 000c A8BF     		it	ge
+ 655 000e 0821     		movge	r1, #8
+ 656 0010 C0F8201D 		str	r1, [r0, #3360]
+  53:funbox_phaser.cpp **** }
+ 657              		.loc 1 53 1 view .LVU158
+ 658 0014 7047     		bx	lr
+ 659              		.cfi_endproc
+ 660              	.LFE2834:
+ 662              		.section	.text._ZN7daisysp12FunboxPhaser7SetFreqEf,"ax",%progbits
+ 663              		.align	1
+ 664              		.global	_ZN7daisysp12FunboxPhaser7SetFreqEf
+ 665              		.syntax unified
+ 666              		.thumb
+ 667              		.thumb_func
+ 668              		.fpu fpv5-d16
+ 670              	_ZN7daisysp12FunboxPhaser7SetFreqEf:
+ 671              	.LVL39:
+ 672              	.LFB2835:
+  54:funbox_phaser.cpp **** 
+  55:funbox_phaser.cpp **** void FunboxPhaser::SetFreq(float ap_freq)
+  56:funbox_phaser.cpp **** {
+ 673              		.loc 1 56 1 is_stmt 1 view -0
+ 674              		.cfi_startproc
+ 675              		@ args = 0, pretend = 0, frame = 0
+ 676              		@ frame_needed = 0, uses_anonymous_args = 0
+ 677              		@ link register save eliminated.
+  57:funbox_phaser.cpp ****     for(int i = 0; i < kMaxPoles; i++)
+ 678              		.loc 1 57 5 view .LVU160
+ 679              	.LBB118:
+ 680              		.loc 1 57 22 view .LVU161
+ 681 0000 00F59633 		add	r3, r0, #76800
+ 682 0004 03F59073 		add	r3, r3, #288
+ 683              	.LVL40:
+ 684              	.L23:
+  58:funbox_phaser.cpp ****         engines_[i].SetFreq(ap_freq);
+ 685              		.loc 1 58 9 discriminator 2 view .LVU162
+ 686              	.LBB119:
+ 687              	.LBI119:
+  25:funbox_phaser.cpp **** {
+ 688              		.loc 1 25 6 discriminator 2 view .LVU163
+ 689              	.LBB120:
+  27:funbox_phaser.cpp **** }
+ 690              		.loc 1 27 5 discriminator 2 view .LVU164
+ 691              	.LBB121:
+ 692              	.LBI121:
+  64:../../DaisySP/Source/Utility/dsp.h **** {
+ 693              		.loc 3 64 14 discriminator 2 view .LVU165
+ 694              	.LBE121:
+ 695              	.LBE120:
+ 696              	.LBE119:
+ 697              	.LBE118:
+  66:../../DaisySP/Source/Utility/dsp.h **** }
+ 698              		.loc 3 66 5 discriminator 2 view .LVU166
+ 699              	.LBB133:
+ 700              	.LBB132:
+ 701              	.LBB131:
+ 702              	.LBB130:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 20
+
+
+ 703              	.LBB122:
+ 704              	.LBI122:
+  40:../../DaisySP/Source/Utility/dsp.h **** {
+ 705              		.loc 3 40 14 discriminator 2 view .LVU167
+ 706              	.LBB123:
+  42:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 707              		.loc 3 42 5 discriminator 2 view .LVU168
+  44:../../DaisySP/Source/Utility/dsp.h **** #else
+ 708              		.loc 3 44 5 discriminator 2 view .LVU169
+ 709 0008 DFED077A 		vldr.32	s15, .L25
+ 710              	.LBE123:
+ 711              	.LBE122:
+ 712              	.LBB125:
+ 713              	.LBB126:
+  55:../../DaisySP/Source/Utility/dsp.h **** #else
+ 714              		.loc 3 55 5 is_stmt 0 discriminator 2 view .LVU170
+ 715 000c 9FED077A 		vldr.32	s14, .L25+4
+ 716              	.LBE126:
+ 717              	.LBE125:
+ 718              	.LBB128:
+ 719              	.LBB124:
+  44:../../DaisySP/Source/Utility/dsp.h **** #else
+ 720              		.loc 3 44 5 discriminator 2 view .LVU171
+ 721              		.syntax unified
+ 722              	@ 44 "../../DaisySP/Source/Utility/dsp.h" 1
+ 723 0010 C0FE277A 		vmaxnm.f32 s15, s0, s15
+ 724              	@ 0 "" 2
+ 725              	.LVL41:
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 726              		.loc 3 48 5 is_stmt 1 discriminator 2 view .LVU172
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 727              		.loc 3 48 5 is_stmt 0 discriminator 2 view .LVU173
+ 728              		.thumb
+ 729              		.syntax unified
+ 730              	.LBE124:
+ 731              	.LBE128:
+ 732              	.LBB129:
+ 733              	.LBI125:
+  51:../../DaisySP/Source/Utility/dsp.h **** {
+ 734              		.loc 3 51 14 is_stmt 1 discriminator 2 view .LVU174
+ 735              	.LBB127:
+  53:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 736              		.loc 3 53 5 discriminator 2 view .LVU175
+  55:../../DaisySP/Source/Utility/dsp.h **** #else
+ 737              		.loc 3 55 5 discriminator 2 view .LVU176
+ 738              		.syntax unified
+ 739              	@ 55 "../../DaisySP/Source/Utility/dsp.h" 1
+ 740 0014 C7FEC77A 		vminnm.f32 s15, s15, s14
+ 741              	@ 0 "" 2
+ 742              	.LVL42:
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 743              		.loc 3 59 5 discriminator 2 view .LVU177
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 744              		.loc 3 59 5 is_stmt 0 discriminator 2 view .LVU178
+ 745              		.thumb
+ 746              		.syntax unified
+ 747              	.LBE127:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 21
+
+
+ 748              	.LBE129:
+ 749              	.LBE130:
+  27:funbox_phaser.cpp **** }
+ 750              		.loc 1 27 14 discriminator 2 view .LVU179
+ 751 0018 C0ED037A 		vstr.32	s15, [r0, #12]
+ 752              	.LVL43:
+  27:funbox_phaser.cpp **** }
+ 753              		.loc 1 27 14 discriminator 2 view .LVU180
+ 754              	.LBE131:
+ 755              	.LBE132:
+  57:funbox_phaser.cpp ****         engines_[i].SetFreq(ap_freq);
+ 756              		.loc 1 57 5 is_stmt 1 discriminator 2 view .LVU181
+  57:funbox_phaser.cpp ****         engines_[i].SetFreq(ap_freq);
+ 757              		.loc 1 57 22 discriminator 2 view .LVU182
+ 758 001c 00F51650 		add	r0, r0, #9600
+ 759 0020 2430     		adds	r0, r0, #36
+ 760 0022 9842     		cmp	r0, r3
+ 761 0024 F0D1     		bne	.L23
+ 762              	.LBE133:
+  59:funbox_phaser.cpp **** }
+ 763              		.loc 1 59 1 is_stmt 0 view .LVU183
+ 764 0026 7047     		bx	lr
+ 765              	.L26:
+ 766              		.align	2
+ 767              	.L25:
+ 768 0028 00000000 		.word	0
+ 769 002c 00409C46 		.word	1184645120
+ 770              		.cfi_endproc
+ 771              	.LFE2835:
+ 773              		.section	.text._ZN7daisysp12FunboxPhaser11SetFeedbackEf,"ax",%progbits
+ 774              		.align	1
+ 775              		.global	_ZN7daisysp12FunboxPhaser11SetFeedbackEf
+ 776              		.syntax unified
+ 777              		.thumb
+ 778              		.thumb_func
+ 779              		.fpu fpv5-d16
+ 781              	_ZN7daisysp12FunboxPhaser11SetFeedbackEf:
+ 782              	.LVL44:
+ 783              	.LFB2836:
+  60:funbox_phaser.cpp **** 
+  61:funbox_phaser.cpp **** void FunboxPhaser::SetFeedback(float feedback)
+  62:funbox_phaser.cpp **** {
+ 784              		.loc 1 62 1 is_stmt 1 view -0
+ 785              		.cfi_startproc
+ 786              		@ args = 0, pretend = 0, frame = 0
+ 787              		@ frame_needed = 0, uses_anonymous_args = 0
+ 788              		@ link register save eliminated.
+  63:funbox_phaser.cpp ****     for(int i = 0; i < kMaxPoles; i++)
+ 789              		.loc 1 63 5 view .LVU185
+ 790              	.LBB134:
+ 791              		.loc 1 63 22 view .LVU186
+ 792 0000 00F59633 		add	r3, r0, #76800
+ 793 0004 03F59073 		add	r3, r3, #288
+ 794              	.LVL45:
+ 795              	.L28:
+  64:funbox_phaser.cpp ****         engines_[i].SetFeedback(feedback);
+ 796              		.loc 1 64 9 discriminator 2 view .LVU187
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 22
+
+
+ 797              	.LBB135:
+ 798              	.LBI135:
+  30:funbox_phaser.cpp **** {
+ 799              		.loc 1 30 6 discriminator 2 view .LVU188
+ 800              	.LBB136:
+  32:funbox_phaser.cpp **** }
+ 801              		.loc 1 32 5 discriminator 2 view .LVU189
+ 802              	.LBB137:
+ 803              	.LBI137:
+  64:../../DaisySP/Source/Utility/dsp.h **** {
+ 804              		.loc 3 64 14 discriminator 2 view .LVU190
+ 805              	.LBE137:
+ 806              	.LBE136:
+ 807              	.LBE135:
+ 808              	.LBE134:
+  66:../../DaisySP/Source/Utility/dsp.h **** }
+ 809              		.loc 3 66 5 discriminator 2 view .LVU191
+ 810              	.LBB149:
+ 811              	.LBB148:
+ 812              	.LBB147:
+ 813              	.LBB146:
+ 814              	.LBB138:
+ 815              	.LBI138:
+  40:../../DaisySP/Source/Utility/dsp.h **** {
+ 816              		.loc 3 40 14 discriminator 2 view .LVU192
+ 817              	.LBB139:
+  42:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 818              		.loc 3 42 5 discriminator 2 view .LVU193
+  44:../../DaisySP/Source/Utility/dsp.h **** #else
+ 819              		.loc 3 44 5 discriminator 2 view .LVU194
+ 820 0008 DFED077A 		vldr.32	s15, .L30
+ 821              	.LBE139:
+ 822              	.LBE138:
+ 823              	.LBB141:
+ 824              	.LBB142:
+  55:../../DaisySP/Source/Utility/dsp.h **** #else
+ 825              		.loc 3 55 5 is_stmt 0 discriminator 2 view .LVU195
+ 826 000c 9FED077A 		vldr.32	s14, .L30+4
+ 827              	.LBE142:
+ 828              	.LBE141:
+ 829              	.LBB144:
+ 830              	.LBB140:
+  44:../../DaisySP/Source/Utility/dsp.h **** #else
+ 831              		.loc 3 44 5 discriminator 2 view .LVU196
+ 832              		.syntax unified
+ 833              	@ 44 "../../DaisySP/Source/Utility/dsp.h" 1
+ 834 0010 C0FE277A 		vmaxnm.f32 s15, s0, s15
+ 835              	@ 0 "" 2
+ 836              	.LVL46:
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 837              		.loc 3 48 5 is_stmt 1 discriminator 2 view .LVU197
+  48:../../DaisySP/Source/Utility/dsp.h **** }
+ 838              		.loc 3 48 5 is_stmt 0 discriminator 2 view .LVU198
+ 839              		.thumb
+ 840              		.syntax unified
+ 841              	.LBE140:
+ 842              	.LBE144:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 23
+
+
+ 843              	.LBB145:
+ 844              	.LBI141:
+  51:../../DaisySP/Source/Utility/dsp.h **** {
+ 845              		.loc 3 51 14 is_stmt 1 discriminator 2 view .LVU199
+ 846              	.LBB143:
+  53:../../DaisySP/Source/Utility/dsp.h **** #ifdef __arm__
+ 847              		.loc 3 53 5 discriminator 2 view .LVU200
+  55:../../DaisySP/Source/Utility/dsp.h **** #else
+ 848              		.loc 3 55 5 discriminator 2 view .LVU201
+ 849              		.syntax unified
+ 850              	@ 55 "../../DaisySP/Source/Utility/dsp.h" 1
+ 851 0014 C7FEC77A 		vminnm.f32 s15, s15, s14
+ 852              	@ 0 "" 2
+ 853              	.LVL47:
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 854              		.loc 3 59 5 discriminator 2 view .LVU202
+  59:../../DaisySP/Source/Utility/dsp.h **** }
+ 855              		.loc 3 59 5 is_stmt 0 discriminator 2 view .LVU203
+ 856              		.thumb
+ 857              		.syntax unified
+ 858              	.LBE143:
+ 859              	.LBE145:
+ 860              	.LBE146:
+  32:funbox_phaser.cpp **** }
+ 861              		.loc 1 32 15 discriminator 2 view .LVU204
+ 862 0018 C0ED027A 		vstr.32	s15, [r0, #8]
+ 863              	.LVL48:
+  32:funbox_phaser.cpp **** }
+ 864              		.loc 1 32 15 discriminator 2 view .LVU205
+ 865              	.LBE147:
+ 866              	.LBE148:
+  63:funbox_phaser.cpp ****         engines_[i].SetFeedback(feedback);
+ 867              		.loc 1 63 5 is_stmt 1 discriminator 2 view .LVU206
+  63:funbox_phaser.cpp ****         engines_[i].SetFeedback(feedback);
+ 868              		.loc 1 63 22 discriminator 2 view .LVU207
+ 869 001c 00F51650 		add	r0, r0, #9600
+ 870 0020 2430     		adds	r0, r0, #36
+ 871 0022 9842     		cmp	r0, r3
+ 872 0024 F0D1     		bne	.L28
+ 873              	.LBE149:
+  65:funbox_phaser.cpp **** }
+ 874              		.loc 1 65 1 is_stmt 0 view .LVU208
+ 875 0026 7047     		bx	lr
+ 876              	.L31:
+ 877              		.align	2
+ 878              	.L30:
+ 879 0028 00000000 		.word	0
+ 880 002c 1F856B3F 		.word	1064011039
+ 881              		.cfi_endproc
+ 882              	.LFE2836:
+ 884              		.text
+ 885              	.Letext0:
+ 886              		.file 4 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 887              		.file 5 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 888              		.file 6 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\stdint.h"
+ 889              		.file 7 "c:\\program files\\daisytoolchain\\lib\\gcc\\arm-none-eabi\\10.2.1\\include\\stddef.h"
+ 890              		.file 8 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cmath"
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 24
+
+
+ 891              		.file 9 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\std_abs.h"
+ 892              		.file 10 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cstdint"
+ 893              		.file 11 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cstdlib"
+ 894              		.file 12 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\type_traits"
+ 895              		.file 13 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\debug\\debug.h"
+ 896              		.file 14 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cwchar"
+ 897              		.file 15 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\stl_pair.h
+ 898              		.file 16 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\exception_
+ 899              		.file 17 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\arm-none-eabi\\t
+ 900              		.file 18 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\clocale"
+ 901              		.file 19 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cstdio"
+ 902              		.file 20 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\basic_stri
+ 903              		.file 21 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\charconv.h
+ 904              		.file 22 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\predefined
+ 905              		.file 23 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\sys\\_types.h"
+ 906              		.file 24 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\sys\\reent.h"
+ 907              		.file 25 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\sys\\lock.h"
+ 908              		.file 26 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\math.h"
+ 909              		.file 27 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\stdlib.h"
+ 910              		.file 28 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\math.h"
+ 911              		.file 29 "c:\\program files\\daisytoolchain\\lib\\gcc\\arm-none-eabi\\10.2.1\\include\\stdarg.h"
+ 912              		.file 30 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\wchar.h"
+ 913              		.file 31 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\locale.h"
+ 914              		.file 32 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\stdio.h"
+ 915              		.file 33 "funbox_phaser.h"
+ 916              		.file 34 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\stdlib.h"
+ 917              		.file 35 "<built-in>"
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s 			page 25
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 funbox_phaser.cpp
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:17     .text._ZN7daisysp18FunboxPhaserEngine4InitEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:25     .text._ZN7daisysp18FunboxPhaserEngine4InitEf:00000000 _ZN7daisysp18FunboxPhaserEngine4InitEf
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:149    .text._ZN7daisysp18FunboxPhaserEngine4InitEf:00000030 $d
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:156    .text._ZN7daisysp18FunboxPhaserEngine7ProcessEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:163    .text._ZN7daisysp18FunboxPhaserEngine7ProcessEf:00000000 _ZN7daisysp18FunboxPhaserEngine7ProcessEf
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:327    .text._ZN7daisysp18FunboxPhaserEngine7ProcessEf:00000090 $d
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:333    .text._ZN7daisysp18FunboxPhaserEngine7SetFreqEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:340    .text._ZN7daisysp18FunboxPhaserEngine7SetFreqEf:00000000 _ZN7daisysp18FunboxPhaserEngine7SetFreqEf
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:399    .text._ZN7daisysp18FunboxPhaserEngine7SetFreqEf:00000018 $d
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:405    .text._ZN7daisysp18FunboxPhaserEngine11SetFeedbackEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:412    .text._ZN7daisysp18FunboxPhaserEngine11SetFeedbackEf:00000000 _ZN7daisysp18FunboxPhaserEngine11SetFeedbackEf
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:471    .text._ZN7daisysp18FunboxPhaserEngine11SetFeedbackEf:00000018 $d
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:477    .text._ZN7daisysp12FunboxPhaser4InitEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:484    .text._ZN7daisysp12FunboxPhaser4InitEf:00000000 _ZN7daisysp12FunboxPhaser4InitEf
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:553    .text._ZN7daisysp12FunboxPhaser7ProcessEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:560    .text._ZN7daisysp12FunboxPhaser7ProcessEf:00000000 _ZN7daisysp12FunboxPhaser7ProcessEf
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:622    .text._ZN7daisysp12FunboxPhaser7ProcessEf:00000038 $d
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:627    .text._ZN7daisysp12FunboxPhaser8SetPolesEi:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:634    .text._ZN7daisysp12FunboxPhaser8SetPolesEi:00000000 _ZN7daisysp12FunboxPhaser8SetPolesEi
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:663    .text._ZN7daisysp12FunboxPhaser7SetFreqEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:670    .text._ZN7daisysp12FunboxPhaser7SetFreqEf:00000000 _ZN7daisysp12FunboxPhaser7SetFreqEf
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:768    .text._ZN7daisysp12FunboxPhaser7SetFreqEf:00000028 $d
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:774    .text._ZN7daisysp12FunboxPhaser11SetFeedbackEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:781    .text._ZN7daisysp12FunboxPhaser11SetFeedbackEf:00000000 _ZN7daisysp12FunboxPhaser11SetFeedbackEf
+C:\Users\Philoop\AppData\Local\Temp\ccwi3pu0.s:879    .text._ZN7daisysp12FunboxPhaser11SetFeedbackEf:00000028 $d
+
+UNDEFINED SYMBOLS
+memset
