@@ -7,7 +7,7 @@ APP_TYPE = BOOT_SRAM
 
 OPT = -Os
 
-CPP_SOURCES = looper.cpp
+CPP_SOURCES = looper.cpp looper_granular_player.cpp
 
 LIBDAISY_DIR = ../../libDaisy
 DAISYSP_DIR = ../../DaisySP

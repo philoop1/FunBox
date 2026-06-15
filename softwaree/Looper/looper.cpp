@@ -3,6 +3,7 @@
 #include "daisy_petal.h"
 #include "daisysp.h"
 #include "funbox.h"
+#include "looper_granular_player.h"
 #include "tempo.h"
 
 #include <algorithm>
@@ -13,9 +14,13 @@ using namespace funbox;
 
 DaisyPetal hw;
 Led led1, led2;
+CpuLoadMeter cpu_load_meter;
 
+::daisy::Parameter knob1_grain_mix;
 ::daisy::Parameter knob3_volume;
 ::daisy::Parameter knob2_metro_volume;
+::daisy::Parameter knob4_grain_size;
+::daisy::Parameter knob5_grain_pitch;
 ::daisy::Parameter knob6_feedback;
 ::daisy::Parameter expression;
 
@@ -32,9 +37,13 @@ static constexpr size_t kLooperSeamFadeSamples = 512;
 static constexpr uint32_t kLooperLengthTransitionSamples = 1024;
 static constexpr uint32_t kPlaybackStepSlewSamples = 512;
 static constexpr uint32_t kLooperSwitchFadeSamples = 1024;
+static constexpr uint32_t kLooperWrapFadeSamples = 512;
 static constexpr uint32_t kLooperStopFadeSamples = 2048;
 static constexpr size_t kLooperMinRecordSamples = 4800;
 static constexpr size_t kLooperMaxSamples = 48000 * 140;
+static constexpr size_t kGranularBufferSamples = 48000 * 4;
+static constexpr size_t kGranularPlayerSamples = kGranularBufferSamples;
+static constexpr float kGranularLevel = 4.0f;
 static constexpr uint32_t kMidiLedPulseMs = 35;
 static constexpr uint32_t kMidiClocksPerBeat = 24;
 static constexpr uint32_t kMidiClocksPerThreeFourBar = 72;
@@ -42,9 +51,18 @@ static constexpr uint32_t kMidiClocksPerFourFourBar = 96;
 static constexpr uint32_t kMetroClickSamples = 1200;
 static constexpr float kMetroNormalPitch = 1200.0f;
 static constexpr float kMetroOnePitch = 1800.0f;
+static constexpr uint32_t kSerialPrintIntervalMs = 1000;
 
 DSY_SDRAM_BSS float loop_buffer_l[kLooperMaxSamples];
 DSY_SDRAM_BSS float loop_buffer_r[kLooperMaxSamples];
+DSY_SDRAM_BSS float granular_buffer[kGranularBufferSamples];
+LooperGranularPlayer granular_player;
+size_t granular_write = 0;
+float grain_mix = 0.0f;
+float grain_size_ms = 80.0f;
+float grain_speed = 1.0f;
+float grain_pitch_cents = 0.0f;
+uint32_t last_serial_print_ms = 0;
 
 enum class LooperState
 {
@@ -86,6 +104,7 @@ float playback_step_target = 1.0f;
 float playback_step_slew_delta = 0.0f;
 uint32_t playback_step_slew_remaining = 0;
 uint32_t looper_switch_fade_remaining = 0;
+uint32_t looper_wrap_fade_remaining = 0;
 uint32_t looper_stop_fade_remaining = 0;
 bool looper_quant_point_valid = false;
 size_t looper_last_quant_write = 0;
@@ -136,6 +155,51 @@ bool LoopIsActive()
     return looper_state == LooperState::Playing;
 }
 
+bool GrainModeActive()
+{
+    return switch1_right && !switch1_left;
+}
+
+float ApplyCenterDeadzone(float value, float deadzone)
+{
+    if(value > -deadzone && value < deadzone)
+        return 0.0f;
+
+    if(value > 0.0f)
+        return (value - deadzone) / (1.0f - deadzone);
+
+    return (value + deadzone) / (1.0f - deadzone);
+}
+
+int LoadPercent(float load)
+{
+    if(load != load)
+        return 0;
+    return static_cast<int>(fclamp(load, 0.0f, 9.99f) * 100.0f + 0.5f);
+}
+
+void PrintSerialStatus()
+{
+    const uint32_t now = System::GetNow();
+    if(now - last_serial_print_ms < kSerialPrintIntervalMs)
+        return;
+
+    last_serial_print_ms = now;
+    DaisySeed::PrintLine(
+        "cpu avg:%d%% min:%d%% max:%d%% state:%d len:%lu grain:%d mix:%d size:%d speed:%d pitch:%d",
+        LoadPercent(cpu_load_meter.GetAvgCpuLoad()),
+        LoadPercent(cpu_load_meter.GetMinCpuLoad()),
+        LoadPercent(cpu_load_meter.GetMaxCpuLoad()),
+        static_cast<int>(looper_state),
+        static_cast<unsigned long>(looper_length),
+        GrainModeActive() ? 1 : 0,
+        static_cast<int>(grain_mix * 100.0f + 0.5f),
+        static_cast<int>(grain_size_ms + 0.5f),
+        static_cast<int>(grain_speed * 100.0f),
+        static_cast<int>(grain_pitch_cents + 0.5f));
+    cpu_load_meter.Reset();
+}
+
 size_t MaxLooperSamples()
 {
     return dip3_mono ? kLooperMaxSamples * 2 : kLooperMaxSamples;
@@ -157,6 +221,7 @@ void MonoBufferWrite(size_t index, float value)
 }
 
 void BeginLoopLengthTransition();
+void ResetGranularBuffer();
 
 float TargetPlaybackStepFromSwitch()
 {
@@ -234,11 +299,6 @@ bool IsAllowedQuantizedBarLength(uint32_t elapsed_clocks)
 bool ClockAtAllowedQuantLength(uint32_t anchor_clock)
 {
     return IsAllowedQuantizedBarLength(tempo::MidiClockCount() - anchor_clock);
-}
-
-bool MidiTransportAtAllowedQuantLength()
-{
-    return MidiTransportBarActive() && ClockAtAllowedQuantLength(midi_transport_start_clock);
 }
 
 int MetroBeatsPerBar()
@@ -360,10 +420,12 @@ void StartLoopRecording()
     looper_pending_length_op = LooperLengthOp::None;
     looper_length_ops_enabled = false;
     looper_switch_fade_remaining = 0;
+    looper_wrap_fade_remaining = 0;
     looper_stop_fade_remaining = 0;
     looper_quant_point_valid = false;
     looper_last_quant_write = 0;
     looper_last_quant_clock = looper_start_clock;
+    ResetGranularBuffer();
 
     if(QuantizeEnabled() && !MidiTransportBarActive())
         SetMetroAnchor(looper_start_clock, true);
@@ -404,6 +466,7 @@ void FinishLoopRecording()
         looper_pending_length_op = LooperLengthOp::None;
         looper_length_ops_enabled = false;
         looper_quant_point_valid = false;
+        ResetGranularBuffer();
         return;
     }
 
@@ -423,13 +486,16 @@ void FinishLoopRecording()
     looper_pending_length_op = LooperLengthOp::None;
     looper_length_ops_enabled = false;
     looper_switch_fade_remaining = 0;
+    looper_wrap_fade_remaining = 0;
     looper_stop_fade_remaining = 0;
     looper_quant_point_valid = false;
+    ResetGranularBuffer();
 }
 
 void StopLoop()
 {
     looper_switch_fade_remaining = 0;
+    looper_wrap_fade_remaining = 0;
     looper_stop_fade_remaining = 0;
     looper_state = LooperState::Empty;
     looper_write = 0;
@@ -440,6 +506,7 @@ void StopLoop()
     looper_pending_length_op = LooperLengthOp::None;
     looper_length_ops_enabled = false;
     looper_quant_point_valid = false;
+    ResetGranularBuffer();
 }
 
 void RequestStopLoop()
@@ -494,6 +561,7 @@ bool HalveLoopLength()
     SmoothLoopSeam(looper_length);
     while(looper_read >= static_cast<float>(looper_length))
         looper_read -= static_cast<float>(looper_length);
+    ResetGranularBuffer();
     return true;
 }
 
@@ -513,6 +581,7 @@ bool DoubleLoopLength()
     looper_repeat_source_length = old_length;
     looper_repeat_fill_index = 0;
     looper_length = new_length;
+    ResetGranularBuffer();
     return true;
 }
 
@@ -618,6 +687,42 @@ float ReadLoopSampleMono(float position, size_t source_length)
     return tail * (1.0f - smooth_x) + head * smooth_x;
 }
 
+void ReadLoopStereoAt(float position, size_t source_length, float& out_l, float& out_r)
+{
+    if(dip3_mono)
+    {
+        const float mono = ReadLoopSampleMono(position, source_length);
+        out_l = mono;
+        out_r = mono;
+    }
+    else
+    {
+        out_l = ReadLoopSample(loop_buffer_l, position, source_length);
+        out_r = ReadLoopSample(loop_buffer_r, position, source_length);
+    }
+}
+
+void ResetGranularBuffer()
+{
+    for(size_t i = 0; i < kGranularBufferSamples; ++i)
+        granular_buffer[i] = 0.0f;
+    granular_write = 0;
+}
+
+void FeedGranularBuffer(float sample)
+{
+    granular_buffer[granular_write] = LooperSoftLimit(sample * kWritePad);
+    granular_write += 1;
+    if(granular_write >= kGranularBufferSamples)
+        granular_write = 0;
+}
+
+float ProcessGranularPlayer()
+{
+    return LooperSoftLimit(granular_player.Process(grain_speed, grain_pitch_cents, grain_size_ms)
+                           * kGranularLevel);
+}
+
 bool LooperReadIsOnSample()
 {
     const size_t read_index = static_cast<size_t>(looper_read);
@@ -688,6 +793,7 @@ void AdvanceLooperRead()
         while(looper_read >= static_cast<float>(looper_length))
             looper_read -= static_cast<float>(looper_length);
         looper_length_ops_enabled = true;
+        looper_wrap_fade_remaining = kLooperWrapFadeSamples;
         TriggerLed2LoopStartBlink();
         ApplyPendingLoopLengthOp();
     }
@@ -696,6 +802,7 @@ void AdvanceLooperRead()
         while(looper_read < 0.0f)
             looper_read += static_cast<float>(looper_length);
         looper_length_ops_enabled = true;
+        looper_wrap_fade_remaining = kLooperWrapFadeSamples;
         TriggerLed2LoopStartBlink();
         ApplyPendingLoopLengthOp();
     }
@@ -908,19 +1015,21 @@ void ProcessLooperSample(float input_l,
     UpdatePlaybackStepSlew();
     const size_t playback_source_length = LooperPlaybackSourceLength();
     const size_t write_index = static_cast<size_t>(looper_read) % looper_length;
-    if(dip3_mono)
-    {
-        const float mono_loop = ReadLoopSampleMono(looper_read, playback_source_length);
-        loop_l = mono_loop;
-        loop_r = mono_loop;
-    }
-    else
-    {
-        loop_l = ReadLoopSample(loop_buffer_l, looper_read, playback_source_length);
-        loop_r = ReadLoopSample(loop_buffer_r, looper_read, playback_source_length);
-    }
+    ReadLoopStereoAt(looper_read, playback_source_length, loop_l, loop_r);
     const float raw_loop_l = loop_l;
     const float raw_loop_r = loop_r;
+    FeedGranularBuffer((raw_loop_l + raw_loop_r) * 0.5f);
+    if(GrainModeActive())
+    {
+        const float grain = ProcessGranularPlayer();
+        float mix = fclamp(grain_mix, 0.0f, 1.0f);
+        if(mix > 0.96f)
+            mix = 1.0f;
+        else if(mix < 0.04f)
+            mix = 0.0f;
+        loop_l = loop_l * (1.0f - mix) + grain * mix;
+        loop_r = loop_r * (1.0f - mix) + grain * mix;
+    }
     ApplyLoopLengthTransition(loop_l, loop_r);
     if(looper_switch_fade_remaining > 0)
     {
@@ -936,6 +1045,16 @@ void ProcessLooperSample(float input_l,
         loop_l *= smooth;
         loop_r *= smooth;
         looper_switch_fade_remaining -= 1;
+    }
+    if(looper_wrap_fade_remaining > 0)
+    {
+        const float progress = 1.0f
+                               - (static_cast<float>(looper_wrap_fade_remaining)
+                                  / static_cast<float>(kLooperWrapFadeSamples));
+        const float smooth = progress * progress * (3.0f - 2.0f * progress);
+        loop_l *= smooth;
+        loop_r *= smooth;
+        looper_wrap_fade_remaining -= 1;
     }
     if(looper_stop_fade_remaining > 0)
     {
@@ -953,7 +1072,7 @@ void ProcessLooperSample(float input_l,
     const bool repeat_fill_was_active = RepeatFillActive();
     ProcessRepeatFill(input_l, input_r, feedback);
 
-    const bool should_write = !repeat_fill_was_active && (PlaybackStep() >= 1.0f || LooperReadIsOnSample());
+    const bool should_write = !repeat_fill_was_active && (fabsf(PlaybackStep()) >= 1.0f || LooperReadIsOnSample());
     if(should_write)
     {
         const float fb = fclamp(feedback, 0.0f, 1.0f);
@@ -1105,11 +1224,23 @@ static void AudioCallback(AudioHandle::InputBuffer in,
                           AudioHandle::OutputBuffer out,
                           size_t size)
 {
+    cpu_load_meter.OnBlockStart();
+
     UpdateControls();
 
     const float gain = knob3_volume.Process();
-    const float metro_volume = knob2_metro_volume.Process();
+    const float knob2_value = knob2_metro_volume.Process();
     const float feedback = knob6_feedback.Process();
+    const float knob1_value = knob1_grain_mix.Process();
+    const float knob4_value = knob4_grain_size.Process();
+    const float knob5_value = knob5_grain_pitch.Process();
+    const bool metro_off = MetroBeatsPerBar() == 0;
+    grain_mix = knob1_value;
+    grain_size_ms = 25.0f + knob4_value * 487.0f;
+    const float grain_speed_knob = ((1.0f - knob2_value) * 2.0f - 1.0f);
+    grain_speed = metro_off ? ApplyCenterDeadzone(grain_speed_knob, 0.04f) * 2.0f : 1.0f;
+    grain_pitch_cents = metro_off ? ((knob5_value * 24.0f - 12.0f) * 100.0f) : 1200.0f;
+    const float metro_volume = metro_off ? 0.0f : knob2_value;
 
     for(size_t i = 0; i < size; i++)
     {
@@ -1134,6 +1265,7 @@ static void AudioCallback(AudioHandle::InputBuffer in,
     UpdateLeds();
     led1.Update();
     led2.Update();
+    cpu_load_meter.OnBlockEnd();
 }
 
 void HandleMidiMessage(MidiEvent m)
@@ -1177,14 +1309,22 @@ int main(void)
     hw.Init();
     const float samplerate = hw.AudioSampleRate();
     hw.SetAudioBlockSize(48);
+    cpu_load_meter.Init(samplerate, 48);
+    DaisySeed::StartLog(false);
+    DaisySeed::PrintLine("Looper serial ready");
 
+    knob1_grain_mix.Init(hw.knob[Funbox::KNOB_1], 0.0f, 1.0f, ::daisy::Parameter::LINEAR);
     knob2_metro_volume.Init(hw.knob[Funbox::KNOB_2], 0.0f, 1.0f, ::daisy::Parameter::LINEAR);
     knob3_volume.Init(hw.knob[Funbox::KNOB_3], 0.0f, 2.0f, ::daisy::Parameter::LINEAR);
+    knob4_grain_size.Init(hw.knob[Funbox::KNOB_4], 0.0f, 1.0f, ::daisy::Parameter::LINEAR);
+    knob5_grain_pitch.Init(hw.knob[Funbox::KNOB_5], 0.0f, 1.0f, ::daisy::Parameter::LINEAR);
     knob6_feedback.Init(hw.knob[Funbox::KNOB_6], 0.0f, 1.0f, ::daisy::Parameter::LINEAR);
     expression.Init(hw.expression, 0.0f, 1.0f, ::daisy::Parameter::LINEAR);
 
     tempo::Init(samplerate);
     tempo::SetSyncMode(tempo::SyncMode::Midi);
+    ResetGranularBuffer();
+    granular_player.Init(granular_buffer, static_cast<int>(kGranularPlayerSamples), samplerate);
 
     led1.Init(hw.seed.GetPin(Funbox::LED_1), false);
     led2.Init(hw.seed.GetPin(Funbox::LED_2), false);
@@ -1204,5 +1344,6 @@ int main(void)
         hw.midi.Listen();
         while(hw.midi.HasEvents())
             HandleMidiMessage(hw.midi.PopEvent());
+        PrintSerialStatus();
     }
 }
