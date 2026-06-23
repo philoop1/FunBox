@@ -35,7 +35,7 @@
 
   <rect x="36" y="32" width="524" height="124" fill="url(#header)" stroke="#5d7fa4" stroke-width="2"/>
   <text x="58" y="82" class="title">Looper</text>
-  <text x="58" y="119" class="subtitle">Pure Stereo / Mono Long Looper</text>
+  <text x="58" y="119" class="subtitle">Stereo / Mono Grain Looper</text>
   <text x="58" y="148" class="small">MIDI clock quantize + bar metronome</text>
 
   <rect x="722" y="52" width="462" height="130" fill="url(#header)" stroke="#5d7fa4" stroke-width="2"/>
@@ -54,7 +54,8 @@
 
   <circle cx="493" cy="345" r="42" class="knob"/>
   <line x1="493" y1="345" x2="493" y2="304" stroke="#111820" stroke-width="6"/>
-  <text x="462" y="415" class="tiny">Free</text>
+  <text x="462" y="415" class="tiny">Mix</text>
+  <text x="453" y="438" class="tiny">Shift Age</text>
 
   <circle cx="620" cy="345" r="42" class="knob"/>
   <line x1="620" y1="345" x2="620" y2="304" stroke="#111820" stroke-width="6"/>
@@ -68,11 +69,13 @@
 
   <circle cx="493" cy="495" r="42" class="knob2"/>
   <line x1="493" y1="495" x2="493" y2="454" stroke="#111820" stroke-width="6"/>
-  <text x="462" y="564" class="tiny">Free</text>
+  <text x="462" y="564" class="tiny">Size</text>
+  <text x="444" y="586" class="tiny">Shift Dens</text>
 
   <circle cx="620" cy="495" r="42" class="knob2"/>
   <line x1="620" y1="495" x2="620" y2="454" stroke="#111820" stroke-width="6"/>
-  <text x="589" y="564" class="tiny">Free</text>
+  <text x="589" y="564" class="tiny">Pitch</text>
+  <text x="579" y="586" class="tiny">Shift Hann</text>
 
   <circle cx="747" cy="495" r="42" class="knob2"/>
   <line x1="747" y1="495" x2="747" y2="454" stroke="#111820" stroke-width="6"/>
@@ -103,22 +106,23 @@
   <!-- Left panels -->
   <rect x="36" y="228" width="326" height="172" class="panel"/>
   <text x="58" y="266" class="subtitle">Knobs</text>
-  <text x="58" y="305" class="body"><tspan class="bold">K2:</tspan> Metro volume</text>
-  <text x="58" y="338" class="body"><tspan class="bold">K3:</tspan> Loop gain 0-2</text>
-  <text x="58" y="371" class="body"><tspan class="bold">K6:</tspan> Feedback 0-1</text>
+  <text x="58" y="305" class="body"><tspan class="bold">K1:</tspan> Grain mix</text>
+  <text x="58" y="338" class="body"><tspan class="bold">K2:</tspan> Speed / Metro vol</text>
+  <text x="58" y="371" class="body"><tspan class="bold">K4:</tspan> Grain size</text>
   <path d="M362 330 C380 330 384 345 400 345" class="line"/>
 
   <rect x="36" y="426" width="326" height="172" class="panel"/>
   <text x="58" y="464" class="subtitle">Footswitches</text>
-  <text x="58" y="503" class="body"><tspan class="bold">FS1:</tspan> Overdub on/off</text>
-  <text x="58" y="536" class="body"><tspan class="bold">LED1:</tspan> OD + MIDI clock</text>
+  <text x="58" y="503" class="body"><tspan class="bold">FS1:</tspan> OD / Shift hold</text>
+  <text x="58" y="536" class="body"><tspan class="bold">LED1:</tspan> OD, Shift, MIDI</text>
   <text x="58" y="569" class="body"><tspan class="bold">FS2:</tspan> Loop control</text>
   <path d="M362 536 C382 550 388 745 400 775" class="line"/>
 
   <rect x="64" y="632" width="304" height="164" class="darkpanel"/>
   <text x="90" y="672" class="subtitle white">Switch 1</text>
-  <text x="90" y="710" class="body white">Move from middle:</text>
-  <text x="90" y="744" class="body white">Metro restarts on 1</text>
+  <text x="90" y="710" class="body white"><tspan class="bold">L:</tspan> Reverse</text>
+  <text x="90" y="744" class="body white"><tspan class="bold">M:</tspan> Forward</text>
+  <text x="90" y="778" class="body white"><tspan class="bold">R:</tspan> Grain Mode</text>
   <path d="M368 714 C386 704 390 650 400 642" class="line"/>
 
   <rect x="64" y="824" width="304" height="164" class="darkpanel"/>
@@ -142,6 +146,13 @@
   <text x="900" y="560" class="body">MIDI clock: inverse pulse</text>
   <text x="900" y="594" class="body">Off + clock: short flash</text>
   <text x="900" y="628" class="small">DIP2 on: no MIDI blink</text>
+
+  <rect x="878" y="1048" width="326" height="178" class="panel"/>
+  <text x="900" y="1088" class="subtitle">Grain / Shift</text>
+  <text x="900" y="1126" class="small"><tspan class="bold">K3:</tspan> Loop gain 0-2</text>
+  <text x="900" y="1156" class="small"><tspan class="bold">K5:</tspan> Pitch +/-12</text>
+  <text x="900" y="1186" class="small"><tspan class="bold">K6:</tspan> Feedback 0-1</text>
+  <text x="900" y="1216" class="small">Soft takeover: LED2 blink</text>
 
   <rect x="878" y="680" width="326" height="178" class="darkpanel"/>
   <text x="900" y="720" class="subtitle white">DIP</text>
@@ -181,6 +192,9 @@
   <text x="654" y="1468" class="body">LED2 blinkt 3x invers</text>
   <text x="654" y="1526" class="small">Beim Stop-Warten nimmt er den letzten moeglichen Quantpunkt.</text>
 
+  <rect x="70" y="1588" width="1078" height="34" fill="#dbe8f4" stroke="#111820" stroke-width="1"/>
+  <text x="92" y="1612" class="small"><tspan class="bold">Shift:</tspan> FS1 600 ms toggelt Shift. LED1 gedimmt. K1 Age/Offset, K2 Direction+Position Random, K4 Density, K5 Hann Shape.</text>
+
   <rect x="40" y="1662" width="1160" height="58" fill="#203040"/>
-  <text x="64" y="1700" class="body white">Looper - pure stereo/mono long looper, MIDI clock quantize, internal bar metronome.</text>
+  <text x="64" y="1700" class="body white">Looper - stereo/mono grain looper, MIDI clock quantize, internal bar metronome.</text>
 </svg>
