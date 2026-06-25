@@ -106,6 +106,7 @@ void LooperGranularPlayer::ResetVoicePhases(int voice_count, float density)
         position_offset_[i] = 0.0f;
         size_factor_[i] = 1.0f;
         pitch_random_cents_[i] = 0.0f;
+        speed_drift_[i] = 0.0f;
     }
 }
 
@@ -312,6 +313,7 @@ void LooperGranularPlayer::ProcessFromStereoReader(float base_position,
     const float random_width = fmaxf(0.0f, fminf(position_random, 1.0f)) * source_size_f * 0.5f;
     const float size_random_amount = fmaxf(0.0f, fminf(size_random, 1.0f));
     const float pitch_random_amount = fmaxf(0.0f, fminf(pitch_random, 1200.0f));
+    const float drift_speed = smoothed_speed_ * 0.50f;
 
     for(int i = 0; i < active_voice_count_; i++)
     {
@@ -336,7 +338,8 @@ void LooperGranularPlayer::ProcessFromStereoReader(float base_position,
         const float grain_scan = speed_sign_[i] < 0.0f ? 1.0f - pitch_phase : pitch_phase;
         const float age_offset = age_continuous ? requested_age_offset : age_offset_[i];
         const float grain_samples_for_voice = grain_samples * voice_size;
-        const float idx = base_position + grain_scan * grain_samples_for_voice
+        speed_drift_[i] = WrapPosition(speed_drift_[i] + drift_speed, source_size_f);
+        const float idx = base_position + speed_drift_[i] + grain_scan * grain_samples_for_voice
                           - age_offset + position_offset_[i];
         float sample_l;
         float sample_r;

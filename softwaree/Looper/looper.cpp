@@ -68,6 +68,8 @@ static constexpr uint32_t kOverdubFadeSamples = 960;
 static constexpr uint32_t kExternalComboClearHoldMs = 100;
 static constexpr uint32_t kExternalComboResetHoldMs = 600;
 static constexpr uint32_t kSerialPrintIntervalMs = 1000;
+static constexpr size_t kAudioBlockSize = 4;
+static constexpr uint32_t kControlUpdateDivisor = 12;
 static constexpr uint8_t kExternalFsw1Bit = 0x01;
 static constexpr uint8_t kExternalFsw2Bit = 0x02;
 
@@ -220,6 +222,8 @@ bool switch2_was_middle = true;
 bool dip1_miso = false;
 bool dip2_ignore_midi = false;
 bool dip3_mono = false;
+bool dip4_metro_eighths = false;
+uint32_t control_update_counter = 0;
 
 uint8_t midi_clock_led_count = 0;
 uint32_t midi_led_pulse_until_ms = 0;
@@ -499,6 +503,11 @@ int MetroBeatsPerBar()
     return 0;
 }
 
+uint32_t MetroClickClockInterval()
+{
+    return dip4_metro_eighths ? (kMidiClocksPerBeat / 2) : kMidiClocksPerBeat;
+}
+
 bool QuantizeEnabled()
 {
     return MeterModeActive() || MidiClockUsable();
@@ -598,15 +607,18 @@ void ProcessMetroClock(uint32_t clock_count)
         return;
 
     const uint32_t elapsed_clocks = clock_count - metro_anchor_clock;
-    if((elapsed_clocks % kMidiClocksPerBeat) != 0)
+    const uint32_t click_interval = MetroClickClockInterval();
+    if(click_interval == 0 || (elapsed_clocks % click_interval) != 0)
         return;
 
-    const uint32_t beat_index = elapsed_clocks / kMidiClocksPerBeat;
-    if(beat_index == metro_last_beat_index)
+    const uint32_t click_index = elapsed_clocks / click_interval;
+    if(click_index == metro_last_beat_index)
         return;
 
-    metro_last_beat_index = beat_index;
-    TriggerMetroClick((beat_index % static_cast<uint32_t>(beats_per_bar)) == 0);
+    metro_last_beat_index = click_index;
+    const uint32_t clicks_per_bar = static_cast<uint32_t>(beats_per_bar)
+                                    * (dip4_metro_eighths ? 2u : 1u);
+    TriggerMetroClick((click_index % clicks_per_bar) == 0);
 }
 
 float ProcessMetroSample(float volume)
@@ -1809,6 +1821,7 @@ void UpdateSwitches()
     dip1_miso = hw.switches[Funbox::SWITCH_DIP_1].Pressed();
     dip2_ignore_midi = hw.switches[Funbox::SWITCH_DIP_2].Pressed();
     dip3_mono = hw.switches[Funbox::SWITCH_DIP_3].Pressed();
+    dip4_metro_eighths = hw.switches[Funbox::SWITCH_DIP_4].Pressed();
 
     if(dip2_ignore_midi)
     {
@@ -1913,15 +1926,18 @@ float Led2WaitingQuantBrightness()
 
 void UpdateLeds()
 {
+    float led1_value;
+    float led2_value;
+
     if(MidiClockUsable())
     {
         const float base = shift_enabled ? 0.35f : (overdub_enabled ? 1.0f : 0.0f);
         const bool midi_pulse = System::GetNow() < midi_led_pulse_until_ms;
-        led1.Set(midi_pulse ? (base > 0.0f ? 0.0f : 1.0f) : base);
+        led1_value = midi_pulse ? (base > 0.0f ? 0.0f : 1.0f) : base;
     }
     else
     {
-        led1.Set(shift_enabled ? 0.35f : (overdub_enabled ? 1.0f : 0.0f));
+        led1_value = shift_enabled ? 0.35f : (overdub_enabled ? 1.0f : 0.0f);
     }
 
     if(looper_error_blink_ticks > 0)
@@ -1930,28 +1946,33 @@ void UpdateLeds()
         const bool invert = ((elapsed / kLooperErrorBlinkHalfTicks) % 2) == 0;
         looper_error_blink_ticks -= 1;
         const float base = Led2BaseBrightness();
-        led2.Set(invert ? (base > 0.0f ? 0.0f : 1.0f) : base);
+        led2_value = invert ? (base > 0.0f ? 0.0f : 1.0f) : base;
     }
     else if(looper_loopstart_blink_ticks > 0)
     {
         looper_loopstart_blink_ticks -= 1;
         const float base = Led2BaseBrightness();
-        led2.Set(base > 0.0f ? 0.0f : 1.0f);
+        led2_value = base > 0.0f ? 0.0f : 1.0f;
     }
     else if(looper_led_ack_ticks > 0)
     {
         looper_led_ack_ticks -= 1;
         const float base = Led2BaseBrightness();
-        led2.Set(base > 0.0f ? 0.0f : 1.0f);
+        led2_value = base > 0.0f ? 0.0f : 1.0f;
     }
     else if(looper_state == LooperState::WaitingEnd)
     {
-        led2.Set(Led2WaitingQuantBrightness());
+        led2_value = Led2WaitingQuantBrightness();
     }
     else
     {
-        led2.Set(Led2BaseBrightness());
+        led2_value = Led2BaseBrightness();
     }
+
+    led1.Set(fclamp(led1_value, 0.0f, 1.0f));
+    led2.Set(fclamp(led2_value, 0.0f, 1.0f));
+    led1.Update();
+    led2.Update();
 }
 
 static void AudioCallback(AudioHandle::InputBuffer in,
@@ -1960,7 +1981,13 @@ static void AudioCallback(AudioHandle::InputBuffer in,
 {
     cpu_load_meter.OnBlockStart();
 
-    UpdateControls();
+    control_update_counter += 1;
+    const bool update_controls_this_block = control_update_counter >= kControlUpdateDivisor;
+    if(update_controls_this_block)
+    {
+        control_update_counter = 0;
+        UpdateControls();
+    }
 
     const float gain = knob3_volume.Process();
     const float knob2_value = knob2_metro_volume.Process();
@@ -1969,24 +1996,27 @@ static void AudioCallback(AudioHandle::InputBuffer in,
     const float knob4_value = knob4_grain_size.Process();
     const float knob5_value = knob5_grain_pitch.Process();
     const bool metro_off = MetroBeatsPerBar() == 0;
-    if(shift_pickup_refresh_pending)
+    if(update_controls_this_block)
     {
-        LockActivePickupParams(knob1_value, knob2_value, knob4_value, knob5_value);
-        shift_pickup_refresh_pending = false;
+        if(shift_pickup_refresh_pending)
+        {
+            LockActivePickupParams(knob1_value, knob2_value, knob4_value, knob5_value);
+            shift_pickup_refresh_pending = false;
+        }
+        if(switch2_pickup_refresh_pending)
+        {
+            LockK2K4K5PickupParams(knob2_value, knob4_value, knob5_value);
+            switch2_pickup_refresh_pending = false;
+        }
+        if(shift_enabled)
+            ProcessPickupParam(k1_age_pickup, knob1_value);
+        else
+            ProcessPickupParam(k1_mix_pickup, knob1_value);
     }
-    if(switch2_pickup_refresh_pending)
-    {
-        LockK2K4K5PickupParams(knob2_value, knob4_value, knob5_value);
-        switch2_pickup_refresh_pending = false;
-    }
-    if(shift_enabled)
-        ProcessPickupParam(k1_age_pickup, knob1_value);
-    else
-        ProcessPickupParam(k1_mix_pickup, knob1_value);
     grain_mix = k1_mix_pickup.value;
     grain_size_random = k1_age_pickup.value;
     grain_age_continuous = false;
-    if(metro_off)
+    if(update_controls_this_block && metro_off)
     {
         if(shift_enabled)
             ProcessPickupParam(k2_random_pickup, knob2_value);
@@ -1997,10 +2027,13 @@ static void AudioCallback(AudioHandle::InputBuffer in,
     {
         grain_random_amount = 0.0f;
     }
-    if(shift_enabled)
-        ProcessPickupParam(k4_density_pickup, knob4_value);
-    else if(metro_off)
-        ProcessPickupParam(k4_size_pickup, knob4_value);
+    if(update_controls_this_block)
+    {
+        if(shift_enabled)
+            ProcessPickupParam(k4_density_pickup, knob4_value);
+        else if(metro_off)
+            ProcessPickupParam(k4_size_pickup, knob4_value);
+    }
     if(!metro_off)
         internal_tempo_bpm = kInternalTempoMinBpm
                              + knob5_value * (kInternalTempoMaxBpm - kInternalTempoMinBpm);
@@ -2017,9 +2050,9 @@ static void AudioCallback(AudioHandle::InputBuffer in,
     grain_density = grain_space;
     grain_buffer_age = grain_space;
     grain_position_random = grain_space > 0.75f ? (grain_space - 0.75f) * 4.0f : 0.0f;
-    const float grain_speed_knob = ((1.0f - grain_speed_knob_value) * 2.0f - 1.0f);
+    const float grain_speed_knob = (grain_speed_knob_value * 2.0f - 1.0f);
     grain_speed = metro_off ? ApplyCenterDeadzone(grain_speed_knob, 0.04f) * 2.0f : 1.0f;
-    if(metro_off)
+    if(update_controls_this_block && metro_off)
     {
         if(shift_enabled)
             ProcessPickupParam(k5_pitch_random_pickup, knob5_value);
@@ -2055,9 +2088,8 @@ static void AudioCallback(AudioHandle::InputBuffer in,
         out[1][i] = LooperSoftLimit((input_r + loop_r * gain + metro) * kMonitorPad);
     }
 
-    UpdateLeds();
-    led1.Update();
-    led2.Update();
+    if(update_controls_this_block)
+        UpdateLeds();
     cpu_load_meter.OnBlockEnd();
 }
 
@@ -2104,8 +2136,8 @@ int main(void)
     hw.Init();
     const float samplerate = hw.AudioSampleRate();
     audio_sample_rate = samplerate;
-    hw.SetAudioBlockSize(48);
-    cpu_load_meter.Init(samplerate, 48);
+    hw.SetAudioBlockSize(kAudioBlockSize);
+    cpu_load_meter.Init(samplerate, kAudioBlockSize);
     DaisySeed::StartLog(false);
     DaisySeed::PrintLine("Looper serial ready");
 

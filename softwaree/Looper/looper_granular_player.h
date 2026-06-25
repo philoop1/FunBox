@@ -95,6 +95,7 @@ class LooperGranularPlayer
     float position_offset_[kMaxGrains];
     float size_factor_[kMaxGrains];
     float pitch_random_cents_[kMaxGrains];
+    float speed_drift_[kMaxGrains];
 };
 } // namespace funbox
 
