@@ -210,6 +210,7 @@ bool external_combo_was_pressed = false;
 bool external_combo_clear_handled = false;
 bool external_combo_block_individuals = false;
 bool external_combo_reset_handled = false;
+bool external_loop_blocks_overdub = false;
 uint32_t external_combo_down_ms = 0;
 
 bool switch3_left = false;
@@ -1838,9 +1839,16 @@ void UpdateControls()
     UpdateSwitches();
     const uint32_t now = System::GetNow();
     UpdateExternalSwitchBits(now);
-    const bool external_overdub_pressed = (external_switch_stable_bits & kExternalFsw2Bit) != 0;
-    const bool external_loop_pressed = (external_switch_stable_bits & kExternalFsw1Bit) != 0;
-    const bool external_combo_pressed = external_overdub_pressed && external_loop_pressed;
+    const bool external_combo_pressed = external_switch_stable_bits
+                                        == (kExternalFsw1Bit | kExternalFsw2Bit);
+    const bool external_loop_pressed = external_switch_stable_bits == kExternalFsw1Bit;
+    const bool external_overdub_pressed_raw = external_switch_stable_bits == kExternalFsw2Bit;
+    if(external_loop_pressed)
+        external_loop_blocks_overdub = true;
+    if(external_switch_stable_bits == 0)
+        external_loop_blocks_overdub = false;
+    const bool external_overdub_pressed = external_overdub_pressed_raw
+                                          && !external_loop_blocks_overdub;
     ProcessExternalComboClearInput(external_combo_pressed, now);
     if(external_combo_pressed)
         external_combo_block_individuals = true;
@@ -1849,6 +1857,11 @@ void UpdateControls()
 
     if(external_combo_pressed || external_combo_block_individuals)
         ResetExternalIndividualInputs();
+    else if(external_loop_blocks_overdub)
+    {
+        external_fsw1_was_pressed = false;
+        external_fsw1_long_handled = false;
+    }
     else
         ProcessExternalOverdubUndoInput(external_overdub_pressed, now);
 
