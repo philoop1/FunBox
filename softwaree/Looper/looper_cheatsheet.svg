@@ -115,7 +115,7 @@
   <text x="58" y="464" class="subtitle">Footswitches</text>
   <text x="58" y="503" class="body"><tspan class="bold">FS1:</tspan> OD / Shift hold</text>
   <text x="58" y="536" class="body"><tspan class="bold">FS2:</tspan> Loop control</text>
-  <text x="58" y="569" class="body"><tspan class="bold">Ext:</tspan> OD/Undo + Loop</text>
+  <text x="58" y="569" class="body"><tspan class="bold">Ext:</tspan> Loop + OD/Edit</text>
   <path d="M362 536 C382 550 388 745 400 775" class="line"/>
 
   <rect x="64" y="632" width="304" height="164" class="darkpanel"/>
@@ -168,19 +168,22 @@
   <text x="900" y="984" class="body white">Bright: loop running</text>
   <text x="900" y="1016" class="small white">3x inverse: limit reached</text>
 
-  <rect x="878" y="1238" width="326" height="178" class="panel"/>
+  <rect x="878" y="1238" width="326" height="260" class="panel"/>
   <text x="900" y="1278" class="subtitle">External FSW</text>
-  <text x="900" y="1316" class="small"><tspan class="bold">1k:</tspan> Overdub, hold Undo</text>
-  <text x="900" y="1346" class="small"><tspan class="bold">2k2:</tspan> same as FS2 Loop</text>
-  <text x="900" y="1376" class="small">Both 100 ms: clear content</text>
-  <text x="900" y="1406" class="small">Both 600 ms: full reset</text>
+  <text x="900" y="1314" class="small"><tspan class="bold">Loop tap:</tspan> Rec start / Finish</text>
+  <text x="900" y="1342" class="small">then Stop / Play from 0</text>
+  <text x="900" y="1380" class="small"><tspan class="bold">Edit tap:</tspan> Overdub toggle</text>
+  <text x="900" y="1408" class="small">Hold 250 ms: Double</text>
+  <text x="900" y="1436" class="small">Hold 800 ms: Halve</text>
+  <text x="900" y="1464" class="small">Hold 1500 ms: Undo</text>
+  <text x="900" y="1492" class="small"><tspan class="bold">Both:</tspan> 100 ms Clear / 600 ms Reset</text>
 
   <!-- Main guide -->
   <rect x="40" y="1040" width="820" height="594" fill="#eef4f9" stroke="#111820" stroke-width="3"/>
   <text x="70" y="1092" class="title">Loop Bedienung</text>
-  <text x="70" y="1134" class="body"><tspan class="bold">Loop aus:</tspan> erster FS2-Press setzt Start. Release wird ignoriert.</text>
-  <text x="70" y="1170" class="body"><tspan class="bold">Recording:</tspan> naechster FS2-Press setzt Ende oder Stop-Wunsch.</text>
-  <text x="70" y="1206" class="body"><tspan class="bold">Playing:</tspan> kurz FS2 = halbieren. Ab 250 ms = verdoppeln.</text>
+  <text x="70" y="1134" class="body"><tspan class="bold">Ext Loop:</tspan> 1. Klick Rec Start, 2. Klick Finish.</text>
+  <text x="70" y="1170" class="body"><tspan class="bold">Ext Loop:</tspan> 3. Klick Stop, 4. Klick Play ab 0.</text>
+  <text x="70" y="1206" class="body"><tspan class="bold">Ext Edit:</tspan> kurz OD, 250 ms Double, 800 ms Halve, 1500 ms Undo.</text>
 
   <rect x="70" y="1240" width="520" height="330" class="panel"/>
   <text x="96" y="1282" class="subtitle">Quantize / Metro</text>

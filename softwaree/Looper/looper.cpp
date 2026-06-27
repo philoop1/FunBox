@@ -123,6 +123,7 @@ enum class LooperState
     WaitingStart,
     Recording,
     WaitingEnd,
+    Paused,
     Playing,
 };
 
@@ -140,6 +141,14 @@ enum class LooperLengthOp
     None,
     Halve,
     Double,
+};
+
+enum class ExternalGesture
+{
+    None,
+    Loop,
+    Edit,
+    Combo,
 };
 
 LooperLengthOp looper_pending_length_op = LooperLengthOp::None;
@@ -212,6 +221,8 @@ bool external_combo_block_individuals = false;
 bool external_combo_reset_handled = false;
 bool external_loop_blocks_overdub = false;
 uint32_t external_combo_down_ms = 0;
+ExternalGesture external_gesture = ExternalGesture::None;
+uint32_t external_gesture_down_ms = 0;
 
 bool switch3_left = false;
 bool switch3_right = false;
@@ -352,10 +363,17 @@ void PrintSerialStatus()
 
     last_serial_print_ms = now;
     DaisySeed::PrintLine(
-        "cpu:%d/%d/%d sh:%d k1szrnd:%d k2dir:%d k4space:%d age:%d pos:%d k5pr:%d lock:%d%d%d%d",
+        "cpu:%d/%d/%d st:%d ext:%d[%d-%d] r:%d s:%d g:%d sh:%d k1szrnd:%d k2dir:%d k4space:%d age:%d pos:%d k5pr:%d lock:%d%d%d%d",
         LoadPercent(cpu_load_meter.GetAvgCpuLoad()),
         LoadPercent(cpu_load_meter.GetMinCpuLoad()),
         LoadPercent(cpu_load_meter.GetMaxCpuLoad()),
+        static_cast<int>(looper_state),
+        static_cast<int>(external_switch_adc_value * 100.0f + 0.5f),
+        static_cast<int>(external_switch_adc_min * 100.0f + 0.5f),
+        static_cast<int>(external_switch_adc_max * 100.0f + 0.5f),
+        static_cast<int>(external_switch_raw_bits),
+        static_cast<int>(external_switch_stable_bits),
+        static_cast<int>(external_gesture),
         shift_enabled ? 1 : 0,
         static_cast<int>(grain_size_random * 100.0f + 0.5f),
         static_cast<int>(grain_random_amount * 100.0f + 0.5f),
@@ -396,6 +414,7 @@ void BeginLoopLengthTransition();
 void ResetGranularBuffer();
 void SmoothLoopSeam(size_t length);
 void SetOverdubEnabled(bool enabled);
+void ProcessExternalComboClearInput(bool pressed, uint32_t now);
 
 float TargetPlaybackStepFromSwitch()
 {
@@ -904,12 +923,39 @@ void RequestStopLoop()
     StopLoop();
 }
 
+void PauseLoopPlayback()
+{
+    if(looper_state != LooperState::Playing || looper_length == 0)
+        return;
+
+    looper_pending_length_op = LooperLengthOp::None;
+    looper_repeat_source_length = 0;
+    looper_repeat_fill_index = 0;
+    looper_switch_fade_remaining = 0;
+    looper_wrap_fade_remaining = 0;
+    looper_stop_fade_remaining = 0;
+    looper_state = LooperState::Paused;
+    TriggerLed2Ack();
+}
+
+void ResumeLoopPlayback()
+{
+    if(looper_state != LooperState::Paused || looper_length == 0)
+        return;
+
+    looper_read = 0.0f;
+    BeginLoopLengthTransition();
+    looper_state = LooperState::Playing;
+    TriggerLed2LoopStartBlink();
+}
+
 void ResetLoopImmediate()
 {
     footswitch2_click_count = 0;
     looper_led_ack_ticks = 0;
     looper_loopstart_blink_ticks = 0;
     looper_error_blink_ticks = 0;
+    SetOverdubEnabled(false);
     StopLoop();
     led2.Set(0.0f);
 }
@@ -1417,13 +1463,11 @@ void ProcessLooperFootswitch2Input(bool pressed,
             footswitch2_click_count = 0;
             RequestClearLoopContentKeepWindow();
             clear_handled = true;
-            DaisySeed::PrintLine("fsw2-clear");
         }
         if(held_ms >= kLooperLongPressMs)
         {
             ResetLoopImmediate();
             long_handled = true;
-            DaisySeed::PrintLine("fsw2-reset");
         }
     }
     else if(!pressed && was_pressed)
@@ -1443,7 +1487,7 @@ uint8_t DecodeExternalSwitchBits(float value)
 {
     if(value > 0.82f)
         return 0;
-    if(value > 0.59f)
+    if(value > 0.70f)
         return kExternalFsw2Bit;
     if(value > 0.45f)
         return kExternalFsw1Bit;
@@ -1466,15 +1510,7 @@ void UpdateExternalSwitchBits(uint32_t now)
         external_switch_stable_bits = external_switch_raw_bits;
 
     if(external_switch_stable_bits != external_switch_reported_bits)
-    {
         external_switch_reported_bits = external_switch_stable_bits;
-        DaisySeed::PrintLine("ext-event adc:%d raw:%d st:%d e:%d%d",
-                             static_cast<int>(external_switch_adc_value * 100.0f + 0.5f),
-                             static_cast<int>(external_switch_raw_bits),
-                             static_cast<int>(external_switch_stable_bits),
-                             (external_switch_stable_bits & kExternalFsw1Bit) != 0 ? 1 : 0,
-                             (external_switch_stable_bits & kExternalFsw2Bit) != 0 ? 1 : 0);
-    }
 }
 
 void ProcessExternalOverdubUndoInput(bool pressed, uint32_t now)
@@ -1500,6 +1536,115 @@ void ProcessExternalOverdubUndoInput(bool pressed, uint32_t now)
     }
 
     external_fsw1_was_pressed = pressed;
+}
+
+void HandleExternalLoopGestureStart()
+{
+    if(looper_state == LooperState::Empty)
+    {
+        RequestLoopStart();
+        TriggerLed2LoopStartBlink();
+    }
+    else if(looper_state == LooperState::Recording)
+    {
+        if(QuantizeEnabled())
+        {
+            looper_end_clock = QuantClockCount();
+            looper_state = LooperState::WaitingEnd;
+        }
+        else
+        {
+            FinishLoopRecording();
+        }
+    }
+    else if(looper_state == LooperState::WaitingStart)
+    {
+        StartLoopRecording();
+    }
+    else if(looper_state == LooperState::WaitingEnd)
+    {
+        FinishLoopRecording();
+    }
+    else if(looper_state == LooperState::Playing)
+    {
+        PauseLoopPlayback();
+    }
+    else if(looper_state == LooperState::Paused)
+    {
+        ResumeLoopPlayback();
+    }
+}
+
+void HandleExternalEditGestureRelease(uint32_t held_ms)
+{
+    if(held_ms >= kExternalUndoHoldMs)
+    {
+        RestoreUndoSnapshot();
+    }
+    else if(held_ms >= 800)
+    {
+        QueueLoopLengthOp(LooperLengthOp::Halve);
+    }
+    else if(held_ms >= kLooperLengthPressMs)
+    {
+        QueueLoopLengthOp(LooperLengthOp::Double);
+    }
+    else
+    {
+        ToggleOverdub();
+    }
+}
+
+void ProcessExternalGestureInput(uint8_t stable_bits, uint32_t now)
+{
+    const uint8_t both_bits = kExternalFsw1Bit | kExternalFsw2Bit;
+    if(external_gesture == ExternalGesture::None)
+    {
+        if(stable_bits == 0)
+            return;
+
+        external_gesture_down_ms = now;
+        if(stable_bits == kExternalFsw1Bit)
+        {
+            external_gesture = ExternalGesture::Loop;
+            HandleExternalLoopGestureStart();
+        }
+        else if(stable_bits == kExternalFsw2Bit)
+        {
+            external_gesture = ExternalGesture::Edit;
+        }
+        else
+        {
+            external_gesture = ExternalGesture::Combo;
+            ProcessExternalComboClearInput(true, now);
+        }
+        return;
+    }
+
+    if(external_gesture != ExternalGesture::Combo && stable_bits == both_bits)
+    {
+        external_gesture = ExternalGesture::Combo;
+        external_gesture_down_ms = now;
+        external_combo_was_pressed = false;
+        external_combo_clear_handled = false;
+        external_combo_reset_handled = false;
+        ProcessExternalComboClearInput(true, now);
+        return;
+    }
+
+    if(external_gesture == ExternalGesture::Combo)
+        ProcessExternalComboClearInput(stable_bits != 0, now);
+
+    if(stable_bits != 0)
+        return;
+
+    const uint32_t held_ms = now - external_gesture_down_ms;
+    if(external_gesture == ExternalGesture::Edit)
+        HandleExternalEditGestureRelease(held_ms);
+    else if(external_gesture == ExternalGesture::Combo)
+        ProcessExternalComboClearInput(false, now);
+
+    external_gesture = ExternalGesture::None;
 }
 
 void ResetExternalIndividualInputs()
@@ -1531,14 +1676,12 @@ void ProcessExternalComboClearInput(bool pressed, uint32_t now)
             SetOverdubEnabled(true);
             external_combo_clear_handled = true;
             external_combo_block_individuals = true;
-            DaisySeed::PrintLine("ext-combo-clear");
         }
         if(!external_combo_reset_handled && held_ms >= kExternalComboResetHoldMs)
         {
             ResetLoopImmediate();
             external_combo_reset_handled = true;
             external_combo_block_individuals = true;
-            DaisySeed::PrintLine("ext-combo-reset");
         }
     }
     else if(!pressed && external_combo_was_pressed)
@@ -1839,31 +1982,8 @@ void UpdateControls()
     UpdateSwitches();
     const uint32_t now = System::GetNow();
     UpdateExternalSwitchBits(now);
-    const bool external_combo_pressed = external_switch_stable_bits
-                                        == (kExternalFsw1Bit | kExternalFsw2Bit);
-    const bool external_loop_pressed = external_switch_stable_bits == kExternalFsw1Bit;
-    const bool external_overdub_pressed_raw = external_switch_stable_bits == kExternalFsw2Bit;
-    if(external_loop_pressed)
-        external_loop_blocks_overdub = true;
-    if(external_switch_stable_bits == 0)
-        external_loop_blocks_overdub = false;
-    const bool external_overdub_pressed = external_overdub_pressed_raw
-                                          && !external_loop_blocks_overdub;
-    ProcessExternalComboClearInput(external_combo_pressed, now);
-    if(external_combo_pressed)
-        external_combo_block_individuals = true;
-    if(external_combo_block_individuals && !external_overdub_pressed && !external_loop_pressed)
-        external_combo_block_individuals = false;
-
-    if(external_combo_pressed || external_combo_block_individuals)
-        ResetExternalIndividualInputs();
-    else if(external_loop_blocks_overdub)
-    {
-        external_fsw1_was_pressed = false;
-        external_fsw1_long_handled = false;
-    }
-    else
-        ProcessExternalOverdubUndoInput(external_overdub_pressed, now);
+    ProcessExternalGestureInput(external_switch_stable_bits, now);
+    const bool external_loop_pressed = external_gesture == ExternalGesture::Loop;
 
     const bool fsw1_pressed = hw.switches[Funbox::FOOTSWITCH_1].Pressed();
     const bool fsw2_pressed = hw.switches[Funbox::FOOTSWITCH_2].Pressed();
@@ -1898,17 +2018,6 @@ void UpdateControls()
                                   footswitch2_long_handled,
                                   footswitch2_clear_handled,
                                   footswitch2_started_loop_on_press);
-    if(!external_combo_pressed && !external_combo_block_individuals)
-    {
-        ProcessLooperFootswitch2Input(external_loop_pressed,
-                                      now,
-                                      external_fsw2_down_ms,
-                                      external_fsw2_was_pressed,
-                                      external_fsw2_long_handled,
-                                      external_fsw2_clear_handled,
-                                      external_fsw2_started_loop_on_press);
-    }
-
     footswitch1_was_pressed = fsw1_pressed;
 }
 
