@@ -1309,13 +1309,16 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
                     const bool was_holding = hold_k3_looper_fx;
                     hold_k3_looper_fx = false;
                     pknobValues[2] = physical_delay_time;
-                    looper_fx_time_knob = physical_delay_time;
+                    looper_route_knob = physical_delay_time;
                     if(was_holding)
                         led1_ack_off_ticks = 24; // short nonblocking confirm pulse
                 }
             }
             else
-                looper_route_knob = physical_delay_time;
+            {
+                pknobValues[2] = physical_delay_time;
+                looper_fx_time_knob = physical_delay_time;
+            }
             knobValues[2] = looper_fx_time_knob;
         }
         else if(hold_k3_after_looper)
@@ -1360,12 +1363,13 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
                 {
                     hold_k6_looper_fx = false;
                     pknobValues[5] = physical_feedback;
-                    looper_fx_feedback_knob = physical_feedback;
+                    looper_feedback_knob = SafeLooperFeedback(physical_feedback);
                 }
             }
             else
             {
-                looper_feedback_knob = SafeLooperFeedback(physical_feedback);
+                pknobValues[5] = physical_feedback;
+                looper_fx_feedback_knob = physical_feedback;
             }
             knobValues[5] = looper_fx_feedback_knob;
         }

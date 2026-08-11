@@ -6,6 +6,7 @@
 #include "envelopeFollower.h"
 #include "funbox_flanger.h"
 #include "funbox_phaser.h"
+#include "funbox_wavefolder.h"
 #include "moogladder.h"
 #include "oscillator.h"
 #include "sampleratereducer.h"
@@ -40,6 +41,7 @@ enum class RouteMode
 {
     Normal,
     Phaser,
+    Wavefolder,
     Flanger,
 };
 
@@ -84,6 +86,7 @@ struct StorageData
     float live_alternate_knobs[6];
     Settings presets[3][5];
     Settings phaser_presets[5];
+    Settings wavefolder_presets[5];
     Settings flanger_presets[5];
     ExpressionHandler::State expression_assignments[2];
 
@@ -106,6 +109,8 @@ struct StorageData
                     return true;
             }
             if(a.phaser_presets[i] != phaser_presets[i])
+                return true;
+            if(a.wavefolder_presets[i] != wavefolder_presets[i])
                 return true;
             if(a.flanger_presets[i] != flanger_presets[i])
                 return true;
@@ -131,7 +136,7 @@ struct StorageData
 };
 
 static constexpr uint32_t kStorageMagic = 0x42434C34; // "BCL4"
-static constexpr uint32_t kStorageVersion = 6;
+static constexpr uint32_t kStorageVersion = 12;
 static constexpr uint32_t kPresetClickTimeoutMs = 1000;
 static constexpr uint32_t kSaveSelectTimeoutMs = 3000;
 static constexpr uint32_t kPresetLedStepMs = 200;
@@ -176,6 +181,7 @@ float knobValues[6] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 float pknobValues[6] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 float alternateKnobValues[6] = {0.5f, 0.5f, 0.2f, 0.0f, 0.333f, 0.404f};
 float phaserAlternateKnobValues[6] = {0.0f, 0.45f, 0.35f, 0.5f, 0.65f, 0.5f};
+float wavefolderAlternateKnobValues[6] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 float flangerAlternateKnobValues[6] = {0.0f, 0.45f, 0.35f, 0.5f, 0.4f, 0.5f};
 float physicalKnobValues[6] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 float alternatePickupValues[6] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
@@ -197,6 +203,8 @@ DSY_SDRAM_BSS FunboxPhaser phaserL;
 DSY_SDRAM_BSS FunboxPhaser phaserR;
 DSY_SDRAM_BSS FunboxFlanger flangerL;
 DSY_SDRAM_BSS FunboxFlanger flangerR;
+FunboxWavefolder wavefolderL;
+FunboxWavefolder wavefolderR;
 Oscillator        ringOsc;
 EnvelopeFollower  envFollower;
 
@@ -215,6 +223,7 @@ float phaserLfoPrevPhaseR = 0.0f;
 float phaserLfoRandomL = 0.0f;
 float phaserLfoRandomR = 0.0f;
 uint32_t phaserRandomState = 0x12345678;
+float wavefolderLfoPhase = 0.0f;
 float flangerLfoPhase = 0.0f;
 float flangerLfoSlewL = 0.0f;
 float flangerLfoSlewR = 0.0f;
@@ -223,7 +232,7 @@ float flangerLfoPrevPhaseR = 0.0f;
 float flangerLfoRandomL = 0.0f;
 float flangerLfoRandomR = 0.0f;
 uint32_t flangerRandomState = 0x87654321;
-float outputGainFilterMode = 1.0f;
+float inputGainFilterMode = 1.0f;
 
 float Clamp01(float v)
 {
@@ -417,7 +426,7 @@ void StoreExpressionAssignment(int slot)
     StorageData& data = SavedSettings.GetSettings();
     data.magic = kStorageMagic;
     data.version = kStorageVersion;
-    data.output_gain_filter_mode = outputGainFilterMode;
+    data.output_gain_filter_mode = inputGainFilterMode;
     expHandler.SaveState(data.expression_assignments[slot]);
     trigger_save = true;
     filter_mode_gain_save_pending = false;
@@ -434,7 +443,7 @@ void StoreLiveAlternateValues()
     StorageData& data = SavedSettings.GetSettings();
     data.magic = kStorageMagic;
     data.version = kStorageVersion;
-    data.output_gain_filter_mode = outputGainFilterMode;
+    data.output_gain_filter_mode = inputGainFilterMode;
     for(int i = 0; i < 6; i++)
         data.live_alternate_knobs[i] = alternateKnobValues[i];
     trigger_save = true;
@@ -447,14 +456,15 @@ void StoreFilterModeOutputGain()
     StorageData& data = SavedSettings.GetSettings();
     data.magic = kStorageMagic;
     data.version = kStorageVersion;
-    data.output_gain_filter_mode = outputGainFilterMode;
+    data.output_gain_filter_mode = inputGainFilterMode;
     trigger_save = true;
     filter_mode_gain_save_pending = false;
 }
 
 bool IsSpecialRoute()
 {
-    return routeMode == RouteMode::Phaser || routeMode == RouteMode::Flanger;
+    return routeMode == RouteMode::Phaser || routeMode == RouteMode::Wavefolder
+           || routeMode == RouteMode::Flanger;
 }
 
 int NormalPresetBank()
@@ -466,6 +476,8 @@ Settings& ActivePresetBank(StorageData& data, int index)
 {
     if(routeMode == RouteMode::Phaser)
         return data.phaser_presets[index];
+    if(routeMode == RouteMode::Wavefolder)
+        return data.wavefolder_presets[index];
     if(routeMode == RouteMode::Flanger)
         return data.flanger_presets[index];
     return data.presets[NormalPresetBank()][index];
@@ -475,6 +487,8 @@ float* ActiveSpecialAlternateValues()
 {
     if(routeMode == RouteMode::Phaser)
         return phaserAlternateKnobValues;
+    if(routeMode == RouteMode::Wavefolder)
+        return wavefolderAlternateKnobValues;
     if(routeMode == RouteMode::Flanger)
         return flangerAlternateKnobValues;
     return alternateKnobValues;
@@ -492,6 +506,8 @@ void ApplyPreset(int index)
         knobValues[i] = s.knobs[i];
         if(routeMode == RouteMode::Phaser)
             phaserAlternateKnobValues[i] = s.alternate_knobs[i];
+        else if(routeMode == RouteMode::Wavefolder)
+            wavefolderAlternateKnobValues[i] = s.alternate_knobs[i];
         else if(routeMode == RouteMode::Flanger)
             flangerAlternateKnobValues[i] = s.alternate_knobs[i];
         else
@@ -506,10 +522,10 @@ void ApplyPreset(int index)
         dipValues[i] = s.dips[i];
     use_preset = true;
     active_preset = index;
-    outputGainFilterMode = data.output_gain_filter_mode;
+    inputGainFilterMode = data.output_gain_filter_mode;
     if(routeMode == RouteMode::Normal && switchValues[0] == 1)
     {
-        float gainKnob = outputGainFilterMode - 1.0f;
+        float gainKnob = inputGainFilterMode - 1.0f;
         if(gainKnob < 0.0f)
             gainKnob = 0.0f;
         if(gainKnob > 1.0f)
@@ -531,12 +547,12 @@ void StorePreset(int index)
     StorageData& data = SavedSettings.GetSettings();
     data.magic = kStorageMagic;
     data.version = kStorageVersion;
-    data.output_gain_filter_mode = outputGainFilterMode;
+    data.output_gain_filter_mode = inputGainFilterMode;
     Settings& s = ActivePresetBank(data, index);
     for(int i = 0; i < 6; i++)
     {
         if(routeMode == RouteMode::Normal && switchValues[0] == 1 && i == 0)
-            s.knobs[i] = outputGainFilterMode - 1.0f;
+            s.knobs[i] = inputGainFilterMode - 1.0f;
         else
             s.knobs[i] = knobValues[i];
         if(IsSpecialRoute() || i < 3)
@@ -835,11 +851,16 @@ void UpdateSwitches()
                 UpdateSwitch2();
                 ApplyPreset(active_preset >= 0 ? active_preset : 0);
             }
-            else if(alternateMode && (switchValues[0] == 0 || switchValues[0] == 2))
+            else if(alternateMode)
             {
                 special_switch1_latched = true;
                 special_return_switch1 = previous_switch1;
-                routeMode = switchValues[0] == 0 ? RouteMode::Phaser : RouteMode::Flanger;
+                if(switchValues[0] == 0)
+                    routeMode = RouteMode::Phaser;
+                else if(switchValues[0] == 1)
+                    routeMode = RouteMode::Wavefolder;
+                else
+                    routeMode = RouteMode::Flanger;
                 UpdateSwitch2();
                 ApplyPreset(0);
             }
@@ -1010,6 +1031,20 @@ float ProcessFlangerVoice(float in,
     return f.Process(in);
 }
 
+float ProcessWavefolderVoice(float in,
+                             bool left,
+                             float threshold_control,
+                             float env_to_drive,
+                             float lfo_to_drive,
+                             float lfo_signal,
+                             float env)
+{
+    FunboxWavefolder& f = left ? wavefolderL : wavefolderR;
+    return fclamp(f.Process(in, threshold_control, env_to_drive, lfo_to_drive, lfo_signal, env),
+                  -1.0f,
+                  1.0f);
+}
+
 static void AudioCallback(AudioHandle::InputBuffer  in,
                           AudioHandle::OutputBuffer out,
                           size_t                    size)
@@ -1103,7 +1138,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
 
     filterResonance = alternateKnobValues[2];
     envInputGain = 1.0f + alternateKnobValues[3] * 18.0f;
-    if(IsSpecialRoute())
+    if(routeMode == RouteMode::Phaser || routeMode == RouteMode::Flanger)
         envInputGain *= 3.0f;
     envAttack = ExpMap(alternateKnobValues[4], 0.001f, 1.0f);
     envRelease = ExpMap(alternateKnobValues[5], 0.01f, 3.0f);
@@ -1124,9 +1159,9 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
     if(routeMode == RouteMode::Normal && effectMode == EffectMode::ThruToFilter)
     {
         const float nextGain = 1.0f + Clamp01(k1);
-        if(fabsf(nextGain - outputGainFilterMode) > 0.001f)
+        if(fabsf(nextGain - inputGainFilterMode) > 0.001f)
         {
-            outputGainFilterMode = nextGain;
+            inputGainFilterMode = nextGain;
             filter_mode_gain_save_pending = true;
             filter_mode_gain_save_ms = System::GetNow();
         }
@@ -1144,8 +1179,10 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
             continue;
         }
 
+        const float globalInL = inL * inputGainFilterMode;
+        const float globalInR = inR * inputGainFilterMode;
         const float input_gain = envInputGain * (dipValues[3] ? 3.5f : 1.0f);
-        const float detector = fmaxf(fabsf(inL), fabsf(inR)) * input_gain;
+        const float detector = fmaxf(fabsf(globalInL), fabsf(globalInR)) * input_gain;
         const float env = Clamp01(envFollower.Process(detector));
 
         float modBits = bits;
@@ -1155,6 +1192,22 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
 
         float modCutoffControl = cutoffControl;
         float modRingFreq = ringBaseFreq;
+
+        if(routeMode == RouteMode::Wavefolder)
+        {
+            const float* wavefolderAlt = wavefolderAlternateKnobValues;
+            const float lfoSpeedControl = ApplyEnvDeadbandDepth(k2, wavefolderAlt[4], env, 3.0f);
+            float       lfoSpeed = ExpMap(lfoSpeedControl, 0.02f, 12.0f);
+            lfoSpeed = fclamp(lfoSpeed, 0.005f, 30.0f);
+            wavefolderLfoPhase += lfoSpeed / samplerate;
+            if(wavefolderLfoPhase >= 1.0f)
+                wavefolderLfoPhase -= floorf(wavefolderLfoPhase);
+
+            const float lfo = PhaserLfo(wavefolderLfoPhase);
+            out[0][i] = ProcessWavefolderVoice(globalInL, true, k1, k4, k5, lfo, env);
+            out[1][i] = ProcessWavefolderVoice(globalInR, false, k1, k4, k5, lfo, env);
+            continue;
+        }
 
         if(routeMode == RouteMode::Phaser)
         {
@@ -1184,7 +1237,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
                                                 phaserLfoSlewR,
                                                 0.5f,
                                                 phaserRandomState);
-            const float outL = ProcessPhaserVoice(inL,
+            const float outL = ProcessPhaserVoice(globalInL,
                                                   true,
                                                   k1,
                                                   phaserAlt[2],
@@ -1195,7 +1248,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
                                                   phaserAlt[4],
                                                   lfoL,
                                                   phaserEnv);
-            const float outR = ProcessPhaserVoice(inR,
+            const float outR = ProcessPhaserVoice(globalInR,
                                                   false,
                                                   k1,
                                                   phaserAlt[2],
@@ -1240,7 +1293,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
                                                 flangerLfoSlewR,
                                                 slew,
                                                 flangerRandomState);
-            const float outL = ProcessFlangerVoice(inL,
+            const float outL = ProcessFlangerVoice(globalInL,
                                                    true,
                                                    k1,
                                                    flangerAlt[2],
@@ -1250,7 +1303,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
                                                    k6,
                                                    lfoL,
                                                    flangerEnv);
-            const float outR = ProcessFlangerVoice(inR,
+            const float outR = ProcessFlangerVoice(globalInR,
                                                    false,
                                                    k1,
                                                    flangerAlt[2],
@@ -1278,11 +1331,11 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
         const float cutoff = ExpMap(modCutoffControl, 40.0f, 16000.0f);
         ringOsc.SetFreq(fclamp(modRingFreq, 0.1f, 6000.0f));
         const float ring = ringOsc.Process() * 2.0f;
-        const float outL = ProcessVoice(inL, true, modBits, modSr, cutoff, resonance, ring);
-        const float outR = ProcessVoice(inR, false, modBits, modSr, cutoff, resonance, ring);
+        const float outL = ProcessVoice(globalInL, true, modBits, modSr, cutoff, resonance, ring);
+        const float outR = ProcessVoice(globalInR, false, modBits, modSr, cutoff, resonance, ring);
 
-        out[0][i] = fclamp(outL * outputGainFilterMode, -1.0f, 1.0f);
-        out[1][i] = fclamp(outR * outputGainFilterMode, -1.0f, 1.0f);
+        out[0][i] = fclamp(outL, -1.0f, 1.0f);
+        out[1][i] = fclamp(outR, -1.0f, 1.0f);
     }
 }
 
@@ -1290,7 +1343,7 @@ int main(void)
 {
     hw.Init();
     samplerate = hw.AudioSampleRate();
-    hw.SetAudioBlockSize(16);
+    hw.SetAudioBlockSize(8);
 
     param1.Init(hw.knob[Funbox::KNOB_1], 0.0f, 1.0f, Parameter::LINEAR);
     param2.Init(hw.knob[Funbox::KNOB_2], 0.0f, 1.0f, Parameter::LINEAR);
@@ -1312,6 +1365,8 @@ int main(void)
     phaserR.Init(samplerate);
     flangerL.Init(samplerate);
     flangerR.Init(samplerate);
+    wavefolderL.Init();
+    wavefolderR.Init();
     ringOsc.Init(samplerate);
     ringOsc.SetAmp(0.5f);
     envFollower.Init(samplerate);
@@ -1390,6 +1445,17 @@ int main(void)
         phaserPreset.alternate_knobs[5] = 0.5f;
         defaults.phaser_presets[i] = phaserPreset;
 
+        Settings wavefolderPreset = defaultPreset;
+        wavefolderPreset.switches[1] = 1;
+        wavefolderPreset.knobs[0] = 0.25f;
+        wavefolderPreset.knobs[1] = 0.25f;
+        wavefolderPreset.knobs[3] = 0.5f;
+        wavefolderPreset.knobs[4] = 0.0f;
+        for(int k = 0; k < 6; k++)
+            wavefolderPreset.alternate_knobs[k] = wavefolderAlternateKnobValues[k];
+        wavefolderPreset.alternate_knobs[4] = 0.5f;
+        defaults.wavefolder_presets[i] = wavefolderPreset;
+
         Settings flangerPreset = phaserPreset;
         flangerPreset.knobs[0] = 0.35f;
         flangerPreset.knobs[1] = 0.2f;
@@ -1419,7 +1485,7 @@ int main(void)
         alternateKnobValues[i] = SavedSettings.GetSettings().live_alternate_knobs[i];
         alternatePickupValues[i] = alternateKnobValues[i];
     }
-    outputGainFilterMode = SavedSettings.GetSettings().output_gain_filter_mode;
+    inputGainFilterMode = SavedSettings.GetSettings().output_gain_filter_mode;
 
     UpdateSwitch1();
     UpdateSwitch3();

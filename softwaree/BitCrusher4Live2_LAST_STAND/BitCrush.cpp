@@ -3,8 +3,9 @@
 #include "funbox.h"
 #include "expressionHandler.h"
 
-#include "Effects/phaser.h"
 #include "envelopeFollower.h"
+#include "funbox_flanger.h"
+#include "funbox_phaser.h"
 #include "moogladder.h"
 #include "oscillator.h"
 #include "sampleratereducer.h"
@@ -39,6 +40,7 @@ enum class RouteMode
 {
     Normal,
     Phaser,
+    Flanger,
 };
 
 struct Settings
@@ -79,8 +81,9 @@ struct StorageData
     uint32_t magic;
     uint32_t version;
     float live_alternate_knobs[6];
-    Settings presets[5];
+    Settings presets[3][5];
     Settings phaser_presets[5];
+    Settings flanger_presets[5];
     ExpressionHandler::State expression_assignments[2];
 
     bool operator!=(const StorageData& a) const
@@ -94,9 +97,14 @@ struct StorageData
         }
         for(int i = 0; i < 5; i++)
         {
-            if(a.presets[i] != presets[i])
-                return true;
+            for(int bank = 0; bank < 3; bank++)
+            {
+                if(a.presets[bank][i] != presets[bank][i])
+                    return true;
+            }
             if(a.phaser_presets[i] != phaser_presets[i])
+                return true;
+            if(a.flanger_presets[i] != flanger_presets[i])
                 return true;
         }
         for(int slot = 0; slot < 2; slot++)
@@ -120,13 +128,13 @@ struct StorageData
 };
 
 static constexpr uint32_t kStorageMagic = 0x42434C34; // "BCL4"
-static constexpr uint32_t kStorageVersion = 3;
+static constexpr uint32_t kStorageVersion = 5;
 static constexpr uint32_t kPresetClickTimeoutMs = 1000;
 static constexpr uint32_t kSaveSelectTimeoutMs = 3000;
 static constexpr uint32_t kPresetLedStepMs = 200;
 static constexpr uint32_t kSaveLedStepMs = 80;
 static constexpr uint32_t kSaveSelectHoldMs = 700;
-static constexpr uint32_t kPresetOffHoldMs = 1000;
+static constexpr uint32_t kPresetOffHoldMs = 1500;
 
 DaisyPetal hw;
 Parameter  param1, param2, param3, param4, param5, param6, expression;
@@ -139,9 +147,10 @@ bool use_preset = false;
 bool trigger_save = false;
 bool update_switches = true;
 bool suppress_button2_release = false;
+bool suppress_button2_preset_release = false;
 bool live_alternate_save_pending = false;
-bool phaser_switch1_latched = false;
-int  phaser_return_switch1 = 1;
+bool special_switch1_latched = false;
+int  special_return_switch1 = 1;
 uint32_t button2_down_ms = 0;
 uint32_t preset_click_start_ms = 0;
 uint32_t save_select_start_ms = 0;
@@ -161,7 +170,8 @@ bool dipValues[4] = {false, false, false, false};
 float knobValues[6] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 float pknobValues[6] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 float alternateKnobValues[6] = {0.5f, 0.5f, 0.2f, 0.0f, 0.333f, 0.404f};
-float phaserAlternateKnobValues[6] = {0.5f, 0.45f, 0.65f, 0.0f, 0.333f, 0.404f};
+float phaserAlternateKnobValues[6] = {0.0f, 0.45f, 0.35f, 0.5f, 0.65f, 0.5f};
+float flangerAlternateKnobValues[6] = {0.0f, 0.45f, 0.35f, 0.5f, 0.4f, 0.5f};
 float physicalKnobValues[6] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 float alternatePickupValues[6] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 bool  normalPickupActive[6] = {false, false, false, false, false, false};
@@ -178,8 +188,10 @@ SampleRateReducer srReducerL, srReducerR;
 SampleRateReducer ringSrReducerL, ringSrReducerR;
 MoogLadder        ladderL, ladderR;
 Svf               svfL, svfR;
-DSY_SDRAM_BSS Phaser phaserL;
-DSY_SDRAM_BSS Phaser phaserR;
+DSY_SDRAM_BSS FunboxPhaser phaserL;
+DSY_SDRAM_BSS FunboxPhaser phaserR;
+DSY_SDRAM_BSS FunboxFlanger flangerL;
+DSY_SDRAM_BSS FunboxFlanger flangerR;
 Oscillator        ringOsc;
 EnvelopeFollower  envFollower;
 
@@ -191,6 +203,21 @@ float filterResonance = 0.2f;
 float cutoffControl = 0.5f;
 float ringBaseFreq = 100.0f;
 float phaserLfoPhase = 0.0f;
+float phaserLfoSlewL = 0.0f;
+float phaserLfoSlewR = 0.0f;
+float phaserLfoPrevPhaseL = 0.0f;
+float phaserLfoPrevPhaseR = 0.0f;
+float phaserLfoRandomL = 0.0f;
+float phaserLfoRandomR = 0.0f;
+uint32_t phaserRandomState = 0x12345678;
+float flangerLfoPhase = 0.0f;
+float flangerLfoSlewL = 0.0f;
+float flangerLfoSlewR = 0.0f;
+float flangerLfoPrevPhaseL = 0.0f;
+float flangerLfoPrevPhaseR = 0.0f;
+float flangerLfoRandomL = 0.0f;
+float flangerLfoRandomR = 0.0f;
+uint32_t flangerRandomState = 0x87654321;
 
 float Clamp01(float v)
 {
@@ -236,6 +263,11 @@ float ApplyEnvDeadband(float base, float amount, float env)
     return Clamp01(base + BipolarDeadband(amount) * env);
 }
 
+float ApplyEnvDeadbandDepth(float base, float amount, float env, float depth)
+{
+    return Clamp01(base + BipolarDeadband(amount) * env * depth);
+}
+
 float EnvScale(float amount, float env, float depth)
 {
     return powf(2.0f, Bipolar(amount) * env * depth);
@@ -251,6 +283,61 @@ float PhaserLfo(float phase)
     static constexpr float kTwoPi = 6.28318530718f;
     phase -= floorf(phase);
     return sinf(phase * kTwoPi);
+}
+
+int PhaserLfoMode(float character)
+{
+    int mode = static_cast<int>(Clamp01(character) * 5.0f);
+    return mode > 4 ? 4 : mode;
+}
+
+float NextRandom(uint32_t& state)
+{
+    state = state * 1664525UL + 1013904223UL;
+    const uint32_t bits = (state >> 8) & 0x00FFFFFFUL;
+    return (static_cast<float>(bits) / 8388607.5f) - 1.0f;
+}
+
+float PhaserLfoTarget(float phase, int mode, float random_value)
+{
+    phase -= floorf(phase);
+    switch(mode)
+    {
+        case 1: return phase * 2.0f - 1.0f; // ramp
+        case 2: return 1.0f - phase * 2.0f; // saw
+        case 3: return phase < 0.5f ? 1.0f : -1.0f; // square
+        case 4: return random_value; // sample and hold
+        default:
+        {
+            const float t = -1.0f + 2.0f * phase;
+            return 2.0f * (fabsf(t) - 0.5f); // triangle
+        }
+    }
+}
+
+float ProcessPhaserLfo(float phase,
+                       int mode,
+                       float& prev_phase,
+                       float& random_value,
+                       float& slew_state,
+                       float slew_amount,
+                       uint32_t& random_state)
+{
+    phase -= floorf(phase);
+    if(phase < prev_phase && mode == 4)
+        random_value = NextRandom(random_state);
+    prev_phase = phase;
+
+    const float target = PhaserLfoTarget(phase, mode, random_value);
+    if(mode == 0)
+    {
+        slew_state = target;
+        return target;
+    }
+
+    const float slew = ExpMap(Clamp01(slew_amount), 0.0004f, 0.08f);
+    slew_state += (target - slew_state) * slew;
+    return slew_state;
 }
 
 int SwitchValue(bool left, bool right)
@@ -345,24 +432,56 @@ void StoreLiveAlternateValues()
     live_alternate_save_pending = false;
 }
 
+bool IsSpecialRoute()
+{
+    return routeMode == RouteMode::Phaser || routeMode == RouteMode::Flanger;
+}
+
+int NormalPresetBank()
+{
+    return switchValues[0] == 0 ? 0 : (switchValues[0] == 2 ? 2 : 1);
+}
+
+Settings& ActivePresetBank(StorageData& data, int index)
+{
+    if(routeMode == RouteMode::Phaser)
+        return data.phaser_presets[index];
+    if(routeMode == RouteMode::Flanger)
+        return data.flanger_presets[index];
+    return data.presets[NormalPresetBank()][index];
+}
+
+float* ActiveSpecialAlternateValues()
+{
+    if(routeMode == RouteMode::Phaser)
+        return phaserAlternateKnobValues;
+    if(routeMode == RouteMode::Flanger)
+        return flangerAlternateKnobValues;
+    return alternateKnobValues;
+}
+
 void ApplyPreset(int index)
 {
     StorageData& data = SavedSettings.GetSettings();
     if(data.magic != kStorageMagic || data.version != kStorageVersion)
         return;
 
-    Settings& s = routeMode == RouteMode::Phaser ? data.phaser_presets[index]
-                                                  : data.presets[index];
+    Settings& s = ActivePresetBank(data, index);
     for(int i = 0; i < 6; i++)
     {
         knobValues[i] = s.knobs[i];
         if(routeMode == RouteMode::Phaser)
             phaserAlternateKnobValues[i] = s.alternate_knobs[i];
+        else if(routeMode == RouteMode::Flanger)
+            flangerAlternateKnobValues[i] = s.alternate_knobs[i];
         else
-            alternateKnobValues[i] = s.alternate_knobs[i];
+        {
+            // Normal Shift K4-K6 are global env follower settings, not preset data.
+            if(i < 3)
+                alternateKnobValues[i] = s.alternate_knobs[i];
+        }
     }
-    for(int i = 0; i < 3; i++)
-        switchValues[i] = s.switches[i];
+    switchValues[2] = s.switches[2];
     for(int i = 0; i < 4; i++)
         dipValues[i] = s.dips[i];
     use_preset = true;
@@ -382,17 +501,15 @@ void StorePreset(int index)
     StorageData& data = SavedSettings.GetSettings();
     data.magic = kStorageMagic;
     data.version = kStorageVersion;
-    Settings& s = routeMode == RouteMode::Phaser ? data.phaser_presets[index]
-                                                  : data.presets[index];
+    Settings& s = ActivePresetBank(data, index);
     for(int i = 0; i < 6; i++)
     {
         s.knobs[i] = knobValues[i];
-        s.alternate_knobs[i] = routeMode == RouteMode::Phaser
-                                   ? phaserAlternateKnobValues[i]
-                                   : alternateKnobValues[i];
+        if(IsSpecialRoute() || i < 3)
+            s.alternate_knobs[i] = IsSpecialRoute() ? ActiveSpecialAlternateValues()[i]
+                                                    : alternateKnobValues[i];
     }
-    for(int i = 0; i < 3; i++)
-        s.switches[i] = switchValues[i];
+    s.switches[2] = switchValues[2];
     for(int i = 0; i < 4; i++)
         s.dips[i] = dipValues[i];
     trigger_save = true;
@@ -451,7 +568,7 @@ void UpdateSwitch2()
         expHandler.Reset();
     }
 
-    if(!phaser_switch1_latched)
+    if(!special_switch1_latched)
         routeMode = RouteMode::Normal;
 }
 
@@ -462,7 +579,7 @@ void UpdateLed2()
 
     if(save_select_active)
     {
-        led2.Set(((System::GetNow() / kSaveLedStepMs) % 2) == 0 ? 1.0f : 0.0f);
+        led2.Set(0.75f);
         return;
     }
 
@@ -476,7 +593,7 @@ void UpdateLed2()
         }
 
         const int pulses = active_preset + 1;
-        const int phases = pulses * 2 + 1;
+        const int phases = pulses * 2 + 2;
         if(led2_phase >= phases)
             led2_phase = 0;
 
@@ -510,8 +627,7 @@ void UpdateButtons()
     }
 
     if(hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() >= 600 && !alternateMode
-       && !bypass && !hw.switches[Funbox::FOOTSWITCH_2].Pressed()
-       && !expression_pressed)
+       && !hw.switches[Funbox::FOOTSWITCH_2].Pressed() && !expression_pressed)
     {
         alternateMode = true;
         CaptureAlternatePickup();
@@ -568,27 +684,52 @@ void UpdateButtons()
         button2_down_ms = System::GetNow();
     }
 
+    if(hw.switches[Funbox::FOOTSWITCH_2].Pressed()
+       && hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() <= 50
+       && !expression_pressed)
+    {
+        const uint32_t held_ms = System::GetNow() - button2_down_ms;
+        if(held_ms >= kPresetOffHoldMs)
+        {
+            if(save_select_active)
+            {
+                save_select_active = false;
+                pending_save_clicks = 0;
+            }
+            DisablePreset();
+            led2.Set(0.0f);
+            suppress_button2_preset_release = true;
+        }
+        else if(held_ms >= kSaveSelectHoldMs && !save_select_active
+                && !suppress_button2_preset_release)
+        {
+            save_select_active = true;
+            pending_preset_clicks = 0;
+            pending_save_clicks = 0;
+            save_select_start_ms = System::GetNow();
+            led2.Set(0.75f);
+        }
+    }
+
     if(hw.switches[Funbox::FOOTSWITCH_2].FallingEdge() && suppress_button2_release)
     {
         suppress_button2_release = false;
         return;
     }
 
+    if(hw.switches[Funbox::FOOTSWITCH_2].FallingEdge() && suppress_button2_preset_release)
+    {
+        suppress_button2_preset_release = false;
+        return;
+    }
+
     if(hw.switches[Funbox::FOOTSWITCH_2].FallingEdge() && !expression_pressed)
     {
         const uint32_t held_ms = System::GetNow() - button2_down_ms;
-        if(held_ms >= kPresetOffHoldMs
-           && hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() <= 50)
-        {
-            DisablePreset();
-        }
-        else if(held_ms >= kSaveSelectHoldMs
+        if(held_ms >= kSaveSelectHoldMs
                 && hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() <= 50)
         {
-            save_select_active = true;
-            pending_preset_clicks = 0;
-            pending_save_clicks = 0;
-            save_select_start_ms = System::GetNow();
+            return;
         }
         else if(held_ms < 350)
         {
@@ -651,20 +792,25 @@ void UpdateSwitches()
         UpdateSwitch1();
         if(changed1)
         {
-            if(phaser_switch1_latched)
+            if(special_switch1_latched)
             {
-                phaser_switch1_latched = false;
-                switchValues[0] = phaser_return_switch1;
+                special_switch1_latched = false;
+                switchValues[0] = special_return_switch1;
                 UpdateSwitch1();
                 UpdateSwitch2();
+                ApplyPreset(active_preset >= 0 ? active_preset : 0);
             }
-            else if(alternateMode && switchValues[0] == 0)
+            else if(alternateMode && (switchValues[0] == 0 || switchValues[0] == 2))
             {
-                phaser_switch1_latched = true;
-                phaser_return_switch1 = previous_switch1;
-                routeMode = RouteMode::Phaser;
-                expressionSlotMode = ExpressionSlotMode::Off;
-                expHandler.Reset();
+                special_switch1_latched = true;
+                special_return_switch1 = previous_switch1;
+                routeMode = switchValues[0] == 0 ? RouteMode::Phaser : RouteMode::Flanger;
+                UpdateSwitch2();
+                ApplyPreset(0);
+            }
+            else if(!alternateMode && routeMode == RouteMode::Normal)
+            {
+                ApplyPreset(active_preset >= 0 ? active_preset : 0);
             }
         }
     }
@@ -773,41 +919,60 @@ float ProcessVoice(
     return ProcessFilter(x, cutoff, resonance, left);
 }
 
-int PhaserPoles(float character)
-{
-    const int stepped = static_cast<int>(Clamp01(character) * 4.0f);
-    const int poles = 2 + (stepped > 3 ? 3 : stepped) * 2;
-    return poles;
-}
-
 float ProcessPhaserVoice(float in,
                          bool left,
                          float freq_control,
                          float feedback_control,
                          float env_to_freq,
                          float env_to_feedback,
-                         float character_control,
                          float depth_control,
                          float env_to_depth,
+                         float stages_control,
                          float lfo_signal,
                          float env)
 {
     float freq = ExpMap(freq_control, 40.0f, 8000.0f);
-    freq *= EnvScaleDeadband(env_to_freq, env, 4.0f);
+    freq *= EnvScaleDeadband(env_to_freq, env, 7.0f);
 
     float feedback = Clamp01(feedback_control + BipolarDeadband(env_to_feedback) * env);
     float depth = Clamp01(depth_control + BipolarDeadband(env_to_depth) * env);
     freq *= powf(2.0f, lfo_signal * depth * 1.5f);
 
-    Phaser& p = left ? phaserL : phaserR;
-    p.SetPoles(PhaserPoles(character_control));
+    FunboxPhaser& p = left ? phaserL : phaserR;
+    const int stages = 2 + static_cast<int>(Clamp01(stages_control) * 3.999f) * 2;
+    p.SetPoles(stages);
     p.SetFreq(fclamp(freq, 20.0f, 16000.0f));
-    p.SetLfoFreq(0.01f);
-    p.SetLfoDepth(0.0f);
-    p.SetFeedback(feedback * 0.75f);
+    p.SetFeedback(feedback);
 
     const float wet = p.Process(in) * 0.25f;
     return fclamp((in * 0.35f) + wet, -1.0f, 1.0f);
+}
+
+float ProcessFlangerVoice(float in,
+                          bool left,
+                          float delay_control,
+                          float feedback_control,
+                          float env_to_delay,
+                          float env_to_feedback,
+                          float depth_control,
+                          float env_to_depth,
+                          float lfo_signal,
+                          float env)
+{
+    float center_ms = ExpMap(delay_control, 0.35f, 45.0f);
+    center_ms *= EnvScaleDeadband(env_to_delay, env, 3.0f);
+
+    const float feedback = BipolarDeadband(feedback_control)
+                           + BipolarDeadband(env_to_feedback) * env;
+    const float depth = Clamp01(depth_control + BipolarDeadband(env_to_depth) * env);
+    const float sweep = powf(2.0f, lfo_signal * depth * 2.0f);
+    const float delay_ms = fclamp(center_ms * sweep, 0.25f, 48.0f);
+
+    FunboxFlanger& f = left ? flangerL : flangerR;
+    f.SetDelayMs(delay_ms);
+    f.SetFeedback(feedback);
+    f.SetWet(0.62f);
+    return f.Process(in);
 }
 
 static void AudioCallback(AudioHandle::InputBuffer  in,
@@ -825,16 +990,14 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
 
     if(alternateMode)
     {
-        float* activeAlternateValues
-            = routeMode == RouteMode::Phaser ? phaserAlternateKnobValues
-                                             : alternateKnobValues;
+        float* activeAlternateValues = ActiveSpecialAlternateValues();
         for(int i = 0; i < 6; i++)
         {
             if(KnobMoved(alternatePickupValues[i], physicalKnobValues[i]))
             {
                 alternatePickupValues[i] = physicalKnobValues[i];
                 activeAlternateValues[i] = physicalKnobValues[i];
-                if(routeMode != RouteMode::Phaser)
+                if(!IsSpecialRoute())
                     RequestLiveAlternateSave();
             }
         }
@@ -874,8 +1037,9 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
     float k6 = expressionValues[5];
 
     filterResonance = alternateKnobValues[2];
-    envInputGain = routeMode == RouteMode::Phaser ? 1.0f
-                                                  : 1.0f + alternateKnobValues[3] * 18.0f;
+    envInputGain = 1.0f + alternateKnobValues[3] * 18.0f;
+    if(IsSpecialRoute())
+        envInputGain *= 3.0f;
     envAttack = ExpMap(alternateKnobValues[4], 0.001f, 1.0f);
     envRelease = ExpMap(alternateKnobValues[5], 0.01f, 3.0f);
 
@@ -919,7 +1083,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
         if(routeMode == RouteMode::Phaser)
         {
             const float* phaserAlt = phaserAlternateKnobValues;
-            const float phaserEnv = Clamp01(env * 3.0f);
+            const float phaserEnv = env;
             const float lfoSpeedControl = ApplyEnvDeadband(k2, k5, phaserEnv);
             float       lfoSpeed = ExpMap(lfoSpeedControl, 0.02f, 8.0f);
             lfoSpeed = fclamp(lfoSpeed, 0.005f, 20.0f);
@@ -927,31 +1091,99 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
             if(phaserLfoPhase >= 1.0f)
                 phaserLfoPhase -= floorf(phaserLfoPhase);
 
-            const float spread = Clamp01(phaserAlt[3]);
-            const float lfoL = PhaserLfo(phaserLfoPhase);
-            const float lfoR = PhaserLfo(phaserLfoPhase + (spread * 0.5f));
+            const float spread = Clamp01(phaserAlt[0]
+                                         + BipolarDeadband(phaserAlt[3]) * phaserEnv);
+            const int   lfoMode = PhaserLfoMode(phaserAlt[1]);
+            const float lfoL = ProcessPhaserLfo(phaserLfoPhase,
+                                                lfoMode,
+                                                phaserLfoPrevPhaseL,
+                                                phaserLfoRandomL,
+                                                phaserLfoSlewL,
+                                                0.5f,
+                                                phaserRandomState);
+            const float lfoR = ProcessPhaserLfo(phaserLfoPhase + (spread * 0.5f),
+                                                lfoMode,
+                                                phaserLfoPrevPhaseR,
+                                                phaserLfoRandomR,
+                                                phaserLfoSlewR,
+                                                0.5f,
+                                                phaserRandomState);
             const float outL = ProcessPhaserVoice(inL,
                                                   true,
                                                   k1,
-                                                  k3,
-                                                  k4,
-                                                  k6,
-                                                  phaserAlt[1],
                                                   phaserAlt[2],
+                                                  k4,
                                                   phaserAlt[5],
+                                                  k3,
+                                                  k6,
+                                                  phaserAlt[4],
                                                   lfoL,
                                                   phaserEnv);
             const float outR = ProcessPhaserVoice(inR,
                                                   false,
                                                   k1,
-                                                  k3,
-                                                  k4,
-                                                  k6,
-                                                  phaserAlt[1],
                                                   phaserAlt[2],
+                                                  k4,
                                                   phaserAlt[5],
+                                                  k3,
+                                                  k6,
+                                                  phaserAlt[4],
                                                   lfoR,
                                                   phaserEnv);
+            out[0][i] = outL;
+            out[1][i] = outR;
+            continue;
+        }
+
+        if(routeMode == RouteMode::Flanger)
+        {
+            const float* flangerAlt = flangerAlternateKnobValues;
+            const float flangerEnv = env;
+            const float lfoSpeedControl = ApplyEnvDeadband(k2, k5, flangerEnv);
+            float       lfoSpeed = ExpMap(lfoSpeedControl, 0.02f, 8.0f);
+            lfoSpeed = fclamp(lfoSpeed, 0.005f, 20.0f);
+            flangerLfoPhase += lfoSpeed / samplerate;
+            if(flangerLfoPhase >= 1.0f)
+                flangerLfoPhase -= floorf(flangerLfoPhase);
+
+            const float spread = Clamp01(flangerAlt[0]
+                                         + BipolarDeadband(flangerAlt[3]) * flangerEnv);
+            const int   lfoMode = PhaserLfoMode(flangerAlt[1]);
+            const float slew = flangerAlt[4];
+            const float lfoL = ProcessPhaserLfo(flangerLfoPhase,
+                                                lfoMode,
+                                                flangerLfoPrevPhaseL,
+                                                flangerLfoRandomL,
+                                                flangerLfoSlewL,
+                                                slew,
+                                                flangerRandomState);
+            const float lfoR = ProcessPhaserLfo(flangerLfoPhase + (spread * 0.5f),
+                                                lfoMode,
+                                                flangerLfoPrevPhaseR,
+                                                flangerLfoRandomR,
+                                                flangerLfoSlewR,
+                                                slew,
+                                                flangerRandomState);
+            const float outL = ProcessFlangerVoice(inL,
+                                                   true,
+                                                   k1,
+                                                   flangerAlt[2],
+                                                   k4,
+                                                   flangerAlt[5],
+                                                   k3,
+                                                   k6,
+                                                   lfoL,
+                                                   flangerEnv);
+            const float outR = ProcessFlangerVoice(inR,
+                                                   false,
+                                                   k1,
+                                                   flangerAlt[2],
+                                                   k4,
+                                                   flangerAlt[5],
+                                                   k3,
+                                                   k6,
+                                                   lfoR,
+                                                   flangerEnv);
             out[0][i] = outL;
             out[1][i] = outR;
             continue;
@@ -964,7 +1196,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
             else
                 modBits = ApplyEnvDeadband(bits, k4, env);
             modSr = ApplyEnvDeadband(sr_reduce, k5, env);
-            modCutoffControl = ApplyEnvDeadband(cutoffControl, k6, env);
+            modCutoffControl = ApplyEnvDeadbandDepth(cutoffControl, k6, env, 2.5f);
         }
 
         const float cutoff = ExpMap(modCutoffControl, 40.0f, 16000.0f);
@@ -1002,6 +1234,8 @@ int main(void)
     svfR.Init(samplerate);
     phaserL.Init(samplerate);
     phaserR.Init(samplerate);
+    flangerL.Init(samplerate);
+    flangerR.Init(samplerate);
     ringOsc.Init(samplerate);
     ringOsc.SetAmp(0.5f);
     envFollower.Init(samplerate);
@@ -1059,16 +1293,33 @@ int main(void)
         defaults.live_alternate_knobs[i] = defaultAlternate[i];
     for(int i = 0; i < 5; i++)
     {
-        defaults.presets[i] = defaultPreset;
+        for(int bank = 0; bank < 3; bank++)
+        {
+            Settings normalPreset = defaultPreset;
+            normalPreset.switches[0] = bank == 0 ? 0 : (bank == 2 ? 2 : 1);
+            defaults.presets[bank][i] = normalPreset;
+        }
         Settings phaserPreset = defaultPreset;
         phaserPreset.switches[1] = 0;
         phaserPreset.knobs[0] = 0.45f;
         phaserPreset.knobs[1] = 0.25f;
-        phaserPreset.knobs[2] = 0.35f;
-        phaserPreset.alternate_knobs[0] = 0.25f;
+        phaserPreset.knobs[2] = 0.65f;
+        phaserPreset.knobs[5] = 0.5f;
+        phaserPreset.alternate_knobs[0] = 0.0f;
         phaserPreset.alternate_knobs[1] = 0.45f;
-        phaserPreset.alternate_knobs[2] = 0.65f;
+        phaserPreset.alternate_knobs[2] = 0.35f;
+        phaserPreset.alternate_knobs[3] = 0.5f;
+        phaserPreset.alternate_knobs[4] = 0.65f;
+        phaserPreset.alternate_knobs[5] = 0.5f;
         defaults.phaser_presets[i] = phaserPreset;
+
+        Settings flangerPreset = phaserPreset;
+        flangerPreset.knobs[0] = 0.35f;
+        flangerPreset.knobs[1] = 0.2f;
+        flangerPreset.knobs[2] = 0.6f;
+        flangerPreset.alternate_knobs[2] = 0.2f;
+        flangerPreset.alternate_knobs[4] = 0.45f;
+        defaults.flanger_presets[i] = flangerPreset;
     }
     for(int slot = 0; slot < 2; slot++)
     {

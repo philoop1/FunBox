@@ -7,6 +7,7 @@
 #include "delayline_oct.h"
 #include "expressionHandler.h"
 #include "tempo.h"  
+#include "harmonic_notch_filter.h"
 
 #include "../CloudSeed/Default.h"
 #include "../CloudSeed/ReverbController.h"
@@ -82,6 +83,7 @@ bool dipValues[4];
 
 
 CloudSeed::ReverbController* reverb = 0;
+HarmonicNotchFilter output_hum_filter;
 
 
 // This is used in the modified CloudSeed code for allocating
@@ -198,6 +200,9 @@ bool save_check = false;
 bool update_switches;
 uint32_t footswitch2_down_ms = 0;
 bool footswitch2_long_handled = false;
+uint32_t external_tap_down_ms = 0;
+bool external_tap_pressed = false;
+bool external_tap_long_handled = false;
 float tempo_division_knob = 0.5f;
 int tempo_debug_blink = 0;
 uint8_t midi_clock_led_count = 0;
@@ -763,6 +768,66 @@ void HandleLooperTapHeld(uint32_t held_ms)
     }
 }
 
+void HandleExternalTapRelease(uint32_t held_ms)
+{
+    if(held_ms >= kLooperLongPressMs || external_tap_long_handled)
+        return;
+
+    if(!LooperModeActive())
+    {
+        EnterLooperMode();
+        StartLoopRecording();
+        return;
+    }
+
+    if(looper_state == LooperState::Recording || looper_state == LooperState::WaitingEnd)
+    {
+        FinishLoopRecording();
+    }
+    else
+    {
+        StartLoopRecording();
+    }
+}
+
+void ProcessExternalTapInput()
+{
+    if(!dipValues[2])
+    {
+        external_tap_pressed = false;
+        external_tap_long_handled = false;
+        return;
+    }
+
+    const float external_tap_value = expression.Process();
+    const bool pressed_now = external_tap_pressed
+                                 ? external_tap_value < 0.55f
+                                 : external_tap_value < 0.20f;
+    const uint32_t now = System::GetNow();
+
+    if(pressed_now && !external_tap_pressed)
+    {
+        external_tap_pressed = true;
+        external_tap_down_ms = now;
+        external_tap_long_handled = false;
+    }
+    else if(pressed_now && !external_tap_long_handled)
+    {
+        const uint32_t held_ms = now - external_tap_down_ms;
+        if(held_ms >= kLooperLongPressMs)
+        {
+            if(LooperModeActive())
+                ExitLooperMode();
+            external_tap_long_handled = true;
+        }
+    }
+    else if(!pressed_now && external_tap_pressed)
+    {
+        external_tap_pressed = false;
+        HandleExternalTapRelease(now - external_tap_down_ms);
+    }
+}
+
 void ProcessLooperQuantize()
 {
     if(looper_state == LooperState::WaitingStart)
@@ -881,7 +946,7 @@ void WriteLooperFxResample(float fxL,
 
 void UpdateLed2Feedback()
 {
-    if(expHandler.isExpressionSetMode())
+    if(!dipValues[2] && expHandler.isExpressionSetMode())
         return;
 
     if(looper_led_ack_ticks > 0)
@@ -944,6 +1009,8 @@ void UpdateTempoSyncMode()
 
 void UpdateButtons()
 {
+    ProcessExternalTapInput();
+
     // (De-)Activate bypass and toggle LED when left footswitch is let go
     if(hw.switches[Funbox::FOOTSWITCH_1].FallingEdge())
     {
@@ -968,7 +1035,7 @@ void UpdateButtons()
 
 
     // Toggle Expression mode by holding down both footswitches for half a second
-    if(hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() >= 500 && hw.switches[Funbox::FOOTSWITCH_2].TimeHeldMs() >= 500 && !expression_pressed ) {
+    if(!dipValues[2] && hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() >= 500 && hw.switches[Funbox::FOOTSWITCH_2].TimeHeldMs() >= 500 && !expression_pressed ) {
         expHandler.ToggleExpressionSetMode();
 
         if (expHandler.isExpressionSetMode()) {
@@ -984,7 +1051,7 @@ void UpdateButtons()
     }
 
     // Clear Expression settings by holding down both footswitches for 2 seconds
-    if(hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() >= 2000 && hw.switches[Funbox::FOOTSWITCH_2].TimeHeldMs() >= 2000) {
+    if(!dipValues[2] && hw.switches[Funbox::FOOTSWITCH_1].TimeHeldMs() >= 2000 && hw.switches[Funbox::FOOTSWITCH_2].TimeHeldMs() >= 2000) {
         expHandler.Reset();
         led1.Set(bypass ? 0.0f : 1.0f); 
         led2.Set(0.0f); 
@@ -1039,7 +1106,7 @@ void UpdateButtons()
 
     UpdateLed2Feedback();
 
-    if(!expHandler.isExpressionSetMode() && tempo::MidiClockPresent())
+    if((dipValues[2] || !expHandler.isExpressionSetMode()) && tempo::MidiClockPresent())
     {
         const float base = Led1BaseBrightness();
         const bool midi_pulse = System::GetNow() < midi_led_pulse_until_ms;
@@ -1276,12 +1343,20 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
     }
 
 
-    float vexpression = expression.Process(); // 0 is heel (up), 1 is toe (down)
-    expHandler.Process(vexpression, knobValues, newExpressionValues);
+    float vexpression = dipValues[2] ? 0.0f : expression.Process(); // 0 is heel (up), 1 is toe (down)
+    if(dipValues[2])
+    {
+        for(int i = 0; i < 6; ++i)
+            newExpressionValues[i] = knobValues[i];
+    }
+    else
+    {
+        expHandler.Process(vexpression, knobValues, newExpressionValues);
+    }
 
 
     // If in expression set mode, set LEDS accordingly
-    if (expHandler.isExpressionSetMode()) {
+    if (!dipValues[2] && expHandler.isExpressionSetMode()) {
         led1.Set(expHandler.returnLed1Brightness());
         led2.Set(expHandler.returnLed2Brightness());
     }
@@ -1406,6 +1481,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
     const bool looper_mode = LooperModeActive();
     const bool looper_has_audio = LooperHasLoop();
     const bool process_fx = !bypass || looper_mode || looper_has_audio;
+    const bool hum_filter_on = dipValues[3];
     const bool overdub_enabled = looper_mode && !bypass;
     if(overdub_enabled && !previous_overdub_enabled)
         overdub_fade_remaining = kOverdubFadeSamples;
@@ -1545,6 +1621,13 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
                 }
 
             }
+
+            if(hum_filter_on)
+            {
+                float fl = out[0][i];
+                float fr = out[1][i];
+                output_hum_filter.ProcessStereo(fl, fr, out[0][i], out[1][i]);
+            }
         }
 
     } else {
@@ -1589,6 +1672,13 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
 
             out[0][i] = NeptuneSoftLimit(inputL + tail_outL * wetMix * 0.7f);
             out[1][i] = NeptuneSoftLimit(inputR + tail_outR * wetMix * 0.7f);
+
+            if(hum_filter_on)
+            {
+                float fl = out[0][i];
+                float fr = out[1][i];
+                output_hum_filter.ProcessStereo(fl, fr, out[0][i], out[1][i]);
+            }
         }
     }
 }
@@ -1698,6 +1788,13 @@ int main(void)
     samplerate = hw.AudioSampleRate();
 
     tempo::Init(samplerate);
+    output_hum_filter.Init(samplerate);
+    output_hum_filter.SetFundamentalHz(1000.0f);
+    output_hum_filter.SetHarmonicCount(8); // 1k..8k
+    output_hum_filter.SetQ(24.0f);
+    output_hum_filter.SetSlope24dB(true);
+    output_hum_filter.SetExtraStageMix(0.5f); // +~6 dB over 24 dB => ~30 dB
+    output_hum_filter.SetDepth(1.0f);
 
     AudioLib::ValueTables::Init();
     CloudSeed::FastSin::Init();

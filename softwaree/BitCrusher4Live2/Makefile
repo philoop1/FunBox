@@ -12,6 +12,7 @@ OPT = -Os
 CPP_SOURCES = BitCrush.cpp \
               funbox_phaser.cpp \
               funbox_flanger.cpp \
+              funbox_wavefolder.cpp \
               moogladder.cpp \
               oscillator.cpp \
               sampleratereducer.cpp \

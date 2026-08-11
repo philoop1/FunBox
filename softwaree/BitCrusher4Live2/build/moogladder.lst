@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 1
 
 
    1              		.cpu cortex-m7
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
   14:moogladder.cpp ****     }
   15:moogladder.cpp ****     else if(x >= 4.0f)
   42              		.loc 1 15 10 is_stmt 1 view .LVU5
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 2
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 2
 
 
   43 000e B1EE007A 		vmov.f32	s14, #4.0e+0
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
   27:moogladder.cpp **** {
   86              		.loc 1 27 1 is_stmt 1 view -0
   87              		.cfi_startproc
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 3
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 3
 
 
   88              		@ args = 0, pretend = 0, frame = 0
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  126              	.LBE7:
   37:moogladder.cpp ****     }
   38:moogladder.cpp **** 
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 4
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 4
 
 
   39:moogladder.cpp ****     old_freq_ = 0.0f;
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  156              		.loc 1 33 22 view .LVU55
   35:moogladder.cpp ****         tanhstg_[i % 3] = 0.0;
  157              		.loc 1 35 9 view .LVU56
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 5
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 5
 
 
   36:moogladder.cpp ****     }
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  204              		.cfi_offset 80, -48
  205              		.cfi_offset 81, -44
  206              		.cfi_offset 82, -40
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 6
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 6
 
 
  207              		.cfi_offset 83, -36
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  241 0028 F4EE477A 		vcmp.f32	s15, s14
  242              	.LBE11:
   57:moogladder.cpp ****     }
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 7
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 7
 
 
  243              		.loc 1 57 13 view .LVU84
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  283              	.LVL12:
   67:moogladder.cpp ****         fc3       = fc2 * fc2;
  284              		.loc 1 67 9 is_stmt 1 view .LVU101
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 8
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 8
 
 
   69:moogladder.cpp ****         acr  = -3.9364f * fc2 + 1.8409f * fc + 0.9968f;
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  328              	.LVL21:
  329              		.loc 1 71 22 view .LVU120
  330 00ac F7EE007A 		vmov.f32	s15, #1.0e+0
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 9
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 9
 
 
   72:moogladder.cpp **** 
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  365              		.loc 1 88 9 view .LVU137
  366              		.loc 1 88 12 is_stmt 0 view .LVU138
  367 00d4 D4ED087A 		vldr.32	s15, [r4, #32]
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 10
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 10
 
 
   89:moogladder.cpp ****         delay[0] = stg[0]
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  406              		.loc 1 94 29 view .LVU154
  407 010c F5EC01AA 		vldmia.32	r5!, {s21}
  408              		.loc 1 96 56 view .LVU155
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 11
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 11
 
 
  409 0110 29EE290A 		vmul.f32	s0, s18, s19
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  448              		.loc 1 101 26 is_stmt 0 discriminator 2 view .LVU173
  449 0142 DDED037A 		vldr.32	s15, [sp, #12]
  450              		.loc 1 101 40 discriminator 2 view .LVU174
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 12
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 12
 
 
  451 0146 B6EE007A 		vmov.f32	s14, #5.0e-1
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  494              		.loc 1 79 9 is_stmt 1 view .LVU187
   80:moogladder.cpp ****         tune = old_tune_;
  495              		.loc 1 80 9 view .LVU188
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 13
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 13
 
 
   79:moogladder.cpp ****         acr  = old_acr_;
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  542              	.LBE21:
  543              		.cfi_endproc
  544              	.LFE2815:
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 14
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 14
 
 
  546              		.text
@@ -815,19 +815,19 @@ ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 1
  577              		.file 31 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\locale.h"
  578              		.file 32 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\stdio.h"
  579              		.file 33 "<built-in>"
-ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s 			page 15
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s 			page 15
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 moogladder.cpp
-C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s:17     .text._ZN7daisysp10MoogLadder7my_tanhEf:00000000 $t
-C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s:25     .text._ZN7daisysp10MoogLadder7my_tanhEf:00000000 _ZN7daisysp10MoogLadder7my_tanhEf
-C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s:76     .text._ZN7daisysp10MoogLadder4InitEf:00000000 $t
-C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s:83     .text._ZN7daisysp10MoogLadder4InitEf:00000000 _ZN7daisysp10MoogLadder4InitEf
-C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s:171    .text._ZN7daisysp10MoogLadder4InitEf:0000002c $d
-C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s:178    .text._ZN7daisysp10MoogLadder7ProcessEf:00000000 $t
-C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s:185    .text._ZN7daisysp10MoogLadder7ProcessEf:00000000 _ZN7daisysp10MoogLadder7ProcessEf
-C:\Users\Philoop\AppData\Local\Temp\ccUP58DO.s:530    .text._ZN7daisysp10MoogLadder7ProcessEf:00000194 $d
+C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s:17     .text._ZN7daisysp10MoogLadder7my_tanhEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s:25     .text._ZN7daisysp10MoogLadder7my_tanhEf:00000000 _ZN7daisysp10MoogLadder7my_tanhEf
+C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s:76     .text._ZN7daisysp10MoogLadder4InitEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s:83     .text._ZN7daisysp10MoogLadder4InitEf:00000000 _ZN7daisysp10MoogLadder4InitEf
+C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s:171    .text._ZN7daisysp10MoogLadder4InitEf:0000002c $d
+C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s:178    .text._ZN7daisysp10MoogLadder7ProcessEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s:185    .text._ZN7daisysp10MoogLadder7ProcessEf:00000000 _ZN7daisysp10MoogLadder7ProcessEf
+C:\Users\Philoop\AppData\Local\Temp\ccb5FaI3.s:530    .text._ZN7daisysp10MoogLadder7ProcessEf:00000194 $d
 
 UNDEFINED SYMBOLS
 tanhf

@@ -338,7 +338,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
     float vmix = newExpressionValues[1];
     float vpitch_raw = newExpressionValues[2];
     float vfeedback = newExpressionValues[3];
-    float vwidth = newExpressionValues[4] * 50.0; // Width of 50ms;
+    float vwidth = newExpressionValues[4] * 150.0; // Width of 50ms;
     float vspeed_raw = newExpressionValues[5];
 
 

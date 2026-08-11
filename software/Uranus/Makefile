@@ -1,5 +1,5 @@
 # Project Name
-TARGET = uranus
+TARGET = uranusp
 CPP_STANDARD = -std=gnu++20
 USE_DAISYSP_LGPL = 1
 

@@ -1,0 +1,820 @@
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 1
+  11              		.eabi_attribute 18, 4
+  12              		.file	"funbox_wavefolder.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN16FunboxWavefolder4InitEv,"ax",%progbits
+  17              		.align	1
+  18              		.global	_ZN16FunboxWavefolder4InitEv
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-d16
+  25              	_ZN16FunboxWavefolder4InitEv:
+  26              	.LVL0:
+  27              	.LFB561:
+  28              		.file 1 "funbox_wavefolder.cpp"
+   1:funbox_wavefolder.cpp **** #include "funbox_wavefolder.h"
+   2:funbox_wavefolder.cpp **** 
+   3:funbox_wavefolder.cpp **** #include <math.h>
+   4:funbox_wavefolder.cpp **** 
+   5:funbox_wavefolder.cpp **** void FunboxWavefolder::Init() {}
+  29              		.loc 1 5 31 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              		.loc 1 5 32 is_stmt 0 view .LVU1
+  35 0000 7047     		bx	lr
+  36              		.cfi_endproc
+  37              	.LFE561:
+  39              		.section	.text._ZNK16FunboxWavefolder7Clamp01Ef,"ax",%progbits
+  40              		.align	1
+  41              		.global	_ZNK16FunboxWavefolder7Clamp01Ef
+  42              		.syntax unified
+  43              		.thumb
+  44              		.thumb_func
+  45              		.fpu fpv5-d16
+  47              	_ZNK16FunboxWavefolder7Clamp01Ef:
+  48              	.LVL1:
+  49              	.LFB562:
+   6:funbox_wavefolder.cpp **** 
+   7:funbox_wavefolder.cpp **** float FunboxWavefolder::Clamp01(float v) const
+   8:funbox_wavefolder.cpp **** {
+  50              		.loc 1 8 1 is_stmt 1 view -0
+  51              		.cfi_startproc
+  52              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 2
+
+
+  53              		@ frame_needed = 0, uses_anonymous_args = 0
+  54              		@ link register save eliminated.
+   9:funbox_wavefolder.cpp ****     if(v < 0.0f)
+  55              		.loc 1 9 5 view .LVU3
+  56 0000 B5EEC00A 		vcmpe.f32	s0, #0
+  57 0004 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  58 0008 08D4     		bmi	.L5
+  10:funbox_wavefolder.cpp ****         return 0.0f;
+  11:funbox_wavefolder.cpp ****     if(v > 1.0f)
+  59              		.loc 1 11 5 view .LVU4
+  60 000a F7EE007A 		vmov.f32	s15, #1.0e+0
+  12:funbox_wavefolder.cpp ****         return 1.0f;
+  61              		.loc 1 12 16 is_stmt 0 view .LVU5
+  62 000e B4EE670A 		vcmp.f32	s0, s15
+  63 0012 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  64 0016 37FE800A 		vselgt.f32	s0, s15, s0
+  65              	.LVL2:
+  66              		.loc 1 12 16 view .LVU6
+  67 001a 7047     		bx	lr
+  68              	.LVL3:
+  69              	.L5:
+  10:funbox_wavefolder.cpp ****         return 0.0f;
+  70              		.loc 1 10 16 view .LVU7
+  71 001c 9FED010A 		vldr.32	s0, .L7
+  72              	.LVL4:
+  13:funbox_wavefolder.cpp ****     return v;
+  14:funbox_wavefolder.cpp **** }
+  73              		.loc 1 14 1 view .LVU8
+  74 0020 7047     		bx	lr
+  75              	.L8:
+  76 0022 00BF     		.align	2
+  77              	.L7:
+  78 0024 00000000 		.word	0
+  79              		.cfi_endproc
+  80              	.LFE562:
+  82              		.section	.text._ZNK16FunboxWavefolder15BipolarDeadbandEf,"ax",%progbits
+  83              		.align	1
+  84              		.global	_ZNK16FunboxWavefolder15BipolarDeadbandEf
+  85              		.syntax unified
+  86              		.thumb
+  87              		.thumb_func
+  88              		.fpu fpv5-d16
+  90              	_ZNK16FunboxWavefolder15BipolarDeadbandEf:
+  91              	.LVL5:
+  92              	.LFB563:
+  15:funbox_wavefolder.cpp **** 
+  16:funbox_wavefolder.cpp **** float FunboxWavefolder::BipolarDeadband(float v) const
+  17:funbox_wavefolder.cpp **** {
+  93              		.loc 1 17 1 is_stmt 1 view -0
+  94              		.cfi_startproc
+  95              		@ args = 0, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97              		@ link register save eliminated.
+  18:funbox_wavefolder.cpp ****     static constexpr float kDeadband = 0.04f;
+  98              		.loc 1 18 5 view .LVU10
+  19:funbox_wavefolder.cpp ****     float b = Clamp01(v) * 2.0f - 1.0f;
+  99              		.loc 1 19 5 view .LVU11
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 3
+
+
+ 100              	.LBB14:
+ 101              	.LBI14:
+   7:funbox_wavefolder.cpp **** {
+ 102              		.loc 1 7 7 view .LVU12
+ 103              	.LBB15:
+   9:funbox_wavefolder.cpp ****         return 0.0f;
+ 104              		.loc 1 9 5 view .LVU13
+ 105 0000 B5EEC00A 		vcmpe.f32	s0, #0
+ 106 0004 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 107 0008 37D4     		bmi	.L16
+  11:funbox_wavefolder.cpp ****         return 1.0f;
+ 108              		.loc 1 11 5 view .LVU14
+ 109 000a F7EE007A 		vmov.f32	s15, #1.0e+0
+  12:funbox_wavefolder.cpp ****     return v;
+ 110              		.loc 1 12 16 is_stmt 0 view .LVU15
+ 111 000e B4EE670A 		vcmp.f32	s0, s15
+ 112 0012 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 113 0016 37FE800A 		vselgt.f32	s0, s15, s0
+ 114              	.LVL6:
+ 115              	.L10:
+  12:funbox_wavefolder.cpp ****     return v;
+ 116              		.loc 1 12 16 view .LVU16
+ 117              	.LBE15:
+ 118              	.LBE14:
+ 119              		.loc 1 19 35 view .LVU17
+ 120 001a FFEE007A 		vmov.f32	s15, #-1.0e+0
+  20:funbox_wavefolder.cpp ****     if(fabsf(b) < kDeadband)
+ 121              		.loc 1 20 5 view .LVU18
+ 122 001e 9FED1B6A 		vldr.32	s12, .L22
+  19:funbox_wavefolder.cpp ****     if(fabsf(b) < kDeadband)
+ 123              		.loc 1 19 35 view .LVU19
+ 124 0022 B0EE007A 		vmov.f32	s14, #2.0e+0
+ 125 0026 F0EE675A 		vmov.f32	s11, s15
+ 126 002a E0EE075A 		vfma.f32	s11, s0, s14
+ 127              	.LVL7:
+ 128              		.loc 1 20 5 is_stmt 1 view .LVU20
+ 129              		.loc 1 20 13 is_stmt 0 view .LVU21
+ 130 002e B0EEE57A 		vabs.f32	s14, s11
+ 131              		.loc 1 20 5 view .LVU22
+ 132 0032 B4EEC67A 		vcmpe.f32	s14, s12
+ 133 0036 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 134 003a 24D4     		bmi	.L17
+  21:funbox_wavefolder.cpp ****         return 0.0f;
+  22:funbox_wavefolder.cpp **** 
+  23:funbox_wavefolder.cpp ****     const float sign = b < 0.0f ? -1.0f : 1.0f;
+ 135              		.loc 1 23 5 is_stmt 1 view .LVU23
+ 136              		.loc 1 23 33 is_stmt 0 view .LVU24
+ 137 003c F5EEC05A 		vcmpe.f32	s11, #0
+  24:funbox_wavefolder.cpp ****     b = (fabsf(b) - kDeadband) / (1.0f - kDeadband);
+ 138              		.loc 1 24 19 view .LVU25
+ 139 0040 37EE467A 		vsub.f32	s14, s14, s12
+ 140              		.loc 1 24 7 view .LVU26
+ 141 0044 9FED126A 		vldr.32	s12, .L22+4
+  23:funbox_wavefolder.cpp ****     b = (fabsf(b) - kDeadband) / (1.0f - kDeadband);
+ 142              		.loc 1 23 33 view .LVU27
+ 143 0048 F7EE006A 		vmov.f32	s13, #1.0e+0
+ 144 004c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 4
+
+
+ 145 0050 54BF     		ite	pl
+ 146 0052 B0EE660A 		vmovpl.f32	s0, s13
+ 147 0056 B0EE670A 		vmovmi.f32	s0, s15
+ 148              	.LVL8:
+ 149              		.loc 1 24 5 is_stmt 1 view .LVU28
+ 150              		.loc 1 24 7 is_stmt 0 view .LVU29
+ 151 005a C7EE067A 		vdiv.f32	s15, s14, s12
+ 152              	.LVL9:
+  25:funbox_wavefolder.cpp ****     return sign * Clamp01(b);
+ 153              		.loc 1 25 5 is_stmt 1 view .LVU30
+ 154              	.LBB17:
+ 155              	.LBI17:
+   7:funbox_wavefolder.cpp **** {
+ 156              		.loc 1 7 7 view .LVU31
+ 157              	.LBB18:
+   9:funbox_wavefolder.cpp ****         return 0.0f;
+ 158              		.loc 1 9 5 view .LVU32
+ 159 005e F5EEC07A 		vcmpe.f32	s15, #0
+ 160 0062 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 161 0066 0BD4     		bmi	.L19
+  11:funbox_wavefolder.cpp ****         return 1.0f;
+ 162              		.loc 1 11 5 view .LVU33
+  12:funbox_wavefolder.cpp ****     return v;
+ 163              		.loc 1 12 16 is_stmt 0 view .LVU34
+ 164 0068 F4EE667A 		vcmp.f32	s15, s13
+ 165 006c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 166 0070 76FEA77A 		vselgt.f32	s15, s13, s15
+ 167              	.LVL10:
+ 168              	.L14:
+  12:funbox_wavefolder.cpp ****     return v;
+ 169              		.loc 1 12 16 view .LVU35
+ 170              	.LBE18:
+ 171              	.LBE17:
+ 172              		.loc 1 25 28 view .LVU36
+ 173 0074 20EE270A 		vmul.f32	s0, s0, s15
+ 174              	.LVL11:
+ 175              		.loc 1 25 28 view .LVU37
+ 176 0078 7047     		bx	lr
+ 177              	.LVL12:
+ 178              	.L16:
+ 179              	.LBB20:
+ 180              	.LBB16:
+  10:funbox_wavefolder.cpp ****     if(v > 1.0f)
+ 181              		.loc 1 10 16 view .LVU38
+ 182 007a 9FED060A 		vldr.32	s0, .L22+8
+ 183              	.LVL13:
+  10:funbox_wavefolder.cpp ****     if(v > 1.0f)
+ 184              		.loc 1 10 16 view .LVU39
+ 185 007e CCE7     		b	.L10
+ 186              	.LVL14:
+ 187              	.L19:
+  10:funbox_wavefolder.cpp ****     if(v > 1.0f)
+ 188              		.loc 1 10 16 view .LVU40
+ 189              	.LBE16:
+ 190              	.LBE20:
+ 191              	.LBB21:
+ 192              	.LBB19:
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 5
+
+
+ 193 0080 DFED047A 		vldr.32	s15, .L22+8
+ 194              	.LVL15:
+  10:funbox_wavefolder.cpp ****     if(v > 1.0f)
+ 195              		.loc 1 10 16 view .LVU41
+ 196 0084 F6E7     		b	.L14
+ 197              	.LVL16:
+ 198              	.L17:
+  10:funbox_wavefolder.cpp ****     if(v > 1.0f)
+ 199              		.loc 1 10 16 view .LVU42
+ 200              	.LBE19:
+ 201              	.LBE21:
+  21:funbox_wavefolder.cpp **** 
+ 202              		.loc 1 21 16 view .LVU43
+ 203 0086 9FED030A 		vldr.32	s0, .L22+8
+  26:funbox_wavefolder.cpp **** }
+ 204              		.loc 1 26 1 view .LVU44
+ 205 008a 7047     		bx	lr
+ 206              	.L23:
+ 207              		.align	2
+ 208              	.L22:
+ 209 008c 0AD7233D 		.word	1025758986
+ 210 0090 8FC2753F 		.word	1064682127
+ 211 0094 00000000 		.word	0
+ 212              		.cfi_endproc
+ 213              	.LFE563:
+ 215              		.section	.text._ZNK16FunboxWavefolder6ExpMapEfff,"ax",%progbits
+ 216              		.align	1
+ 217              		.global	_ZNK16FunboxWavefolder6ExpMapEfff
+ 218              		.syntax unified
+ 219              		.thumb
+ 220              		.thumb_func
+ 221              		.fpu fpv5-d16
+ 223              	_ZNK16FunboxWavefolder6ExpMapEfff:
+ 224              	.LVL17:
+ 225              	.LFB564:
+  27:funbox_wavefolder.cpp **** 
+  28:funbox_wavefolder.cpp **** float FunboxWavefolder::ExpMap(float knob, float min_v, float max_v) const
+  29:funbox_wavefolder.cpp **** {
+ 226              		.loc 1 29 1 is_stmt 1 view -0
+ 227              		.cfi_startproc
+ 228              		@ args = 0, pretend = 0, frame = 0
+ 229              		@ frame_needed = 0, uses_anonymous_args = 0
+  30:funbox_wavefolder.cpp ****     return min_v * powf(max_v / min_v, Clamp01(knob));
+ 230              		.loc 1 30 5 view .LVU46
+  29:funbox_wavefolder.cpp ****     return min_v * powf(max_v / min_v, Clamp01(knob));
+ 231              		.loc 1 29 1 is_stmt 0 view .LVU47
+ 232 0000 F0EE407A 		vmov.f32	s15, s0
+ 233              		.loc 1 30 24 view .LVU48
+ 234 0004 81EE200A 		vdiv.f32	s0, s2, s1
+ 235              	.LVL18:
+ 236              	.LBB22:
+ 237              	.LBI22:
+   7:funbox_wavefolder.cpp **** {
+ 238              		.loc 1 7 7 is_stmt 1 view .LVU49
+ 239              	.LBB23:
+   9:funbox_wavefolder.cpp ****         return 0.0f;
+ 240              		.loc 1 9 5 view .LVU50
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 6
+
+
+ 241 0008 F5EEC07A 		vcmpe.f32	s15, #0
+ 242              	.LBE23:
+ 243              	.LBE22:
+  29:funbox_wavefolder.cpp ****     return min_v * powf(max_v / min_v, Clamp01(knob));
+ 244              		.loc 1 29 1 is_stmt 0 view .LVU51
+ 245 000c 08B5     		push	{r3, lr}
+ 246              		.cfi_def_cfa_offset 8
+ 247              		.cfi_offset 3, -8
+ 248              		.cfi_offset 14, -4
+ 249              	.LBB27:
+ 250              	.LBB24:
+   9:funbox_wavefolder.cpp ****         return 0.0f;
+ 251              		.loc 1 9 5 view .LVU52
+ 252 000e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 253              	.LBE24:
+ 254              	.LBE27:
+  29:funbox_wavefolder.cpp ****     return min_v * powf(max_v / min_v, Clamp01(knob));
+ 255              		.loc 1 29 1 view .LVU53
+ 256 0012 2DED028B 		vpush.64	{d8}
+ 257              		.cfi_def_cfa_offset 16
+ 258              		.cfi_offset 80, -16
+ 259              		.cfi_offset 81, -12
+  29:funbox_wavefolder.cpp ****     return min_v * powf(max_v / min_v, Clamp01(knob));
+ 260              		.loc 1 29 1 view .LVU54
+ 261 0016 B0EE608A 		vmov.f32	s16, s1
+ 262              	.LBB28:
+ 263              	.LBB25:
+   9:funbox_wavefolder.cpp ****         return 0.0f;
+ 264              		.loc 1 9 5 view .LVU55
+ 265 001a 10D4     		bmi	.L27
+  11:funbox_wavefolder.cpp ****         return 1.0f;
+ 266              		.loc 1 11 5 is_stmt 1 view .LVU56
+ 267 001c B7EE007A 		vmov.f32	s14, #1.0e+0
+  12:funbox_wavefolder.cpp ****     return v;
+ 268              		.loc 1 12 16 is_stmt 0 view .LVU57
+ 269 0020 F4EE477A 		vcmp.f32	s15, s14
+ 270 0024 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 271 0028 77FE277A 		vselgt.f32	s15, s14, s15
+ 272              	.LVL19:
+ 273              	.L25:
+  12:funbox_wavefolder.cpp ****     return v;
+ 274              		.loc 1 12 16 view .LVU58
+ 275              	.LBE25:
+ 276              	.LBE28:
+ 277              		.loc 1 30 24 view .LVU59
+ 278 002c F0EE670A 		vmov.f32	s1, s15
+ 279              	.LVL20:
+ 280              		.loc 1 30 24 view .LVU60
+ 281 0030 FFF7FEFF 		bl	powf
+ 282              	.LVL21:
+  31:funbox_wavefolder.cpp **** }
+ 283              		.loc 1 31 1 view .LVU61
+ 284 0034 20EE080A 		vmul.f32	s0, s0, s16
+ 285 0038 BDEC028B 		vldm	sp!, {d8}
+ 286              		.cfi_remember_state
+ 287              		.cfi_restore 80
+ 288              		.cfi_restore 81
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 7
+
+
+ 289              		.cfi_def_cfa_offset 8
+ 290              	.LVL22:
+ 291              		.loc 1 31 1 view .LVU62
+ 292 003c 08BD     		pop	{r3, pc}
+ 293              	.LVL23:
+ 294              	.L27:
+ 295              		.cfi_restore_state
+ 296              	.LBB29:
+ 297              	.LBB26:
+  10:funbox_wavefolder.cpp ****     if(v > 1.0f)
+ 298              		.loc 1 10 16 view .LVU63
+ 299 003e DFED017A 		vldr.32	s15, .L29
+ 300              	.LVL24:
+  10:funbox_wavefolder.cpp ****     if(v > 1.0f)
+ 301              		.loc 1 10 16 view .LVU64
+ 302 0042 F3E7     		b	.L25
+ 303              	.L30:
+ 304              		.align	2
+ 305              	.L29:
+ 306 0044 00000000 		.word	0
+ 307              	.LBE26:
+ 308              	.LBE29:
+ 309              		.cfi_endproc
+ 310              	.LFE564:
+ 312              		.section	.text._ZNK16FunboxWavefolder4FoldEf,"ax",%progbits
+ 313              		.align	1
+ 314              		.global	_ZNK16FunboxWavefolder4FoldEf
+ 315              		.syntax unified
+ 316              		.thumb
+ 317              		.thumb_func
+ 318              		.fpu fpv5-d16
+ 320              	_ZNK16FunboxWavefolder4FoldEf:
+ 321              	.LVL25:
+ 322              	.LFB565:
+  32:funbox_wavefolder.cpp **** 
+  33:funbox_wavefolder.cpp **** float FunboxWavefolder::Fold(float in) const
+  34:funbox_wavefolder.cpp **** {
+ 323              		.loc 1 34 1 is_stmt 1 view -0
+ 324              		.cfi_startproc
+ 325              		@ args = 0, pretend = 0, frame = 0
+ 326              		@ frame_needed = 0, uses_anonymous_args = 0
+ 327              		@ link register save eliminated.
+  35:funbox_wavefolder.cpp ****     const float ft = floorf((in + 1.0f) * 0.5f);
+ 328              		.loc 1 35 5 view .LVU66
+ 329              		.loc 1 35 33 is_stmt 0 view .LVU67
+ 330 0000 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 331              		.loc 1 35 28 view .LVU68
+ 332 0004 F6EE006A 		vmov.f32	s13, #5.0e-1
+ 333              		.loc 1 35 33 view .LVU69
+ 334 0008 70EE077A 		vadd.f32	s15, s0, s14
+ 335              		.loc 1 35 28 view .LVU70
+ 336 000c 67EEA67A 		vmul.f32	s15, s15, s13
+ 337 0010 FBFE677A 		vrintm.f32	s15, s15
+ 338              	.LVL26:
+  36:funbox_wavefolder.cpp ****     const float sgn = static_cast<int>(ft) % 2 == 0 ? 1.0f : -1.0f;
+ 339              		.loc 1 36 5 is_stmt 1 view .LVU71
+ 340              		.loc 1 36 23 is_stmt 0 view .LVU72
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 8
+
+
+ 341 0014 FDEEE76A 		vcvt.s32.f32	s13, s15
+ 342 0018 16EE903A 		vmov	r3, s13	@ int
+ 343              		.loc 1 36 53 view .LVU73
+ 344 001c FFEE006A 		vmov.f32	s13, #-1.0e+0
+ 345 0020 13F0010F 		tst	r3, #1
+ 346 0024 07FE267A 		vseleq.f32	s14, s14, s13
+ 347              	.LVL27:
+  37:funbox_wavefolder.cpp ****     return sgn * (in - 2.0f * ft);
+ 348              		.loc 1 37 5 is_stmt 1 view .LVU74
+ 349              		.loc 1 37 22 is_stmt 0 view .LVU75
+ 350 0028 F0EE006A 		vmov.f32	s13, #2.0e+0
+ 351 002c A7EEE60A 		vfms.f32	s0, s15, s13
+ 352              	.LVL28:
+  38:funbox_wavefolder.cpp **** }
+ 353              		.loc 1 38 1 view .LVU76
+ 354 0030 20EE070A 		vmul.f32	s0, s0, s14
+ 355 0034 7047     		bx	lr
+ 356              		.cfi_endproc
+ 357              	.LFE565:
+ 359              		.section	.text._ZN16FunboxWavefolder7ProcessEffffff,"ax",%progbits
+ 360              		.align	1
+ 361              		.global	_ZN16FunboxWavefolder7ProcessEffffff
+ 362              		.syntax unified
+ 363              		.thumb
+ 364              		.thumb_func
+ 365              		.fpu fpv5-d16
+ 367              	_ZN16FunboxWavefolder7ProcessEffffff:
+ 368              	.LVL29:
+ 369              	.LFB566:
+  39:funbox_wavefolder.cpp **** 
+  40:funbox_wavefolder.cpp **** float FunboxWavefolder::Process(float in,
+  41:funbox_wavefolder.cpp ****                                 float threshold_control,
+  42:funbox_wavefolder.cpp ****                                 float env_to_threshold,
+  43:funbox_wavefolder.cpp ****                                 float lfo_to_threshold,
+  44:funbox_wavefolder.cpp ****                                 float lfo_signal,
+  45:funbox_wavefolder.cpp ****                                 float env)
+  46:funbox_wavefolder.cpp **** {
+ 370              		.loc 1 46 1 is_stmt 1 view -0
+ 371              		.cfi_startproc
+ 372              		@ args = 0, pretend = 0, frame = 0
+ 373              		@ frame_needed = 0, uses_anonymous_args = 0
+  47:funbox_wavefolder.cpp ****     const float base_threshold = ExpMap(threshold_control, 1.0f, 0.001f);
+ 374              		.loc 1 47 5 view .LVU78
+  46:funbox_wavefolder.cpp ****     const float base_threshold = ExpMap(threshold_control, 1.0f, 0.001f);
+ 375              		.loc 1 46 1 is_stmt 0 view .LVU79
+ 376 0000 10B5     		push	{r4, lr}
+ 377              		.cfi_def_cfa_offset 8
+ 378              		.cfi_offset 4, -8
+ 379              		.cfi_offset 14, -4
+ 380 0002 2DED088B 		vpush.64	{d8, d9, d10, d11}
+ 381              		.cfi_def_cfa_offset 40
+ 382              		.cfi_offset 80, -40
+ 383              		.cfi_offset 81, -36
+ 384              		.cfi_offset 82, -32
+ 385              		.cfi_offset 83, -28
+ 386              		.cfi_offset 84, -24
+ 387              		.cfi_offset 85, -20
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 9
+
+
+ 388              		.cfi_offset 86, -16
+ 389              		.cfi_offset 87, -12
+  46:funbox_wavefolder.cpp ****     const float base_threshold = ExpMap(threshold_control, 1.0f, 0.001f);
+ 390              		.loc 1 46 1 view .LVU80
+ 391 0006 F0EE41AA 		vmov.f32	s21, s2
+ 392 000a 0446     		mov	r4, r0
+ 393 000c B0EE629A 		vmov.f32	s18, s5
+ 394              		.loc 1 47 40 view .LVU81
+ 395 0010 9FED451A 		vldr.32	s2, .L45
+ 396              	.LVL30:
+  46:funbox_wavefolder.cpp ****     const float base_threshold = ExpMap(threshold_control, 1.0f, 0.001f);
+ 397              		.loc 1 46 1 view .LVU82
+ 398 0014 F0EE409A 		vmov.f32	s19, s0
+ 399 0018 B0EE600A 		vmov.f32	s0, s1
+ 400              	.LVL31:
+ 401              		.loc 1 47 40 view .LVU83
+ 402 001c F7EE000A 		vmov.f32	s1, #1.0e+0
+ 403              	.LVL32:
+  46:funbox_wavefolder.cpp ****     const float base_threshold = ExpMap(threshold_control, 1.0f, 0.001f);
+ 404              		.loc 1 46 1 view .LVU84
+ 405 0020 F0EE618A 		vmov.f32	s17, s3
+ 406 0024 B0EE42AA 		vmov.f32	s20, s4
+ 407              		.loc 1 47 40 view .LVU85
+ 408 0028 FFF7FEFF 		bl	_ZNK16FunboxWavefolder6ExpMapEfff
+ 409              	.LVL33:
+  48:funbox_wavefolder.cpp **** 
+  49:funbox_wavefolder.cpp ****     const float env_threshold
+  50:funbox_wavefolder.cpp ****         = powf(2.0f, -BipolarDeadband(env_to_threshold) * env * 8.0f);
+ 410              		.loc 1 50 38 view .LVU86
+ 411 002c 2046     		mov	r0, r4
+  47:funbox_wavefolder.cpp **** 
+ 412              		.loc 1 47 40 view .LVU87
+ 413 002e B0EE408A 		vmov.f32	s16, s0
+ 414              	.LVL34:
+  49:funbox_wavefolder.cpp ****         = powf(2.0f, -BipolarDeadband(env_to_threshold) * env * 8.0f);
+ 415              		.loc 1 49 5 is_stmt 1 view .LVU88
+ 416              		.loc 1 50 38 is_stmt 0 view .LVU89
+ 417 0032 B0EE6A0A 		vmov.f32	s0, s21
+ 418              	.LVL35:
+ 419              		.loc 1 50 38 view .LVU90
+ 420 0036 FFF7FEFF 		bl	_ZNK16FunboxWavefolder15BipolarDeadbandEf
+ 421              	.LVL36:
+ 422              		.loc 1 50 15 view .LVU91
+ 423 003a B2EE00BA 		vmov.f32	s22, #8.0e+0
+ 424              		.loc 1 50 57 view .LVU92
+ 425 003e 20EE490A 		vnmul.f32	s0, s0, s18
+ 426 0042 B7EE009A 		vmov.f32	s18, #1.0e+0
+ 427              	.LVL37:
+ 428              		.loc 1 50 15 view .LVU93
+ 429 0046 60EE0B0A 		vmul.f32	s1, s0, s22
+ 430 004a B0EE000A 		vmov.f32	s0, #2.0e+0
+ 431 004e FFF7FEFF 		bl	powf
+ 432              	.LVL38:
+ 433              	.LBB30:
+ 434              	.LBB31:
+   9:funbox_wavefolder.cpp ****         return 0.0f;
+ 435              		.loc 1 9 5 view .LVU94
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 10
+
+
+ 436 0052 F5EEC08A 		vcmpe.f32	s17, #0
+ 437              	.LBE31:
+ 438              	.LBE30:
+ 439              		.loc 1 50 15 view .LVU95
+ 440 0056 F0EE40AA 		vmov.f32	s21, s0
+ 441              	.LVL39:
+  51:funbox_wavefolder.cpp ****     const float lfo_amount
+ 442              		.loc 1 51 5 is_stmt 1 view .LVU96
+ 443              	.LBB33:
+ 444              	.LBI30:
+   7:funbox_wavefolder.cpp **** {
+ 445              		.loc 1 7 7 view .LVU97
+ 446              	.LBB32:
+   9:funbox_wavefolder.cpp ****         return 0.0f;
+ 447              		.loc 1 9 5 view .LVU98
+ 448 005a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 449 005e 5DD4     		bmi	.L41
+  11:funbox_wavefolder.cpp ****         return 1.0f;
+ 450              		.loc 1 11 5 view .LVU99
+ 451 0060 F4EEC98A 		vcmpe.f32	s17, s18
+ 452 0064 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 453 0068 55DC     		bgt	.L40
+ 454              	.LVL40:
+  11:funbox_wavefolder.cpp ****         return 1.0f;
+ 455              		.loc 1 11 5 is_stmt 0 view .LVU100
+ 456              	.LBE32:
+ 457              	.LBE33:
+  52:funbox_wavefolder.cpp ****         = Clamp01(lfo_to_threshold) < 0.02f ? 0.0f : Clamp01(lfo_to_threshold);
+ 458              		.loc 1 52 45 view .LVU101
+ 459 006a DFED307A 		vldr.32	s15, .L45+4
+ 460 006e F4EEE78A 		vcmpe.f32	s17, s15
+ 461 0072 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 462 0076 51D4     		bmi	.L41
+ 463              	.LVL41:
+ 464              	.LBB34:
+ 465              	.LBI34:
+   7:funbox_wavefolder.cpp **** {
+ 466              		.loc 1 7 7 is_stmt 1 view .LVU102
+ 467              	.LBB35:
+   9:funbox_wavefolder.cpp ****         return 0.0f;
+ 468              		.loc 1 9 5 view .LVU103
+  11:funbox_wavefolder.cpp ****         return 1.0f;
+ 469              		.loc 1 11 5 view .LVU104
+  12:funbox_wavefolder.cpp ****     return v;
+ 470              		.loc 1 12 16 is_stmt 0 view .LVU105
+ 471 0078 F4EE498A 		vcmp.f32	s17, s18
+ 472 007c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 473 0080 79FE288A 		vselgt.f32	s17, s18, s17
+ 474              	.LVL42:
+ 475              	.L35:
+  12:funbox_wavefolder.cpp ****     return v;
+ 476              		.loc 1 12 16 view .LVU106
+ 477              	.LBE35:
+ 478              	.LBE34:
+  53:funbox_wavefolder.cpp ****     const float lfo_threshold = powf(2.0f, -lfo_signal * lfo_amount * 8.0f);
+ 479              		.loc 1 53 5 is_stmt 1 discriminator 4 view .LVU107
+ 480              		.loc 1 53 56 is_stmt 0 discriminator 4 view .LVU108
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 11
+
+
+ 481 0084 6AEE680A 		vnmul.f32	s1, s20, s17
+ 482              		.loc 1 53 37 discriminator 4 view .LVU109
+ 483 0088 B0EE000A 		vmov.f32	s0, #2.0e+0
+ 484              	.LVL43:
+ 485              		.loc 1 53 37 discriminator 4 view .LVU110
+ 486 008c 60EE8B0A 		vmul.f32	s1, s1, s22
+ 487 0090 FFF7FEFF 		bl	powf
+ 488              	.LVL44:
+  54:funbox_wavefolder.cpp ****     const float threshold
+ 489              		.loc 1 54 5 is_stmt 1 discriminator 4 view .LVU111
+  55:funbox_wavefolder.cpp ****         = fminf(fmaxf(base_threshold * env_threshold * lfo_threshold, 0.0005f), 2.0f);
+ 490              		.loc 1 55 38 is_stmt 0 discriminator 4 view .LVU112
+ 491 0094 28EE2A8A 		vmul.f32	s16, s16, s21
+ 492              	.LVL45:
+ 493              		.loc 1 55 16 discriminator 4 view .LVU113
+ 494 0098 9FED256A 		vldr.32	s12, .L45+8
+  56:funbox_wavefolder.cpp **** 
+  57:funbox_wavefolder.cpp ****     const float folded = Fold(in / threshold) * threshold;
+ 495              		.loc 1 57 30 discriminator 4 view .LVU114
+ 496 009c 2046     		mov	r0, r4
+  55:funbox_wavefolder.cpp ****         = fminf(fmaxf(base_threshold * env_threshold * lfo_threshold, 0.0005f), 2.0f);
+ 497              		.loc 1 55 16 discriminator 4 view .LVU115
+ 498 009e 28EE008A 		vmul.f32	s16, s16, s0
+ 499 00a2 B0EE000A 		vmov.f32	s0, #2.0e+0
+ 500              	.LVL46:
+  55:funbox_wavefolder.cpp ****         = fminf(fmaxf(base_threshold * env_threshold * lfo_threshold, 0.0005f), 2.0f);
+ 501              		.loc 1 55 16 discriminator 4 view .LVU116
+ 502 00a6 88FE066A 		vmaxnm.f32	s12, s16, s12
+ 503 00aa 86FE406A 		vminnm.f32	s12, s12, s0
+ 504              	.LVL47:
+ 505              		.loc 1 57 5 is_stmt 1 discriminator 4 view .LVU117
+ 506              		.loc 1 57 30 is_stmt 0 discriminator 4 view .LVU118
+ 507 00ae 89EE860A 		vdiv.f32	s0, s19, s12
+ 508 00b2 FFF7FEFF 		bl	_ZNK16FunboxWavefolder4FoldEf
+ 509              	.LVL48:
+  58:funbox_wavefolder.cpp ****     const float over_threshold = fabsf(in) - threshold;
+  59:funbox_wavefolder.cpp ****     const float fold_activity
+  60:funbox_wavefolder.cpp ****         = Clamp01(over_threshold / fmaxf(threshold * 4.0f, 0.001f));
+ 510              		.loc 1 60 41 discriminator 4 view .LVU119
+ 511 00b6 9FED1C7A 		vldr.32	s14, .L45
+ 512 00ba F1EE007A 		vmov.f32	s15, #4.0e+0
+  58:funbox_wavefolder.cpp ****     const float over_threshold = fabsf(in) - threshold;
+ 513              		.loc 1 58 39 discriminator 4 view .LVU120
+ 514 00be F0EEE99A 		vabs.f32	s19, s19
+ 515              	.LVL49:
+  57:funbox_wavefolder.cpp ****     const float over_threshold = fabsf(in) - threshold;
+ 516              		.loc 1 57 49 discriminator 4 view .LVU121
+ 517 00c2 60EE068A 		vmul.f32	s17, s0, s12
+ 518              	.LVL50:
+  58:funbox_wavefolder.cpp ****     const float over_threshold = fabsf(in) - threshold;
+ 519              		.loc 1 58 5 is_stmt 1 discriminator 4 view .LVU122
+  59:funbox_wavefolder.cpp ****         = Clamp01(over_threshold / fmaxf(threshold * 4.0f, 0.001f));
+ 520              		.loc 1 59 5 discriminator 4 view .LVU123
+ 521              		.loc 1 60 41 is_stmt 0 discriminator 4 view .LVU124
+ 522 00c6 66EE277A 		vmul.f32	s15, s12, s15
+  58:funbox_wavefolder.cpp ****     const float over_threshold = fabsf(in) - threshold;
+ 523              		.loc 1 58 17 discriminator 4 view .LVU125
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 12
+
+
+ 524 00ca 79EEC69A 		vsub.f32	s19, s19, s12
+ 525              		.loc 1 60 41 discriminator 4 view .LVU126
+ 526 00ce C7FE877A 		vmaxnm.f32	s15, s15, s14
+ 527              		.loc 1 60 18 discriminator 4 view .LVU127
+ 528 00d2 89EEA78A 		vdiv.f32	s16, s19, s15
+ 529              	.LVL51:
+ 530              	.LBB37:
+ 531              	.LBI37:
+   7:funbox_wavefolder.cpp **** {
+ 532              		.loc 1 7 7 is_stmt 1 discriminator 4 view .LVU128
+ 533              	.LBB38:
+   9:funbox_wavefolder.cpp ****         return 0.0f;
+ 534              		.loc 1 9 5 discriminator 4 view .LVU129
+ 535 00d6 B5EEC08A 		vcmpe.f32	s16, #0
+ 536 00da F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 537 00de 20D4     		bmi	.L42
+ 538              	.LVL52:
+  11:funbox_wavefolder.cpp ****         return 1.0f;
+ 539              		.loc 1 11 5 view .LVU130
+  12:funbox_wavefolder.cpp ****     return v;
+ 540              		.loc 1 12 16 is_stmt 0 view .LVU131
+ 541 00e0 B4EE498A 		vcmp.f32	s16, s18
+ 542 00e4 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 543 00e8 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 544 00ec 37FE888A 		vselgt.f32	s16, s15, s16
+ 545              	.LVL53:
+ 546              	.L37:
+  12:funbox_wavefolder.cpp ****     return v;
+ 547              		.loc 1 12 16 view .LVU132
+ 548              	.LBE38:
+ 549              	.LBE37:
+  61:funbox_wavefolder.cpp ****     const float makeup = fminf(powf(threshold, -0.70f), 96.0f);
+ 550              		.loc 1 61 5 is_stmt 1 view .LVU133
+ 551              		.loc 1 61 31 is_stmt 0 view .LVU134
+ 552 00f0 B0EE460A 		vmov.f32	s0, s12
+ 553 00f4 DFED0F0A 		vldr.32	s1, .L45+12
+ 554 00f8 FFF7FEFF 		bl	powf
+ 555              	.LVL54:
+ 556              		.loc 1 61 31 view .LVU135
+ 557 00fc DFED0E7A 		vldr.32	s15, .L45+16
+ 558 0100 C0FE677A 		vminnm.f32	s15, s0, s15
+ 559              	.LVL55:
+  62:funbox_wavefolder.cpp **** 
+  63:funbox_wavefolder.cpp ****     return folded * (1.0f + fold_activity * (makeup - 1.0f));
+ 560              		.loc 1 63 5 is_stmt 1 view .LVU136
+ 561              		.loc 1 63 53 is_stmt 0 view .LVU137
+ 562 0104 77EEC97A 		vsub.f32	s15, s15, s18
+ 563              	.LVL56:
+ 564              		.loc 1 63 27 view .LVU138
+ 565 0108 A7EE889A 		vfma.f32	s18, s15, s16
+  64:funbox_wavefolder.cpp **** }
+ 566              		.loc 1 64 1 view .LVU139
+ 567 010c 29EE280A 		vmul.f32	s0, s18, s17
+ 568              	.LVL57:
+ 569              		.loc 1 64 1 view .LVU140
+ 570 0110 BDEC088B 		vldm	sp!, {d8-d11}
+ 571              		.cfi_remember_state
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 13
+
+
+ 572              		.cfi_restore 86
+ 573              		.cfi_restore 87
+ 574              		.cfi_restore 84
+ 575              		.cfi_restore 85
+ 576              		.cfi_restore 82
+ 577              		.cfi_restore 83
+ 578              		.cfi_restore 80
+ 579              		.cfi_restore 81
+ 580              		.cfi_def_cfa_offset 8
+ 581              	.LVL58:
+ 582              		.loc 1 64 1 view .LVU141
+ 583 0114 10BD     		pop	{r4, pc}
+ 584              	.LVL59:
+ 585              	.L40:
+ 586              		.cfi_restore_state
+ 587              	.LBB40:
+ 588              	.LBB36:
+  12:funbox_wavefolder.cpp ****     return v;
+ 589              		.loc 1 12 16 view .LVU142
+ 590 0116 F0EE498A 		vmov.f32	s17, s18
+ 591              	.LVL60:
+  12:funbox_wavefolder.cpp ****     return v;
+ 592              		.loc 1 12 16 view .LVU143
+ 593 011a B3E7     		b	.L35
+ 594              	.LVL61:
+ 595              	.L41:
+  12:funbox_wavefolder.cpp ****     return v;
+ 596              		.loc 1 12 16 view .LVU144
+ 597              	.LBE36:
+ 598              	.LBE40:
+  52:funbox_wavefolder.cpp ****     const float lfo_threshold = powf(2.0f, -lfo_signal * lfo_amount * 8.0f);
+ 599              		.loc 1 52 45 view .LVU145
+ 600 011c DFED078A 		vldr.32	s17, .L45+20
+ 601              	.LVL62:
+  52:funbox_wavefolder.cpp ****     const float lfo_threshold = powf(2.0f, -lfo_signal * lfo_amount * 8.0f);
+ 602              		.loc 1 52 45 view .LVU146
+ 603 0120 B0E7     		b	.L35
+ 604              	.LVL63:
+ 605              	.L42:
+ 606              	.LBB41:
+ 607              	.LBB39:
+  10:funbox_wavefolder.cpp ****     if(v > 1.0f)
+ 608              		.loc 1 10 16 view .LVU147
+ 609 0122 9FED068A 		vldr.32	s16, .L45+20
+ 610              	.LVL64:
+  10:funbox_wavefolder.cpp ****     if(v > 1.0f)
+ 611              		.loc 1 10 16 view .LVU148
+ 612 0126 E3E7     		b	.L37
+ 613              	.L46:
+ 614              		.align	2
+ 615              	.L45:
+ 616 0128 6F12833A 		.word	981668463
+ 617 012c 0AD7A33C 		.word	1017370378
+ 618 0130 6F12033A 		.word	973279855
+ 619 0134 333333BF 		.word	-1087163597
+ 620 0138 0000C042 		.word	1119879168
+ 621 013c 00000000 		.word	0
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 14
+
+
+ 622              	.LBE39:
+ 623              	.LBE41:
+ 624              		.cfi_endproc
+ 625              	.LFE566:
+ 627              		.text
+ 628              	.Letext0:
+ 629              		.file 2 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\cmath"
+ 630              		.file 3 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\bits\\std_abs.h"
+ 631              		.file 4 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\arm-none-eabi\\th
+ 632              		.file 5 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\math.h"
+ 633              		.file 6 "c:\\program files\\daisytoolchain\\arm-none-eabi\\include\\c++\\10.2.1\\math.h"
+ 634              		.file 7 "funbox_wavefolder.h"
+ 635              		.file 8 "<built-in>"
+ARM GAS  C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s 			page 15
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 funbox_wavefolder.cpp
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:17     .text._ZN16FunboxWavefolder4InitEv:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:25     .text._ZN16FunboxWavefolder4InitEv:00000000 _ZN16FunboxWavefolder4InitEv
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:40     .text._ZNK16FunboxWavefolder7Clamp01Ef:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:47     .text._ZNK16FunboxWavefolder7Clamp01Ef:00000000 _ZNK16FunboxWavefolder7Clamp01Ef
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:78     .text._ZNK16FunboxWavefolder7Clamp01Ef:00000024 $d
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:83     .text._ZNK16FunboxWavefolder15BipolarDeadbandEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:90     .text._ZNK16FunboxWavefolder15BipolarDeadbandEf:00000000 _ZNK16FunboxWavefolder15BipolarDeadbandEf
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:209    .text._ZNK16FunboxWavefolder15BipolarDeadbandEf:0000008c $d
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:216    .text._ZNK16FunboxWavefolder6ExpMapEfff:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:223    .text._ZNK16FunboxWavefolder6ExpMapEfff:00000000 _ZNK16FunboxWavefolder6ExpMapEfff
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:306    .text._ZNK16FunboxWavefolder6ExpMapEfff:00000044 $d
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:313    .text._ZNK16FunboxWavefolder4FoldEf:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:320    .text._ZNK16FunboxWavefolder4FoldEf:00000000 _ZNK16FunboxWavefolder4FoldEf
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:360    .text._ZN16FunboxWavefolder7ProcessEffffff:00000000 $t
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:367    .text._ZN16FunboxWavefolder7ProcessEffffff:00000000 _ZN16FunboxWavefolder7ProcessEffffff
+C:\Users\Philoop\AppData\Local\Temp\ccRCi7bF.s:616    .text._ZN16FunboxWavefolder7ProcessEffffff:00000128 $d
+
+UNDEFINED SYMBOLS
+powf

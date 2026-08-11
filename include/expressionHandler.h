@@ -41,6 +41,14 @@ class ExpressionHandler
 
 {
   public:
+    struct State
+    {
+        float expression_up[6];
+        float expression_down[6];
+        bool  expression_knob_active[6];
+        bool  expressionEngaged;
+    };
+
     ExpressionHandler() {}
     ~ExpressionHandler() {}
     // Initialize
@@ -103,6 +111,29 @@ class ExpressionHandler
     float returnLed2Brightness() 
     {
         return led2_brightness;
+    }
+
+    void SaveState(State& state)
+    {
+        for (int i = 0; i < 6; i++) {
+            state.expression_up[i] = expression_up[i];
+            state.expression_down[i] = expression_down[i];
+            state.expression_knob_active[i] = expression_knob_active[i];
+        }
+        state.expressionEngaged = expressionEngaged;
+    }
+
+    void LoadState(const State& state)
+    {
+        for (int i = 0; i < 6; i++) {
+            expression_up[i] = state.expression_up[i];
+            expression_down[i] = state.expression_down[i];
+            expression_knob_active[i] = state.expression_knob_active[i];
+        }
+        expressionSet = false;
+        expressionEngaged = state.expressionEngaged;
+        led1_brightness = 0.0f;
+        led2_brightness = 0.0f;
     }
 
     void Process(float vexpression, float* knobValues, float* newExpressionValues)

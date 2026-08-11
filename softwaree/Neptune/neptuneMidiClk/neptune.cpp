@@ -750,7 +750,7 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
     } else {
         for (size_t i = 0; i < size; i++)
         {
-            // Stereo or MISO 
+            // Stereo or MISO
             if (dipValues[0]) {  // Stereo
                 inputL = in[0][i];
                 inputR = in[1][i];
@@ -758,8 +758,38 @@ static void AudioCallback(AudioHandle::InputBuffer  in,
                 inputL = in[0][i];
                 inputR = in[0][i];
             }
-            out[0][i] = inputL;
-            out[1][i] = inputR;
+
+            // Bypass with tails: keep the delay/reverb engines running, but close
+            // their input so old material decays instead of freezing in the buffers.
+            delay_inL = 0.0f;
+            delay_inR = 0.0f;
+
+            delay_outL = delayL.Process(delay_inL) * delayMix;
+            delay_outR = delayR.Process(delay_inR) * delayMix;
+
+            if ((toggleValues[1] == 0) || (toggleValues[1] == 2)) {
+                inL[0] = delay_outL;
+                inR[0] = delay_outR;
+            } else {
+                inL[0] = 0.0f;
+                inR[0] = 0.0f;
+            }
+
+            reverb->Process(inL, inR, outL, outR, 1);
+
+            float tail_outL;
+            float tail_outR;
+
+            if (!(toggleValues[1] == 2)) {
+                tail_outL = (outL[0] * (reverbMix * 1.2f) + delay_outL) * wetMix;
+                tail_outR = (outR[0] * (reverbMix * 1.2f) + delay_outR) * wetMix;
+            } else {
+                tail_outL = (outL[0] * (reverbMix * 1.2f)) * wetMix;
+                tail_outR = (outR[0] * (reverbMix * 1.2f)) * wetMix;
+            }
+
+            out[0][i] = inputL + tail_outL * wetMix;
+            out[1][i] = inputR + tail_outR * wetMix;
         }
     }
 }

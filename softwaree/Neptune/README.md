@@ -47,8 +47,8 @@ Very long press on Footswitch 2 exits looper mode, stops the loop, and returns t
 
 | Control in looper mode | Function |
 | --- | --- |
-| Knob 3 | Looper routing, 5 zones. Shift: Neptune FX time / tempo division. |
-| Knob 6 | Looper feedback/decay. Shift: Neptune FX feedback. |
+| Knob 3 | Neptune FX time / tempo division. Shift: looper routing, 5 zones. |
+| Knob 6 | Neptune FX feedback. Shift: looper feedback/decay. |
 | Footswitch 1 / bypass | Effect active = overdub enabled. Bypass = loop plays without overdub. |
 | Footswitch 2 short click | Start/end loop. |
 | Footswitch 2 very long press | Enter/exit looper mode. |
@@ -63,18 +63,18 @@ Very long press on Footswitch 2 exits looper mode, stops the loop, and returns t
 | 60-80% | OP wet / OD wet | Wet live overplay. Wet Neptune signal is overdubbed. |
 | 80-100% | Loop Into FX / Resample | Loop playback goes through Neptune FX. With overdub enabled, the processed result is written back into the loop. |
 
-OP means overplay: what you play live over the loop. OD means overdub: what gets written into the loop when overdub is enabled. In looper mode, bypass controls overdub on/off only; K3 chooses dry/wet or resample behavior independently. Overdub fades in briefly when enabled.
+OP means overplay: what you play live over the loop. OD means overdub: what gets written into the loop when overdub is enabled. In looper mode, bypass controls overdub on/off only; Shift + K3 chooses dry/wet or resample behavior independently. Overdub fades in briefly when enabled.
 
-Hold Footswitch 1 in looper mode for shift controls:
+Hold Footswitch 1 in looper mode for looper controls:
 
 | Shift control | Function |
 | --- | --- |
-| Shift + Knob 3 | Neptune FX delay time / tempo division. |
-| Shift + Knob 6 | Neptune FX delay feedback. |
+| Shift + Knob 3 | Looper routing, 5 zones. |
+| Shift + Knob 6 | Looper feedback/decay. |
 
-The last looper shift values keep controlling Neptune FX time/feedback after leaving looper mode. Physical Knob 3/6 are ignored until moved, then normal control resumes.
+The normal Knob 3/6 values keep controlling Neptune FX time/feedback during looper mode and after leaving it. Looper routing and looper feedback are remembered separately while Neptune is running.
 
-Looper K3 and K6 values are remembered separately while Neptune is running. Leaving looper mode uses jump behavior: normal Knob 3 and Knob 6 immediately follow the physical pot positions again.
+Leaving looper mode uses jump behavior: normal Knob 3 and Knob 6 immediately follow the physical pot positions again.
 
 ### MIDI Quantized Looping
 
