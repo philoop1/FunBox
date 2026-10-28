@@ -9,10 +9,10 @@ OPT = -Os
 
 CPP_SOURCES = looper.cpp looper_granular_player.cpp
 
-LIBDAISY_DIR = ../../libDaisy
-DAISYSP_DIR = ../../DaisySP
+LIBDAISY_DIR = ../../../libDaisy
+DAISYSP_DIR = ../../../DaisySP
 
 SYSTEM_FILES_DIR = $(LIBDAISY_DIR)/core
 include $(SYSTEM_FILES_DIR)/Makefile
 
-C_INCLUDES += -I../../include
+C_INCLUDES += -I../../../include

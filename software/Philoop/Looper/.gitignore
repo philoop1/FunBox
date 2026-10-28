@@ -1,0 +1,3 @@
+build/*
+!build/looper.bin
+!build/looper.hex

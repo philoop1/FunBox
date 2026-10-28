@@ -7,7 +7,7 @@ still under development; see its README for controls and build instructions.
 
 It also includes [Philoop's experimental BitCrusher4Live2](software/Philoop/BitCrusher4Live2)
 with ring modulation, sample-rate reduction, phaser, and flanger, plus a
-[MIDI-clock-aware looper](softwaree/Looper).
+[MIDI-clock-aware looper](software/Philoop/Looper).
 
 [![Downloads](https://img.shields.io/github/downloads/GuitarML/Funbox/total)](https://somsubhra.github.io/github-release-stats/?username=GuitarML&repository=Funbox&page=1&per_page=30)
 
