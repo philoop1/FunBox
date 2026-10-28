@@ -1,4 +1,4 @@
-# BitCrusher4Live2
+# Philoop BitCrusher4Live2 (experimental)
 
 Live-Version auf Basis von BitCrusher4Live. Phaser wird per Shift + Switch 1 links gelatcht, Wavefolder per Shift + Switch 1 mitte, Flanger per Shift + Switch 1 rechts. Alle drei haben je 5 eigene Presets. The Phaser, Wavefolder, and Flanger use local Funbox cores.
 
@@ -130,7 +130,6 @@ Audio block size is 8 samples.
 ## Build
 
 ```bash
-cd /i/Daisy/FunBox/FunBox/softwaree/BitCrusher4Live2
-make
-make program-dfu
+make -C software/Philoop/BitCrusher4Live2
+make -C software/Philoop/BitCrusher4Live2 program-dfu
 ```
