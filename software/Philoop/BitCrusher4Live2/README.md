@@ -1,6 +1,6 @@
 # Philoop BitCrusher4Live2 (experimental)
 
-Live-Version auf Basis von BitCrusher4Live. Phaser wird per Shift + Switch 1 links gelatcht, Wavefolder per Shift + Switch 1 mitte, Flanger per Shift + Switch 1 rechts. Alle drei haben je 5 eigene Presets. The Phaser, Wavefolder, and Flanger use local Funbox cores.
+Live-Version auf Basis von BitCrusher4Live. Phaser wird per Shift + Switch 1 links gelatcht, Flanger per Shift + Switch 1 rechts. Beide haben je 5 eigene Presets. The Phaser and Flanger use local Funbox cores.
 
 ## Signal Modes
 
@@ -20,32 +20,18 @@ Live-Version auf Basis von BitCrusher4Live. Phaser wird per Shift + Switch 1 lin
 
 | Control | Description |
 | --- | --- |
-| Knob 1 | Bit depth. In Switch 1 middle/filter mode: global input gain, 1.0x to 2.0x. In ringmod mode: sine oscillator frequency. |
-| Knob 2 | Sample-rate reduction. In Switch 1 middle/filter mode: global envelope attack. In ringmod mode: second sample-rate reducer after ringmod. |
+| Knob 1 | Bit depth. In ringmod mode: sine oscillator frequency. |
+| Knob 2 | Sample-rate reduction. In ringmod mode: second sample-rate reducer after ringmod. |
 | Knob 3 | Filter cutoff. |
-| Knob 4 | Envelope amount to bit depth. In Switch 1 middle/filter mode: global envelope follower input gain. In ringmod mode: envelope amount to sine frequency. Bipolar, center is neutral except in filter mode. |
-| Knob 5 | Envelope amount to sample-rate reduction. In Switch 1 middle/filter mode: global envelope decay/release. Bipolar, center is neutral except in filter mode. |
+| Knob 4 | Envelope amount to bit depth. In ringmod mode: envelope amount to sine frequency. Bipolar, center is neutral. |
+| Knob 5 | Envelope amount to sample-rate reduction. Bipolar, center is neutral. |
 | Knob 6 | Envelope amount to cutoff. Bipolar, center is neutral. Uses an intensified range for stronger filter sweeps. |
 | Shift + Knob 3 | Filter resonance. |
-| Shift + Knob 4 | Envelope follower input gain. Stored globally, independent of presets, and used by all modes. Also available as Switch 1 middle + Knob 4. Phaser and Flanger multiply this by 3 internally. |
-| Shift + Knob 5 | Envelope attack. Stored globally, independent of presets. Also available as Switch 1 middle + Knob 2. |
-| Shift + Knob 6 | Envelope release. Stored globally, independent of presets. Also available as Switch 1 middle + Knob 5. |
+| Shift + Knob 4 | Envelope follower input gain. Stored globally, independent of presets, and used by all modes. Phaser and Flanger multiply this by 3 internally. |
+| Shift + Knob 5 | Envelope attack. Stored globally, independent of presets. |
+| Shift + Knob 6 | Envelope release. Stored globally, independent of presets. |
 
 Each Switch 1 position has its own normal 5-preset bank. Moving Switch 1 in normal route mode loads the same preset number from the new bank, or preset 1 if no preset number is active. Switch 1 and Switch 2 are not stored in presets, so their physical positions stay live when a preset is loaded.
-
-Switch 1 middle acts as the filter page in normal route mode. Knob 1 sets the global input gain before the active effect route. Knobs 2, 4, and 5 edit the same global envelope follower values as the Shift layer, so changing them there affects all modes and is saved globally.
-
-## Wavefolder Controls
-
-Hold Footswitch 1 to enter Shift mode, then move Switch 1 to the middle position to latch Wavefolder mode. Wavefolder stays active until Switch 1 is moved again, then it returns to the Switch 1 layer that was active before Wavefolder was latched.
-
-| Control | Description |
-| --- | --- |
-| Knob 1 | Fold threshold/sensitivity. Left folds later, right folds much earlier. |
-| Knob 2 | LFO speed. |
-| Knob 4 | Envelope amount to fold threshold. Bipolar, center is neutral. Right folds earlier on envelope peaks, left folds later. |
-| Knob 5 | LFO amount to fold threshold. Fully counterclockwise is off. |
-| Shift + Knob 5 | Envelope amount to LFO speed. Bipolar, center is neutral. |
 
 ## Phaser Controls
 
@@ -103,14 +89,14 @@ Switch 2 selects the expression assignment slot.
 
 ## Presets
 
-There are 5 normal presets for each Switch 1 position, plus 5 Phaser presets, 5 Wavefolder presets, and 5 Flanger presets. Preset selection does not change bypass, so a preset can be selected while the effect is off and then engaged with Footswitch 1. Switch 1 and Switch 2 are not stored in presets; Switch 3 is stored. When Phaser, Wavefolder, or Flanger is latched, preset 1 of that bank loads automatically. Footswitch 2 can still recall, save, and turn off presets in the active bank.
+There are 5 normal presets for each Switch 1 position, plus 5 Phaser presets and 5 Flanger presets. Preset selection does not change bypass, so a preset can be selected while the effect is off and then engaged with Footswitch 1. Switch 1 and Switch 2 are not stored in presets; Switch 3 is stored. When Phaser or Flanger is latched, preset 1 of that bank loads automatically. Footswitch 2 can still recall, save, and turn off presets in the active bank.
 
 | Action | Result |
 | --- | --- |
 | 1-5 short clicks on Footswitch 2 | Recall preset 1-5 in the current route bank. If that preset is already active, save edits back to that preset. |
 | Hold Footswitch 2 for 700-999 ms | Enter save-select mode as soon as the hold threshold is reached. LED2 lights while waiting for preset input. |
 | In save-select mode, 1-5 short clicks | Save current state to preset 1-5 in the current route bank. |
-| Hold Footswitch 2 for 1.5 seconds or longer | Presets off in the current bank. Phaser, Wavefolder, and Flanger will still auto-load preset 1 the next time their latch is entered. |
+| Hold Footswitch 2 for 1.5 seconds or longer | Presets off in the current bank. Phaser/Flanger will still auto-load preset 1 the next time their latch is entered. |
 
 When a preset is active, LED2 blinks the preset number in a 200 ms pattern, then stays off for two 200 ms steps before repeating.
 
@@ -125,7 +111,7 @@ When a preset is active, LED2 blinks the preset number in a 200 ms pattern, then
 | LED 1 | Effect on/off, shift, and expression feedback. |
 | LED 2 | Preset/save and expression feedback. |
 
-Audio block size is 8 samples.
+Audio block size is 16 samples.
 
 ## Build
 

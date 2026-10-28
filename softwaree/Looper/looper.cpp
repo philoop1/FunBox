@@ -363,7 +363,7 @@ void PrintSerialStatus()
 
     last_serial_print_ms = now;
     DaisySeed::PrintLine(
-        "cpu:%d/%d/%d st:%d ext:%d[%d-%d] r:%d s:%d g:%d sh:%d k1szrnd:%d k2dir:%d k4space:%d age:%d pos:%d k5pr:%d lock:%d%d%d%d",
+        "cpu:%d/%d/%d st:%d ext_adc:%d[%d-%d] ext_raw:%d ext_fs:%d gesture:%d sh:%d k1szrnd:%d k2dir:%d k4space:%d age:%d pos:%d k5pr:%d lock:%d%d%d%d",
         LoadPercent(cpu_load_meter.GetAvgCpuLoad()),
         LoadPercent(cpu_load_meter.GetMinCpuLoad()),
         LoadPercent(cpu_load_meter.GetMaxCpuLoad()),
@@ -388,6 +388,19 @@ void PrintSerialStatus()
     external_switch_adc_min = external_switch_adc_value;
     external_switch_adc_max = external_switch_adc_value;
     cpu_load_meter.Reset();
+}
+
+void PrintExternalSwitchEvent(uint8_t bits)
+{
+    const int adc = static_cast<int>(external_switch_adc_value * 100.0f + 0.5f);
+    if(bits == kExternalFsw1Bit)
+        DaisySeed::PrintLine("EXT FS: LOOP adc:%d", adc);
+    else if(bits == kExternalFsw2Bit)
+        DaisySeed::PrintLine("EXT FS: EDIT/OVERDUB adc:%d", adc);
+    else if(bits == (kExternalFsw1Bit | kExternalFsw2Bit))
+        DaisySeed::PrintLine("EXT FS: BOTH adc:%d", adc);
+    else
+        DaisySeed::PrintLine("EXT FS: NONE adc:%d", adc);
 }
 
 size_t MaxLooperSamples()
@@ -1510,7 +1523,10 @@ void UpdateExternalSwitchBits(uint32_t now)
         external_switch_stable_bits = external_switch_raw_bits;
 
     if(external_switch_stable_bits != external_switch_reported_bits)
+    {
         external_switch_reported_bits = external_switch_stable_bits;
+        PrintExternalSwitchEvent(external_switch_stable_bits);
+    }
 }
 
 void ProcessExternalOverdubUndoInput(bool pressed, uint32_t now)

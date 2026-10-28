@@ -1,0 +1,3 @@
+build/*
+!build/BitCrush4Live2.bin
+!build/BitCrush4Live2.hex
