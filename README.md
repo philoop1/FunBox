@@ -1,4 +1,10 @@
 # Funbox
+
+This fork includes [Philoop's experimental Neptune variant](software/Philoop/Neptune)
+with tap tempo, MIDI clock, and a live looper. It builds on the original
+[GuitarML Funbox](https://github.com/GuitarML/Funbox) project. The variant is
+still under development; see its README for controls and build instructions.
+
 [![Downloads](https://img.shields.io/github/downloads/GuitarML/Funbox/total)](https://somsubhra.github.io/github-release-stats/?username=GuitarML&repository=Funbox&page=1&per_page=30)
 
 Funbox is a digital stereo guitar effect platform using the Daisy Seed by Electrosmith.

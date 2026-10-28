@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1754" viewBox="0 0 1240 1754">
+  <defs>
+    <linearGradient id="header" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b9d4ef"/>
+      <stop offset="1" stop-color="#7fb0df"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e8edf2"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4c5867"/>
+      <stop offset="1" stop-color="#15191f"/>
+    </linearGradient>
+    <style>
+      .title{font:700 46px Arial,Helvetica,sans-serif;fill:#05080c}
+      .subtitle{font:700 24px Arial,Helvetica,sans-serif;fill:#10151b}
+      .body{font:400 23px Arial,Helvetica,sans-serif;fill:#111820}
+      .small{font:400 18px Arial,Helvetica,sans-serif;fill:#111820}
+      .tiny{font:700 13px Arial,Helvetica,sans-serif;fill:#10151b}
+      .white{fill:#fff}
+      .bold{font-weight:700}
+      .panel{fill:url(#panel);stroke:#111820;stroke-width:2}
+      .darkpanel{fill:url(#dark);stroke:#111820;stroke-width:2}
+      .pedal{fill:#d7e5f3;stroke:#406d91;stroke-width:8}
+      .knob{fill:#ffe8a7;stroke:#111820;stroke-width:5}
+      .knob2{fill:#89817e;stroke:#111820;stroke-width:5}
+      .switch{fill:#64a6df;stroke:#111820;stroke-width:4}
+      .led{fill:#63aee7;stroke:#6f8ea9;stroke-width:8}
+      .line{stroke:#111820;stroke-width:3;fill:none}
+    </style>
+  </defs>
+
+  <rect width="1240" height="1754" fill="#f7f8fa"/>
+
+  <rect x="36" y="32" width="524" height="124" fill="url(#header)" stroke="#5d7fa4" stroke-width="2"/>
+  <text x="58" y="82" class="title">Neptune Live</text>
+  <text x="58" y="119" class="subtitle">Reverb / Delay / Tap / Looper</text>
+  <text x="58" y="148" class="small">CloudSeed + normal / octave / reverse delay</text>
+
+  <rect x="722" y="52" width="462" height="130" fill="url(#header)" stroke="#5d7fa4" stroke-width="2"/>
+  <text x="746" y="91" class="subtitle">Stereo In/Out</text>
+  <text x="746" y="124" class="body">Expression: YES</text>
+  <text x="746" y="156" class="body">MIDI clock: YES</text>
+
+  <!-- Pedal body -->
+  <rect x="400" y="220" width="440" height="620" rx="18" class="pedal"/>
+  <polygon points="508,204 525,170 542,204" fill="#111820"/>
+  <polygon points="720,170 737,204 754,170" fill="#111820"/>
+
+  <rect x="430" y="280" width="126" height="260" fill="#c7d9e9" stroke="#111820" stroke-width="2"/>
+  <rect x="557" y="280" width="126" height="260" fill="#c7d9e9" stroke="#111820" stroke-width="2"/>
+  <rect x="684" y="280" width="126" height="260" fill="#c7d9e9" stroke="#111820" stroke-width="2"/>
+
+  <circle cx="493" cy="345" r="42" class="knob"/>
+  <line x1="493" y1="345" x2="493" y2="304" stroke="#111820" stroke-width="6"/>
+  <text x="455" y="415" class="tiny">Decay</text>
+
+  <circle cx="620" cy="345" r="42" class="knob"/>
+  <line x1="620" y1="345" x2="620" y2="304" stroke="#111820" stroke-width="6"/>
+  <text x="590" y="415" class="tiny">Mix</text>
+  <text x="578" y="438" class="tiny">(R/D)</text>
+
+  <circle cx="747" cy="345" r="42" class="knob"/>
+  <line x1="747" y1="345" x2="747" y2="304" stroke="#111820" stroke-width="6"/>
+  <text x="712" y="415" class="tiny">Time</text>
+
+  <circle cx="493" cy="495" r="42" class="knob2"/>
+  <line x1="493" y1="495" x2="493" y2="454" stroke="#111820" stroke-width="6"/>
+  <text x="462" y="564" class="tiny">Mod</text>
+  <text x="446" y="586" class="tiny">(Rate)</text>
+
+  <circle cx="620" cy="495" r="42" class="knob2"/>
+  <line x1="620" y1="495" x2="620" y2="454" stroke="#111820" stroke-width="6"/>
+  <text x="585" y="564" class="tiny">Damp</text>
+
+  <circle cx="747" cy="495" r="42" class="knob2"/>
+  <line x1="747" y1="495" x2="747" y2="454" stroke="#111820" stroke-width="6"/>
+  <text x="710" y="564" class="tiny">FDBK</text>
+
+  <circle cx="493" cy="640" r="24" class="switch"/>
+  <path d="M468 640 h32" stroke="#111820" stroke-width="7"/>
+  <text x="452" y="701" class="tiny" transform="rotate(-90 452 701)">Chor Hall Cloud</text>
+
+  <circle cx="620" cy="640" r="24" class="switch"/>
+  <path d="M595 640 h32" stroke="#111820" stroke-width="7"/>
+  <text x="579" y="701" class="tiny" transform="rotate(-90 579 701)">D+R D|R D-&gt;R</text>
+
+  <circle cx="747" cy="640" r="24" class="switch"/>
+  <path d="M722 640 h32" stroke="#111820" stroke-width="7"/>
+  <text x="706" y="701" class="tiny" transform="rotate(-90 706 701)">Norm Oct Rev</text>
+
+  <text x="521" y="762" font-family="Georgia,serif" font-size="44" font-weight="700" fill="#05080c">NEPTUNE</text>
+  <text x="573" y="792" class="small">LIVE</text>
+  <circle cx="493" cy="775" r="43" class="led"/>
+  <circle cx="747" cy="775" r="43" class="led"/>
+  <text x="440" y="833" class="tiny">BYPASS / ALT</text>
+  <text x="707" y="833" class="tiny">TAP / LOOP</text>
+
+  <!-- Left panels -->
+  <rect x="36" y="228" width="326" height="162" class="panel"/>
+  <text x="58" y="266" class="subtitle">K1-3</text>
+  <text x="58" y="305" class="body"><tspan class="bold">K1:</tspan> Reverb decay</text>
+  <text x="58" y="338" class="body"><tspan class="bold">K2:</tspan> Dry/wet mix</text>
+  <text x="58" y="371" class="body"><tspan class="bold">K3:</tspan> Delay time / div</text>
+  <path d="M362 310 C380 315 384 328 400 330" class="line"/>
+
+  <rect x="36" y="418" width="326" height="162" class="panel"/>
+  <text x="58" y="456" class="subtitle">K4-6</text>
+  <text x="58" y="495" class="body"><tspan class="bold">K4:</tspan> Mod amount</text>
+  <text x="58" y="528" class="body"><tspan class="bold">K5:</tspan> Damp lowpass</text>
+  <text x="58" y="561" class="body"><tspan class="bold">K6:</tspan> Delay feedback</text>
+  <path d="M362 508 C380 510 384 520 400 520" class="line"/>
+
+  <rect x="64" y="612" width="304" height="164" class="darkpanel"/>
+  <text x="90" y="652" class="subtitle white">Switch 1</text>
+  <text x="90" y="690" class="body white"><tspan class="bold">L:</tspan> Chorus reverb</text>
+  <text x="90" y="724" class="body white"><tspan class="bold">M:</tspan> Medium hall</text>
+  <text x="90" y="758" class="body white"><tspan class="bold">R:</tspan> RubiKa / cloud</text>
+  <path d="M368 690 C386 688 390 650 400 642" class="line"/>
+
+  <rect x="64" y="804" width="304" height="164" class="darkpanel"/>
+  <text x="90" y="844" class="subtitle white">Switch 2</text>
+  <text x="90" y="882" class="body white"><tspan class="bold">L:</tspan> Delay into reverb</text>
+  <text x="90" y="916" class="body white"><tspan class="bold">M:</tspan> Parallel</text>
+  <text x="90" y="950" class="body white"><tspan class="bold">R:</tspan> Delay to reverb</text>
+
+  <!-- Right panels -->
+  <rect x="878" y="238" width="326" height="178" class="panel"/>
+  <text x="900" y="278" class="subtitle">Shift / Alt</text>
+  <text x="900" y="316" class="body"><tspan class="bold">Hold FS1:</tspan> alt mode</text>
+  <text x="900" y="350" class="body"><tspan class="bold">K2:</tspan> reverb/delay balance</text>
+  <text x="900" y="384" class="body"><tspan class="bold">K4:</tspan> modulation rate</text>
+  <path d="M878 330 C860 330 856 345 840 345" class="line"/>
+
+  <rect x="878" y="448" width="326" height="178" class="panel"/>
+  <text x="900" y="488" class="subtitle">Tap / MIDI Clock</text>
+  <text x="900" y="526" class="body">Short FS2: tap tempo</text>
+  <text x="900" y="560" class="body">MIDI clock auto-takes over</text>
+  <text x="900" y="594" class="body">LED1 blinks on MIDI clock</text>
+
+  <rect x="878" y="658" width="326" height="178" class="darkpanel"/>
+  <text x="900" y="698" class="subtitle white">Switch 3</text>
+  <text x="900" y="736" class="body white"><tspan class="bold">L:</tspan> Normal delay</text>
+  <text x="900" y="770" class="body white"><tspan class="bold">M:</tspan> Octave delay</text>
+  <text x="900" y="804" class="body white"><tspan class="bold">R:</tspan> Reverse delay</text>
+  <path d="M878 732 C856 725 852 655 840 640" class="line"/>
+
+  <rect x="878" y="868" width="326" height="118" fill="#4c6178" stroke="#111820" stroke-width="2"/>
+  <text x="900" y="908" class="subtitle white">DIP</text>
+  <text x="900" y="946" class="body white">1: Stereo / MISO</text>
+  <text x="900" y="978" class="body white">2-4: N/A</text>
+
+  <!-- Looper section -->
+  <rect x="40" y="1040" width="1160" height="594" fill="#eef4f9" stroke="#111820" stroke-width="3"/>
+  <text x="70" y="1092" class="title">Looper Mode</text>
+  <text x="70" y="1134" class="body"><tspan class="bold">FS2 very long press:</tspan> enter / exit looper. LED2 dim = armed, LED2 bright = recording or playing.</text>
+  <text x="70" y="1170" class="body"><tspan class="bold">FS2 click 1:</tspan> loop start. <tspan class="bold">FS2 click 2:</tspan> loop end. MIDI clock quantizes start to next 1/16 and end to next bar.</text>
+  <text x="70" y="1206" class="body"><tspan class="bold">Bypass off:</tspan> overdub on with short fade-in. <tspan class="bold">Bypass on:</tspan> overplay only, no overdub.</text>
+
+  <rect x="70" y="1240" width="520" height="330" class="panel"/>
+  <text x="96" y="1282" class="subtitle">K3 in Looper: OP / OD / FX</text>
+  <text x="96" y="1324" class="body"><tspan class="bold">0-20:</tspan> OP dry / OD dry</text>
+  <text x="96" y="1360" class="body"><tspan class="bold">20-40:</tspan> OP wet / OD dry</text>
+  <text x="96" y="1396" class="body"><tspan class="bold">40-60:</tspan> OP dry / OD wet</text>
+  <text x="96" y="1432" class="body"><tspan class="bold">60-80:</tspan> OP wet / OD wet</text>
+  <text x="96" y="1468" class="body"><tspan class="bold">80-100:</tspan> Loop into FX / resample</text>
+  <text x="96" y="1526" class="small">OP = overplay. OD = overdub into loop.</text>
+
+  <rect x="628" y="1240" width="520" height="330" class="panel"/>
+  <text x="654" y="1282" class="subtitle">K6 in Looper: Feedback</text>
+  <text x="654" y="1324" class="body">Left: loop fades faster</text>
+  <text x="654" y="1360" class="body">Right: loop holds longer</text>
+  <text x="654" y="1396" class="body">Bypass controls overdub only.</text>
+  <text x="654" y="1432" class="body">K3 chooses dry/wet independently.</text>
+  <text x="654" y="1490" class="small">Shift+K3: FX time. Shift+K6: FX feedback.</text>
+  <text x="654" y="1526" class="small">After exit, FX values hold until K3/K6 move.</text>
+
+  <!-- Footer -->
+  <rect x="40" y="1662" width="1160" height="58" fill="#203040"/>
+  <text x="64" y="1700" class="body white">Neptune Live Looper - Footswitch 2 replaces old preset behavior with tap tempo and loop control.</text>
+</svg>

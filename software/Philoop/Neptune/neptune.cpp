@@ -9,11 +9,11 @@
 #include "tempo.h"  
 #include "harmonic_notch_filter.h"
 
-#include "../CloudSeed/Default.h"
-#include "../CloudSeed/ReverbController.h"
-#include "../CloudSeed/FastSin.h"
-#include "../CloudSeed/AudioLib/ValueTables.h"
-#include "../CloudSeed/AudioLib/MathDefs.h"
+#include "../../Neptune/CloudSeed/Default.h"
+#include "../../Neptune/CloudSeed/ReverbController.h"
+#include "../../Neptune/CloudSeed/FastSin.h"
+#include "../../Neptune/CloudSeed/AudioLib/ValueTables.h"
+#include "../../Neptune/CloudSeed/AudioLib/MathDefs.h"
 
 #define NEPTUNE_TEMPO_DEBUG 1
 #define NEPTUNE_RAW_MIDI_DEBUG 0

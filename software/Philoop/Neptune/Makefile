@@ -16,7 +16,7 @@ CPP_SOURCES = neptune.cpp harmonic_notch_filter.cpp
 # Library Locations
 LIBDAISY_DIR = ../../../libDaisy
 DAISYSP_DIR = ../../../DaisySP
-CLOUDSEED_DIR = ../CloudSeed
+CLOUDSEED_DIR = ../../Neptune/CloudSeed
 
 # Core location, and generic Makefile.
 SYSTEM_FILES_DIR = $(LIBDAISY_DIR)/core
@@ -24,7 +24,7 @@ include $(SYSTEM_FILES_DIR)/Makefile
 
 
 # Include funbox.h
-C_INCLUDES += -I../../../include -I../CloudSeed \
+C_INCLUDES += -I../../../include -I$(CLOUDSEED_DIR) \
 
 LIBS += -lcloudseed
-LIBDIR += -L../CloudSeed/build 
+LIBDIR += -L$(CLOUDSEED_DIR)/build
